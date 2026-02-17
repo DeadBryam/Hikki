@@ -1,12 +1,24 @@
 pre-commit:
+  jobs:
+    - run: bun x ultracite fix
+      glob:
+        - "apps/**/*.{js,jsx,ts,tsx,json,jsonc,css,md}"
+        - "packages/**/*.{js,jsx,ts,tsx,json,jsonc,css,md}"
+        - "*.{js,jsx,ts,tsx,json,jsonc,css,md}"
+      stage_fixed: true
   parallel: true
   commands:
     lint:
-      run: bun biome check --staged
+      run: bun run check
     typecheck:
-      run: bun typecheck
+      run: bun run typecheck
 
 pre-push:
+  parallel: false
   commands:
     build:
-      run: bun build
+      run: bun run build
+    typecheck:
+      run: bun run typecheck
+    lint:
+      run: bun run check
