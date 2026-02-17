@@ -4,7 +4,6 @@ import { ViewTransitions } from "next-view-transitions";
 import { Toaster } from "sileo";
 
 import "./globals.css";
-import { Providers } from "@/components/providers";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
@@ -48,7 +47,7 @@ export default function RootLayout({
             enableSystem
           >
             <QueryProvider>
-              <Providers>{children}</Providers>
+              {children}
               <Toaster position="bottom-right" />
             </QueryProvider>
           </ThemeProvider>
