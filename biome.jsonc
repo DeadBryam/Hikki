@@ -1,4 +1,14 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": ["ultracite/biome/core", "ultracite/biome/next"]
+  "extends": ["ultracite/biome/core", "ultracite/biome/next"],
+  "linter": {
+    "rules": {
+      "suspicious": {
+        "noExplicitAny": "off"
+      }
+    }
+  },
+  "files": {
+    "includes": ["**/*.ts", "**/*.tsx", "!**/node_modules", "!**/dist"]
+  }
 }

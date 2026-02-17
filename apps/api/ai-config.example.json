@@ -1,0 +1,14 @@
+{
+  "cerebras": {
+    "api_key": "your_cerebras_api_key_here",
+    "base_url": "https://api.cerebras.ai/v1",
+    "models": ["qwen-3-235b-a22b-instruct-2507", "llama3.1-70b", "llama3.1-8b"],
+    "priority": 1
+  },
+  "groq": {
+    "api_key": "your_groq_api_key_here",
+    "base_url": "https://api.groq.com/openai/v1",
+    "models": ["llama-3-70b", "mixtral-8x7b", "llama-3-8b"],
+    "priority": 2
+  }
+}

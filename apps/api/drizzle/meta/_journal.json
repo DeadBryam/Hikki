@@ -1,0 +1,90 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1707420000000,
+      "tag": "0000_create_users",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1707420000000,
+      "tag": "0001_create_threads",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1707420000000,
+      "tag": "0002_create_messages",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1707420000000,
+      "tag": "0003_create_summaries",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1707420000000,
+      "tag": "0004_create_memory_items",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1707420000000,
+      "tag": "0005_create_jobs",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1707420000000,
+      "tag": "0006_create_sessions",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1707420000000,
+      "tag": "0007_add_email_verification",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1707420000000,
+      "tag": "0008_add_missing_indexes",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1707420000000,
+      "tag": "0009_add_job_retry_count",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1707420000000,
+      "tag": "0010_add_recurrent_fields",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1707420000000,
+      "tag": "0011_add_onboarding_field",
+      "breakpoints": true
+    }
+  ]
+}
