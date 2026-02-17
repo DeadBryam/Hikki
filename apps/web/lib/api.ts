@@ -1,8 +1,8 @@
 import ky from "ky";
-
+import { env } from "@/lib/env";
 import { toast } from "@/lib/toast";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_URL = env.API_URL;
 
 export const api = ky.create({
   credentials: "include",
