@@ -14,10 +14,11 @@
     "check": "ultracite check",
     "typecheck": "turbo run typecheck",
     "fix": "ultracite fix",
-    "prepare": "lefthook install"
+    "prepare": "lefthook install",
+    "db:migrate": "bun run --filter @hikki/api db:migrate"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.0",
+    "@biomejs/biome": "2.4.2",
     "lefthook": "^2.1.1",
     "oxfmt": "^0.33.0",
     "oxlint": "^1.48.0",
