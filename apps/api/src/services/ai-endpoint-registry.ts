@@ -691,7 +691,7 @@ const ENDPOINTS_BY_CATEGORY: Record<string, AIEndpointDoc[]> = {
         "Call this first when learning about the API. Shows all categories and their URLs.",
       how_to_use:
         "Send a GET request. No authentication required. Returns index of categories.",
-      path: "/api/v1/docs/ai",
+      path: "/docs/ai",
       method: "GET",
       requires_auth: false,
       tags: ["AI Discovery"],
@@ -725,7 +725,7 @@ const ENDPOINTS_BY_CATEGORY: Record<string, AIEndpointDoc[]> = {
         "After getting the index, call the URL of the category you want to explore.",
       how_to_use:
         "Send the category ID (kebab-case) in the URL. Returns full documentation for that category.",
-      path: "/api/v1/docs/ai/:category",
+      path: "/docs/ai/:category",
       method: "GET",
       requires_auth: false,
       tags: ["AI Discovery"],
@@ -755,7 +755,7 @@ const ENDPOINTS_BY_CATEGORY: Record<string, AIEndpointDoc[]> = {
         "When you need the complete API documentation in a single request",
       how_to_use:
         "Send a GET request. Returns all endpoints grouped by category.",
-      path: "/api/v1/docs/ai/all",
+      path: "/docs/ai/all",
       method: "GET",
       requires_auth: false,
       tags: ["AI Discovery"],
@@ -794,7 +794,7 @@ export function getWikiIndex(): AIWikiIndex {
     name: cat.name,
     description: cat.description,
     endpoint_count: ENDPOINTS_BY_CATEGORY[cat.id]?.length || 0,
-    url: `/api/v1/docs/ai/${cat.id}`,
+    url: `/docs/ai/${cat.id}`,
   }));
 
   const totalEndpoints = Object.values(ENDPOINTS_BY_CATEGORY).reduce(
@@ -812,7 +812,7 @@ export function getWikiIndex(): AIWikiIndex {
       base_url: "http://localhost:3000",
       total_endpoints: totalEndpoints,
     },
-    all_endpoints_url: "/api/v1/docs/ai/all",
+    all_endpoints_url: "/docs/ai/all",
   };
 }
 

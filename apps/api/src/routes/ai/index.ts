@@ -1,7 +1,7 @@
 /**
  * AI Documentation Routes Module
  *
- * Aggregates all AI documentation routes under /api/v1/docs/ai
+ * Aggregates all AI documentation routes under /docs/ai
  */
 
 import { Elysia } from "elysia";

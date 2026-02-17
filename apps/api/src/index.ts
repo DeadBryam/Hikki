@@ -41,10 +41,10 @@ const app = new Elysia(serveConfig)
   .use(logesticPlugin)
   .onError(errorHandler)
   .use(rootRoute)
+  .use(aiDocsIndex)
   .group("/api/v1", (app) =>
     app
       .use(appRoute)
-      .use(aiDocsIndex)
       .use(chatRoute)
       .use(authRoutes)
       .use(threadsRoutes)

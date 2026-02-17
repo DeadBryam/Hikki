@@ -2,9 +2,9 @@
  * AI Documentation Routes - Wiki Style
  *
  * Provides wiki-style documentation endpoints for AI agents:
- * - /api/v1/docs/ai           -> Wiki index (list of categories)
- * - /api/v1/docs/ai/:category -> Category documentation
- * - /api/v1/docs/ai/all       -> All endpoints at once
+ * - /docs/ai           -> Wiki index (list of categories)
+ * - /docs/ai/:category -> Category documentation
+ * - /docs/ai/all       -> All endpoints at once
  */
 
 import { Elysia, t } from "elysia";
