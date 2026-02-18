@@ -16,5 +16,9 @@ export const verifyRoutes = new Elysia({ prefix: "/verify" })
   .post("/email", verifyEmailPostHandler, verifyEmailPostSchema)
   .post("/resend", resendVerificationHandler, resendVerificationSchema)
   .post("/forgot-password", forgotPasswordHandler, forgotPasswordSchema)
-  .get("/reset-password", validateResetTokenHandler, validateResetTokenSchema)
+  .get(
+    "/validate-reset-token",
+    validateResetTokenHandler,
+    validateResetTokenSchema
+  )
   .post("/reset-password", resetPasswordHandler, resetPasswordSchema);
