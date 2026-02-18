@@ -1,6 +1,6 @@
 import type { FieldValues, UseFormSetError } from "react-hook-form";
 import { toast } from "@/lib/toast";
-import type { ApiError } from "./api";
+import type { ApiError } from "@/types/api";
 
 /**
  * Map server validation `details` to react-hook-form field errors.
