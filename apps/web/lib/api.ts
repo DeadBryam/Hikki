@@ -1,6 +1,9 @@
 import ky from "ky";
 import { env } from "@/lib/env";
 import { toast } from "@/lib/toast";
+import type { ApiError } from "@/types/api";
+import { SESSION_TOKEN_NAME } from "./const/cookie-names";
+import { getCookie, removeCookie } from "./utils";
 
 export const api = ky.create({
   credentials: "include",
@@ -10,6 +13,23 @@ export const api = ky.create({
   hooks: {
     afterResponse: [
       async (_, __, response) => {
+        if (response.status === 401) {
+          const hasSessionCookie = getCookie(SESSION_TOKEN_NAME);
+          removeCookie(SESSION_TOKEN_NAME);
+
+          if (typeof window !== "undefined") {
+            if (window.location.pathname.startsWith("/auth/")) {
+              if (hasSessionCookie) {
+                toast.error({
+                  description: "Session expired. Please log in again.",
+                });
+              }
+              return;
+            }
+            window.location.assign("/auth/login");
+          }
+        }
+
         if (!response.ok) {
           const parsed = await response.json().catch(() => ({}));
           const message =
@@ -33,14 +53,3 @@ export const api = ky.create({
   },
   prefixUrl: env.API_URL,
 });
-
-export interface ApiResponse<T> {
-  data: T;
-  message?: string;
-}
-
-export interface ApiError {
-  code?: string;
-  details?: Record<string, string>[];
-  message: string;
-}
