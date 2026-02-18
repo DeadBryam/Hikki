@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
   experimental: {
     turbopackFileSystemCacheForBuild: true,
     turbopackFileSystemCacheForDev: true,
+    viewTransition: true,
   },
 };
 
