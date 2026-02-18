@@ -4,86 +4,82 @@
   "entries": [
     {
       "idx": 0,
-      "version": "7",
-      "when": 1707420000000,
-      "tag": "0000_create_users",
+      "version": "6",
+      "when": 1771403906861,
+      "tag": "0000_add_migration_audit",
+      "hash": "38cef693d242b33707c09dc31cb4e00cb2e785078bde956dd5d18b49de8a69e4",
       "breakpoints": true
     },
     {
       "idx": 1,
-      "version": "7",
-      "when": 1707420000000,
-      "tag": "0001_create_threads",
+      "version": "6",
+      "when": 1771403906862,
+      "tag": "0002_create_users",
+      "hash": "7b4fd5b527c0e4cd1840f4585c070c3e6b884135592e74fbed7bd8c8dbdd1822",
       "breakpoints": true
     },
     {
       "idx": 2,
-      "version": "7",
-      "when": 1707420000000,
-      "tag": "0002_create_messages",
+      "version": "6",
+      "when": 1771403906863,
+      "tag": "0003_create_threads",
+      "hash": "3ef1541a052de98202ff1f0cb4b60a5887ca81438e94f3ba58cbbfa427dce85b",
       "breakpoints": true
     },
     {
       "idx": 3,
-      "version": "7",
-      "when": 1707420000000,
-      "tag": "0003_create_summaries",
+      "version": "6",
+      "when": 1771403906864,
+      "tag": "0004_create_messages",
+      "hash": "602f94412fd0b31bda88164f4f3cc2f5a4efb7f63fe4984dd33a7a24b69560b3",
       "breakpoints": true
     },
     {
       "idx": 4,
-      "version": "7",
-      "when": 1707420000000,
-      "tag": "0004_create_memory_items",
+      "version": "6",
+      "when": 1771403906865,
+      "tag": "0005_create_summaries",
+      "hash": "01aec92406283251403a5c99cd8e478ff6eaa212dfc533f1e55389ebd139ea43",
       "breakpoints": true
     },
     {
       "idx": 5,
-      "version": "7",
-      "when": 1707420000000,
-      "tag": "0005_create_jobs",
+      "version": "6",
+      "when": 1771403906866,
+      "tag": "0006_create_memory_items",
+      "hash": "4425b689be0fff9e65f732fe0764bfc0934c32b411aeb81ffd85a302129733ab",
       "breakpoints": true
     },
     {
       "idx": 6,
-      "version": "7",
-      "when": 1707420000000,
-      "tag": "0006_create_sessions",
+      "version": "6",
+      "when": 1771403906867,
+      "tag": "0007_create_jobs",
+      "hash": "1b3a7a10f0a88781a209bde9e6dd3fa020d00a0292cf3e40aa1795d7e841a075",
       "breakpoints": true
     },
     {
       "idx": 7,
-      "version": "7",
-      "when": 1707420000000,
-      "tag": "0007_add_email_verification",
+      "version": "6",
+      "when": 1771403906868,
+      "tag": "0008_create_sessions",
+      "hash": "06f283138c2069258837d86c90666dc1bb0f89ea697ccac3c247be1ad9b3c101",
       "breakpoints": true
     },
     {
       "idx": 8,
-      "version": "7",
-      "when": 1707420000000,
-      "tag": "0008_add_missing_indexes",
+      "version": "6",
+      "when": 1771403906869,
+      "tag": "0009_add_email_verification",
+      "hash": "788eac8f6fd593564721ee53b7c69c7aaa6c09ae8fe2e73a487c22d2e0800ee1",
       "breakpoints": true
     },
     {
       "idx": 9,
-      "version": "7",
-      "when": 1707420000000,
-      "tag": "0009_add_job_retry_count",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1707420000000,
-      "tag": "0010_add_recurrent_fields",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "7",
-      "when": 1707420000000,
-      "tag": "0011_add_onboarding_field",
+      "version": "6",
+      "when": 1771403906870,
+      "tag": "0010_add_missing_indexes",
+      "hash": "b0bb49b00e04ee1da594238b2915bafa9da51e0a1e36bce777842bc2c132b533",
       "breakpoints": true
     }
   ]

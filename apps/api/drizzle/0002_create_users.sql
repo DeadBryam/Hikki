@@ -7,7 +7,9 @@ CREATE TABLE `users` (
 	`deleted_at` text,
 	`validated_at` text,
 	`created_at` text DEFAULT CURRENT_TIMESTAMP,
-	`updated_at` text DEFAULT CURRENT_TIMESTAMP
+	`updated_at` text DEFAULT CURRENT_TIMESTAMP,
+	`onboarding_completed_at` text
+
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `users_username_unique` ON `users` (`username`);

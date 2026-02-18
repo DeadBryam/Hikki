@@ -26,7 +26,10 @@ sqlite.run("PRAGMA mmap_size = 268435456;");
 // biome-ignore lint/suspicious/useAwait: Migrations should run synchronously at startup
 export async function initDatabase() {
   try {
-    migrate(db, { migrationsFolder: "./drizzle" });
+    migrate(db, {
+      migrationsFolder: "./drizzle",
+      migrationsTable: "__migrations",
+    });
     logger.info("✅ Migrations completed successfully");
   } catch (error) {
     logger.error(`❌ Migrations failed: ${(error as Error).message}`);
