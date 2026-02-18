@@ -68,7 +68,7 @@ export const authService = {
   },
 
   async getCurrentUser(): Promise<ApiResponse<AuthUser> | null> {
-    const response = await api.get("api/v1/auth/user", { retry: 0 });
+    const response = await api.get("api/v1/auth/me", { retry: 0 });
     return response.json();
   },
 

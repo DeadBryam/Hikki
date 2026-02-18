@@ -1,6 +1,4 @@
-import { SESSION_TOKEN_NAME } from "@/lib/const/cookie-names";
 import { useAuthStore } from "@/lib/stores/auth-store";
-import { getCookie } from "../utils/misc";
 import { useUser } from "./auth/queries/use-user";
 
 export function useAuth() {
@@ -14,12 +12,11 @@ export function useAuth() {
     logout,
   } = useAuthStore();
 
-  const hasToken = Boolean(getCookie(SESSION_TOKEN_NAME));
   const {
     data: userData,
     isLoading: queryLoading,
     error: queryError,
-  } = useUser({ enabled: hasToken });
+  } = useUser();
 
   const user = userData?.data ?? storeUser;
   const isAuthenticated = Boolean(user);

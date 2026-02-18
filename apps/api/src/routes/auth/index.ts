@@ -18,5 +18,5 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
   .use(verifyRoutes)
   .onBeforeHandle(authMiddleware)
   .post("/logout", logoutHandler, logoutSchema)
-  .get("/user", userHandler, userSchema)
+  .get("/me", userHandler, userSchema)
   .patch("/onboarding", completeOnboardingHandler, completeOnboardingSchema);

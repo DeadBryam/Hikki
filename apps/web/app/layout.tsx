@@ -4,7 +4,6 @@ import { ViewTransitions } from "next-view-transitions";
 
 import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { AuthProvider } from "@/lib/providers/auth-provider";
 
 import "@/styles/globals.css";
 import { Toaster } from "@/components/providers/toaster";
@@ -49,10 +48,8 @@ export default function RootLayout({
             enableSystem
           >
             <QueryProvider>
-              <AuthProvider>
-                {children}
-                <Toaster />
-              </AuthProvider>
+              {children}
+              <Toaster />
             </QueryProvider>
           </ThemeProvider>
         </body>
