@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useTransitionRouter } from "next-view-transitions";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/hooks/use-auth";
 
@@ -37,8 +37,9 @@ export function AuthGuard({
   fallback,
   redirectTo = "/auth/login",
 }: AuthGuardProps) {
+  const router = useTransitionRouter();
+
   const { isAuthenticated, isLoading } = useAuth();
-  const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
