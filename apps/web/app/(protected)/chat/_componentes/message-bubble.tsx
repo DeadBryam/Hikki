@@ -10,9 +10,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cardHoverVariants } from "@/lib/animations";
-import type { Message } from "@/lib/mock-data";
-import { cn } from "@/lib/utils";
+import type { Message } from "@/lib/mock/mock-data";
+import { cardHoverVariants } from "@/lib/utils/animations";
+import { cn } from "@/lib/utils/misc";
 
 interface MessageBubbleProps {
   message: Message;

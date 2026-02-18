@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Code, Lightbulb, Palette, Sparkles, Zap } from "lucide-react";
-import { containerVariants, itemVariants } from "@/lib/animations";
+import { containerVariants, itemVariants } from "@/lib/utils/animations";
 
 interface EmptyStateProps {
   onSuggestionClick: (suggestion: string) => void;

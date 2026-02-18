@@ -3,9 +3,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { messageVariants } from "@/lib/animations";
-import { type Message, mockMessagesByConversation } from "@/lib/mock-data";
-import { cn } from "@/lib/utils";
+import { type Message, mockMessagesByConversation } from "@/lib/mock/mock-data";
+import { messageVariants } from "@/lib/utils/animations";
+import { cn } from "@/lib/utils/misc";
 import { EmptyState } from "./empty-state";
 import { MessageBubble } from "./message-bubble";
 import { MessageInput } from "./message-input";

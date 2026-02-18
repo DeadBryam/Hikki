@@ -5,8 +5,8 @@ import { Mic, Paperclip, Send, Sparkles } from "lucide-react";
 import { type KeyboardEvent, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { inputFocusVariants } from "@/lib/animations";
-import { cn } from "@/lib/utils";
+import { inputFocusVariants } from "@/lib/utils/animations";
+import { cn } from "@/lib/utils/misc";
 
 interface MessageInputProps {
   isCentered?: boolean;
