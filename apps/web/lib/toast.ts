@@ -1,16 +1,21 @@
 import { sileo } from "sileo";
 
+interface ToastOptions {
+  description: string;
+  title?: string;
+}
+
 export const toast = {
-  error: (message: string, description?: string) => {
+  error: (params: ToastOptions) => {
     sileo.error({
-      description,
-      title: message,
+      title: params.title,
+      description: params.description,
     });
   },
-  info: (message: string, description?: string) => {
+  info: (params: ToastOptions) => {
     sileo.info({
-      description,
-      title: message,
+      title: params.title,
+      description: params.description,
     });
   },
   promise: <T>(
@@ -26,16 +31,16 @@ export const toast = {
       loading: { title: messages.loading },
       success: { title: messages.success },
     }),
-  success: (message: string, description?: string) => {
+  success: (params: ToastOptions) => {
     sileo.success({
-      description,
-      title: message,
+      title: params.title,
+      description: params.description,
     });
   },
-  warning: (message: string, description?: string) => {
+  warning: (params: ToastOptions) => {
     sileo.warning({
-      description,
-      title: message,
+      title: params.title,
+      description: params.description,
     });
   },
 };

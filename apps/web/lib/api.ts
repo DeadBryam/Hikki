@@ -2,8 +2,6 @@ import ky from "ky";
 import { env } from "@/lib/env";
 import { toast } from "@/lib/toast";
 
-const API_URL = env.API_URL;
-
 export const api = ky.create({
   credentials: "include",
   headers: {
@@ -16,19 +14,14 @@ export const api = ky.create({
           const error = await response.json().catch(() => ({}));
           const message =
             (error as ApiError)?.message || `Error ${response.status}`;
-          toast.error(message);
+          toast.error({ description: message });
           throw new Error(message);
         }
         return response;
       },
     ],
-    beforeRequest: [
-      (request) => {
-        console.log(`[API] ${request.method} ${request.url}`);
-      },
-    ],
   },
-  prefixUrl: API_URL,
+  prefixUrl: env.API_URL,
 });
 
 export interface ApiResponse<T> {
