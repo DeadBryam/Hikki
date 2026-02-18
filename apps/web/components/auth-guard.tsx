@@ -37,14 +37,13 @@ export function AuthGuard({
   fallback,
   redirectTo = "/auth/login",
 }: AuthGuardProps) {
-  const { isAuthenticated, isLoading, initializeFromStorage } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    initializeFromStorage();
-  }, [initializeFromStorage]);
+  }, []);
 
   useEffect(() => {
     if (isMounted && !isLoading && !isAuthenticated) {
