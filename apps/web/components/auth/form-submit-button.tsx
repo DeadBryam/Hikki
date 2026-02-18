@@ -19,9 +19,11 @@ function FormSubmitButton({
     <Button
       aria-busy={isLoading}
       className={cn(
-        "submit-btn h-12 w-full font-semibold transition-colors duration-200",
-        "bg-gradient-to-r from-red-500 to-orange-500 hover:opacity-90",
-        "active:opacity-75",
+        "submit-btn h-12 w-full cursor-pointer rounded-lg font-semibold shadow-sm transition-colors duration-200",
+        "bg-linear-to-r from-rose-700 to-rose-600 text-white",
+        "hover:from-rose-800 hover:to-rose-700 active:opacity-90",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        "focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2",
         className
       )}
       disabled={isLoading || disabled}
@@ -29,7 +31,7 @@ function FormSubmitButton({
     >
       {isLoading ? (
         <>
-          <Loader2 className="h-4 w-4 animate-spin text-red-500" />
+          <Loader2 className="h-4 w-4 animate-spin text-white" />
           <span className="sr-only">Loading...</span>
         </>
       ) : (
