@@ -19,7 +19,7 @@ export default function LoginPage() {
   const router = useTransitionRouter();
   const login = useLogin();
 
-  const { control, handleSubmit, setError } = useForm<LoginInput>({
+  const { control, handleSubmit, setError, reset } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       username: "",
@@ -35,6 +35,7 @@ export default function LoginPage() {
           title: "Login successful",
         });
         router.replace("/chat");
+        reset();
       },
       onError: (error) => {
         setFormErrorsFromServer(setError, error);
