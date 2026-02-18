@@ -16,7 +16,7 @@ function isPublicAuthRoute(pathname: string): boolean {
 }
 
 function getTokenFromRequest(request: NextRequest): string | null {
-  const cookieToken = request.cookies.get("auth_token")?.value;
+  const cookieToken = request.cookies.get("session")?.value;
   if (cookieToken) {
     return cookieToken;
   }

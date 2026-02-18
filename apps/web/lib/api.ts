@@ -11,11 +11,21 @@ export const api = ky.create({
     afterResponse: [
       async (_, __, response) => {
         if (!response.ok) {
-          const error = await response.json().catch(() => ({}));
+          const parsed = await response.json().catch(() => ({}));
           const message =
-            (error as ApiError)?.message || `Error ${response.status}`;
+            (parsed as ApiError)?.message || `Error ${response.status}`;
           toast.error({ description: message });
-          throw new Error(message);
+
+          const err = new Error(message) as Error &
+            Partial<ApiError> & { parsed?: any };
+          try {
+            err.code = (parsed as ApiError)?.code;
+            err.details = (parsed as ApiError)?.details;
+          } catch {
+            err.message = "An unknown error occurred";
+          }
+          err.parsed = parsed;
+          throw err;
         }
         return response;
       },
@@ -31,6 +41,6 @@ export interface ApiResponse<T> {
 
 export interface ApiError {
   code?: string;
-  details?: Record<string, string[]>;
+  details?: Record<string, string>[];
   message: string;
 }

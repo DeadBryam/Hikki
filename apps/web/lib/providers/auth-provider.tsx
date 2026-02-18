@@ -1,30 +1,36 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "@/lib/hooks/use-auth";
+import { useUser } from "@/lib/hooks/auth/queries/use-user";
+import { useAuthStore } from "@/lib/stores/auth-store";
 
 interface AuthProviderProps {
   children: React.ReactNode;
 }
 
 /**
- * AuthProvider initializes authentication from localStorage on app load
+ * AuthProvider initializes authentication state on app load
  * This component:
  * - Prevents hydration mismatches by deferring rendering until client-side
- * - Loads persisted auth token from localStorage
- * - Ensures auth state is synced before rendering protected routes
+ * - Fetches current user via TanStack Query (uses HttpOnly cookies automatically)
+ * - Syncs user state to Zustand store
  *
- * Must be placed in root layout before any protected components
+ * Must be placed in root layout inside QueryProvider
  */
 export function AuthProvider({ children }: AuthProviderProps) {
-  const { initializeFromStorage } = useAuth();
   const [isHydrated, setIsHydrated] = useState(false);
+  const { data: user } = useUser();
+  const setUser = useAuthStore((state) => state.setUser);
 
   useEffect(() => {
     setIsHydrated(true);
+  }, []);
 
-    initializeFromStorage();
-  }, [initializeFromStorage]);
+  useEffect(() => {
+    if (user !== undefined) {
+      setUser(user);
+    }
+  }, [user, setUser]);
 
   if (!isHydrated) {
     return null;
