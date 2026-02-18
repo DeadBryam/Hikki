@@ -1,4 +1,4 @@
-import { api } from "@/lib/api";
+import { api } from "@/lib/api/api";
 import type { LoginInput, SignupInput } from "@/lib/schemas/auth";
 import type { ApiResponse } from "@/types/api";
 
@@ -24,6 +24,7 @@ export interface VerifyEmailResponse {
 }
 
 export interface ResendVerificationResponse {
+  remaining?: number;
   success: boolean;
 }
 
@@ -62,84 +63,56 @@ export const authService = {
   },
 
   async logout(): Promise<ApiResponse<LogoutResponse>> {
-    try {
-      const response = await api.post("api/v1/auth/logout");
-      return response.json();
-    } catch {
-      return { success: false, timestamp: new Date().toISOString() };
-    }
+    const response = await api.post("api/v1/auth/logout");
+    return response.json();
   },
 
   async getCurrentUser(): Promise<ApiResponse<AuthUser> | null> {
-    try {
-      const response = await api.get("api/v1/auth/user", { retry: 0 });
-      return response.json();
-    } catch {
-      return null;
-    }
+    const response = await api.get("api/v1/auth/user", { retry: 0 });
+    return response.json();
   },
 
   async verifyEmail(token: string): Promise<ApiResponse<VerifyEmailResponse>> {
-    try {
-      const response = await api.get(
-        `api/v1/auth/verify/email?token=${encodeURIComponent(token)}`
-      );
-      return response.json();
-    } catch {
-      return { success: false, timestamp: new Date().toISOString() };
-    }
+    const response = await api.get(
+      `api/v1/auth/verify/email?token=${encodeURIComponent(token)}`
+    );
+    return response.json();
   },
 
   async resendVerification(
     email: string
   ): Promise<ApiResponse<ResendVerificationResponse>> {
-    try {
-      const response = await api.post("api/v1/auth/verify/resend", {
-        json: { email },
-      });
-      return response.json();
-    } catch {
-      return { success: false, timestamp: new Date().toISOString() };
-    }
+    const response = await api.post("api/v1/auth/verify/resend", {
+      json: { email },
+    });
+    return response.json();
   },
 
   async requestPasswordReset(
     email: string
   ): Promise<ApiResponse<RequestPasswordResetResponse>> {
-    try {
-      const response = await api.post("api/v1/auth/verify/forgot-password", {
-        json: { email },
-      });
-      return response.json();
-    } catch {
-      return { success: false, timestamp: new Date().toISOString() };
-    }
+    const response = await api.post("api/v1/auth/verify/forgot-password", {
+      json: { email },
+    });
+    return response.json();
   },
 
   async validateResetToken(
     token: string
   ): Promise<ApiResponse<ValidateResetTokenResponse>> {
-    try {
-      const response = await api.get(
-        `api/v1/auth/verify/validate-reset-token?token=${encodeURIComponent(token)}`
-      );
-      return response.json();
-    } catch {
-      return { success: false, timestamp: new Date().toISOString() };
-    }
+    const response = await api.get(
+      `api/v1/auth/verify/validate-reset-token?token=${encodeURIComponent(token)}`
+    );
+    return response.json();
   },
 
   async resetPassword(
     token: string,
     password: string
   ): Promise<ApiResponse<ResetPasswordResponse>> {
-    try {
-      const response = await api.post("api/v1/auth/verify/reset-password", {
-        json: { token, password },
-      });
-      return response.json();
-    } catch {
-      return { success: false, timestamp: new Date().toISOString() };
-    }
+    const response = await api.post("api/v1/auth/verify/reset-password", {
+      json: { token, password },
+    });
+    return response.json();
   },
 };

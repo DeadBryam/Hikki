@@ -1,6 +1,6 @@
 import { SESSION_TOKEN_NAME } from "@/lib/const/cookie-names";
 import { useAuthStore } from "@/lib/stores/auth-store";
-import { getCookie } from "../utils";
+import { getCookie } from "../utils/misc";
 import { useUser } from "./auth/queries/use-user";
 
 export function useAuth() {

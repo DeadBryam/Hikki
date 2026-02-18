@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "@/lib/hooks/auth/queries/use-user";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { SESSION_TOKEN_NAME } from "../const/cookie-names";
-import { getCookie } from "../utils";
+import { getCookie } from "../utils/misc";
 
 interface AuthProviderProps {
   children: React.ReactNode;

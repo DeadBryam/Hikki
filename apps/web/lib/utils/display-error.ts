@@ -1,5 +1,5 @@
 import { toast } from "@/lib/utils/toast";
-import type { ApiError } from "@/types/api";
+import type { ErrorResponse } from "@/types/api";
 
 interface DisplayErrorOptions {
   type: "warning" | "error" | "info";
@@ -10,7 +10,7 @@ interface DisplayErrorOptions {
  * Returns true if any field errors were set, false otherwise.
  */
 export function displayErrorsFromServer(
-  error: ApiError,
+  error: ErrorResponse,
   options: DisplayErrorOptions
 ): void {
   if (options.type === "error") {
