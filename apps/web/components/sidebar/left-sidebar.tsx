@@ -9,7 +9,8 @@ import {
   Plus,
   Sparkles,
 } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useTransitionRouter } from "next-view-transitions";
 import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -39,7 +40,7 @@ import { toast } from "@/lib/utils/toast";
 export function LeftSidebar() {
   const [isOpen, setIsOpen] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const router = useRouter();
+  const router = useTransitionRouter();
   const params = useParams();
   const { user, logout: logoutFromStore } = useAuth();
   const activeConversation = params?.slug as string | undefined;
