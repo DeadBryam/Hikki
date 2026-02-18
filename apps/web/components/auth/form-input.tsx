@@ -1,7 +1,7 @@
 import { AlertCircle } from "lucide-react";
 import { type Control, Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/misc";
 
 interface FormInputProps {
   control: Control<any>;

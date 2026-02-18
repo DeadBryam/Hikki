@@ -20,21 +20,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  listItemVariants,
-  sidebarVariants,
-  staggerContainerVariants,
-} from "@/lib/animations";
-import { env } from "@/lib/env";
 import { useAuth } from "@/lib/hooks/use-auth";
 import {
   formatRelativeTime,
   groupConversationsByDate,
   mockConversations,
-} from "@/lib/mock-data";
+} from "@/lib/mock/mock-data";
 import { authService } from "@/lib/services/auth-service";
-import { toast } from "@/lib/toast";
-import { cn } from "@/lib/utils";
+import {
+  listItemVariants,
+  sidebarVariants,
+  staggerContainerVariants,
+} from "@/lib/utils/animations";
+import { env } from "@/lib/utils/env";
+import { cn } from "@/lib/utils/misc";
+import { toast } from "@/lib/utils/toast";
 
 export function LeftSidebar() {
   const [isOpen, setIsOpen] = useState(true);
@@ -86,7 +86,7 @@ export function LeftSidebar() {
             className="flex items-center gap-2 overflow-hidden"
             transition={{ type: "spring" }}
           >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-red-500 to-orange-500">
               <Sparkles className="h-4 w-4 text-white" />
             </div>
             {isOpen && (
@@ -187,7 +187,7 @@ export function LeftSidebar() {
                         )}
 
                         {/* Hover glow effect */}
-                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-red-500/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                        <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-red-500/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                       </motion.button>
                     </TooltipTrigger>
 
@@ -210,14 +210,14 @@ export function LeftSidebar() {
         <div className="border-border border-t p-3">
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8 shrink-0">
-              <AvatarFallback className="bg-gradient-to-br from-red-400 to-orange-400 font-bold text-white text-xs">
-                {user?.username?.charAt(0).toUpperCase() || "U"}
+              <AvatarFallback className="bg-linear-to-br from-red-400 to-orange-400 font-bold text-white text-xs">
+                {user?.username?.charAt(0).toUpperCase() || "H"}
               </AvatarFallback>
             </Avatar>
             {isOpen && (
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium text-sm">
-                  {user?.username || "User"}
+                  {user?.name || "User"}
                 </p>
                 <p className="truncate text-muted-foreground text-xs">
                   {user?.email || "No email"}

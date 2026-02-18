@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/misc";
 
 const MIN_LENGTH_PATTERN = /.{8,}/;
 const UPPERCASE_PATTERN = /[A-Z]/;

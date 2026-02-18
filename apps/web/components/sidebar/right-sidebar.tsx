@@ -20,14 +20,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cardHoverVariants, sidebarVariants } from "@/lib/animations";
 import {
   formatJobTime,
   mockJobs,
   mockMemories,
   mockReminders,
-} from "@/lib/mock-data";
-import { cn } from "@/lib/utils";
+} from "@/lib/mock/mock-data";
+import { cardHoverVariants, sidebarVariants } from "@/lib/utils/animations";
+import { cn } from "@/lib/utils/misc";
 
 export function RightSidebar() {
   const [isOpen, setIsOpen] = useState(true);

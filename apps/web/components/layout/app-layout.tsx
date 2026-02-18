@@ -2,7 +2,7 @@
 
 import { LeftSidebar } from "@/components/sidebar/left-sidebar";
 import { RightSidebar } from "@/components/sidebar/right-sidebar";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/misc";
 
 interface AppLayoutProps {
   children: React.ReactNode;

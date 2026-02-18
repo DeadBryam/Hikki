@@ -5,7 +5,7 @@ import { useState } from "react";
 import { type Control, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/misc";
 
 interface PasswordInputProps {
   control: Control<any>;
