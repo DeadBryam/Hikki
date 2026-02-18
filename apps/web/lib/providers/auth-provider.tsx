@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/hooks/auth/queries/use-user";
 import { useAuthStore } from "@/lib/stores/auth-store";
+import { SESSION_TOKEN_NAME } from "../const/cookie-names";
+import { getCookie } from "../utils";
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -18,9 +20,11 @@ interface AuthProviderProps {
  * Must be placed in root layout inside QueryProvider
  */
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [isHydrated, setIsHydrated] = useState(false);
-  const { data: user } = useUser();
   const setUser = useAuthStore((state) => state.setUser);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  const hasToken = Boolean(getCookie(SESSION_TOKEN_NAME));
+  const { data: user } = useUser({ enabled: hasToken });
 
   useEffect(() => {
     setIsHydrated(true);
@@ -28,7 +32,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     if (user !== undefined) {
-      setUser(user);
+      setUser(user?.data ?? null);
     }
   }, [user, setUser]);
 
