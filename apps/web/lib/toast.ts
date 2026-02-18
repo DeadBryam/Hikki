@@ -18,6 +18,18 @@ export const toast = {
       description: params.description,
     });
   },
+  success: (params: ToastOptions) => {
+    sileo.success({
+      title: params.title,
+      description: params.description,
+    });
+  },
+  warning: (params: ToastOptions) => {
+    sileo.warning({
+      title: params.title,
+      description: params.description,
+    });
+  },
   promise: <T>(
     promise: Promise<T>,
     messages: {
@@ -31,16 +43,4 @@ export const toast = {
       loading: { title: messages.loading },
       success: { title: messages.success },
     }),
-  success: (params: ToastOptions) => {
-    sileo.success({
-      title: params.title,
-      description: params.description,
-    });
-  },
-  warning: (params: ToastOptions) => {
-    sileo.warning({
-      title: params.title,
-      description: params.description,
-    });
-  },
 };

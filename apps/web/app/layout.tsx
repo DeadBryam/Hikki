@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ViewTransitions } from "next-view-transitions";
-import { Toaster } from "sileo";
 
-import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { AuthProvider } from "@/lib/providers/auth-provider";
+
+import "@/styles/globals.css";
+import { Toaster } from "@/components/providers/toaster";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -46,10 +48,12 @@ export default function RootLayout({
             disableTransitionOnChange
             enableSystem
           >
-            <QueryProvider>
-              {children}
-              <Toaster position="bottom-right" />
-            </QueryProvider>
+            <AuthProvider>
+              <QueryProvider>
+                {children}
+                <Toaster />
+              </QueryProvider>
+            </AuthProvider>
           </ThemeProvider>
         </body>
       </html>
