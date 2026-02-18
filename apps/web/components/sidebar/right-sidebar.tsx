@@ -33,7 +33,6 @@ export function RightSidebar() {
   const [isOpen, setIsOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("memories");
 
-  // Count items for badges
   const jobsRunning = mockJobs.filter((j) => j.status === "running").length;
   const remindersPending = mockReminders.filter((r) => !r.completed).length;
 

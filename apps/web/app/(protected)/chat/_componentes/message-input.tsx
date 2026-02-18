@@ -30,7 +30,6 @@ export function MessageInput({
     onSend(message);
     setMessage("");
 
-    // Reset textarea height
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
@@ -47,7 +46,6 @@ export function MessageInput({
     const target = e.target;
     setMessage(target.value);
 
-    // Auto-resize textarea
     target.style.height = "auto";
     target.style.height = `${Math.min(target.scrollHeight, 200)}px`;
   };

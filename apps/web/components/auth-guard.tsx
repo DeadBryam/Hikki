@@ -41,20 +41,17 @@ export function AuthGuard({
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
 
-  // Initialize authentication state on component mount
   useEffect(() => {
     setIsMounted(true);
     initializeFromStorage();
   }, [initializeFromStorage]);
 
-  // Redirect if not authenticated (after loading completes)
   useEffect(() => {
     if (isMounted && !isLoading && !isAuthenticated) {
       router.push(redirectTo);
     }
   }, [isMounted, isLoading, isAuthenticated, redirectTo, router]);
 
-  // Show loading state while checking authentication
   if (!isMounted || isLoading) {
     return (
       fallback || (
@@ -68,12 +65,10 @@ export function AuthGuard({
     );
   }
 
-  // Show protected content if authenticated
   if (isAuthenticated) {
     return <>{children}</>;
   }
 
-  // Show loading state while redirecting
   return (
     fallback || (
       <div className="flex min-h-screen items-center justify-center">

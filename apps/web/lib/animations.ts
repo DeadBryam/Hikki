@@ -4,7 +4,6 @@
 
 import type { Variants } from "framer-motion";
 
-// Spring configurations
 export const springs = {
   smooth: { type: "spring", stiffness: 300, damping: 30 },
   bouncy: { type: "spring", stiffness: 400, damping: 25 },
@@ -12,7 +11,6 @@ export const springs = {
   stiff: { type: "spring", stiffness: 500, damping: 30 },
 } as const;
 
-// Fade variants
 export const fadeVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -25,7 +23,6 @@ export const fadeVariants: Variants = {
   },
 };
 
-// Scale variants
 export const scaleVariants: Variants = {
   hidden: { opacity: 0, scale: 0.95 },
   visible: {
@@ -40,7 +37,6 @@ export const scaleVariants: Variants = {
   },
 };
 
-// Slide up variants
 export const slideUpVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
@@ -55,7 +51,6 @@ export const slideUpVariants: Variants = {
   },
 };
 
-// Slide from left variants
 export const slideLeftVariants: Variants = {
   hidden: { opacity: 0, x: -20 },
   visible: {
@@ -70,7 +65,6 @@ export const slideLeftVariants: Variants = {
   },
 };
 
-// Container with stagger children
 export const staggerContainerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -82,7 +76,6 @@ export const staggerContainerVariants: Variants = {
   },
 };
 
-// Message variants for chat
 export const messageVariants: Variants = {
   hidden: { opacity: 0, y: 20, scale: 0.95 },
   visible: {
@@ -93,7 +86,6 @@ export const messageVariants: Variants = {
   },
 };
 
-// Sidebar variants
 export const sidebarVariants: Variants = {
   expanded: {
     width: 280,
@@ -105,7 +97,6 @@ export const sidebarVariants: Variants = {
   },
 };
 
-// Input focus variants
 export const inputFocusVariants: Variants = {
   idle: {
     scale: 1,
@@ -118,7 +109,6 @@ export const inputFocusVariants: Variants = {
   },
 };
 
-// Glow hover variants
 export const glowHoverVariants: Variants = {
   rest: {
     boxShadow: "0 0 0 rgba(139, 92, 246, 0)",
@@ -130,7 +120,6 @@ export const glowHoverVariants: Variants = {
   },
 };
 
-// Typing indicator variants
 export const typingDotVariants: Variants = {
   animate: {
     y: [0, -6, 0],
@@ -142,7 +131,6 @@ export const typingDotVariants: Variants = {
   },
 };
 
-// Card hover variants
 export const cardHoverVariants: Variants = {
   rest: {
     scale: 1,
@@ -156,7 +144,6 @@ export const cardHoverVariants: Variants = {
   },
 };
 
-// Page transition variants for View Transitions + Framer Motion
 export const pageTransitionVariants: Variants = {
   initial: { opacity: 0, scale: 0.98 },
   animate: {
@@ -171,7 +158,6 @@ export const pageTransitionVariants: Variants = {
   },
 };
 
-// List item variants
 export const listItemVariants: Variants = {
   hidden: { opacity: 0, x: -10 },
   visible: {
@@ -181,7 +167,6 @@ export const listItemVariants: Variants = {
   },
 };
 
-// Container variants for staggered children animations
 export const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -193,7 +178,6 @@ export const containerVariants: Variants = {
   },
 };
 
-// Item variants for use with containerVariants
 export const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
@@ -203,14 +187,12 @@ export const itemVariants: Variants = {
   },
 };
 
-// Modal overlay variants
 export const overlayVariants: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1 },
   exit: { opacity: 0 },
 };
 
-// Modal content variants
 export const modalContentVariants: Variants = {
   hidden: { opacity: 0, scale: 0.95, y: 20 },
   visible: {
@@ -227,7 +209,6 @@ export const modalContentVariants: Variants = {
   },
 };
 
-// Gradient background animation
 export const gradientShiftVariants: Variants = {
   animate: {
     backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],

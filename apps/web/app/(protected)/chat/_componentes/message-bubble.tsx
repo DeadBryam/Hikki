@@ -161,7 +161,6 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   );
 }
 
-// Simple content formatter for bold and code
 function FormattedContent({ content }: { content: string }) {
   const parts = content.split(/(\*\*.*?\*\*|`.*?`)/g);
 

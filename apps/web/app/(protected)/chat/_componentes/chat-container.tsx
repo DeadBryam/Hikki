@@ -24,7 +24,6 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
 
   const isEmpty = messages.length === 0;
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({
@@ -39,7 +38,6 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
       return;
     }
 
-    // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
@@ -50,7 +48,6 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
     setMessages((prev) => [...prev, userMessage]);
     setIsTyping(true);
 
-    // Simulate AI response
     setTimeout(() => {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),

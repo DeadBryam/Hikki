@@ -46,7 +46,6 @@ export interface Message {
   timestamp: Date;
 }
 
-// Helper to get relative time
 const getRelativeTime = (date: Date): string => {
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
@@ -400,7 +399,6 @@ export const mockMessagesByConversation: Record<string, Message[]> = {
   ],
 };
 
-// Quick suggestions for empty state
 export const quickSuggestions = [
   {
     icon: "📝",
@@ -434,7 +432,6 @@ export const quickSuggestions = [
   },
 ];
 
-// Group conversations by date
 export const groupConversationsByDate = (conversations: Conversation[]) => {
   const groups: { [key: string]: Conversation[] } = {
     Pinned: [],
@@ -469,16 +466,13 @@ export const groupConversationsByDate = (conversations: Conversation[]) => {
     }
   }
 
-  // Remove empty groups
   return Object.entries(groups).filter(([_, items]) => items.length > 0);
 };
 
-// Format relative time for display
 export const formatRelativeTime = (dateString: string): string => {
   return getRelativeTime(new Date(dateString));
 };
 
-// Format date for jobs/reminders
 export const formatJobTime = (dateString: string): string => {
   const date = new Date(dateString);
   const now = new Date();

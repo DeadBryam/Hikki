@@ -42,12 +42,10 @@ export function useProtectedRoute(
   const { isAuthenticated, isLoading, initializeFromStorage } = useAuth();
   const router = useRouter();
 
-  // Initialize auth state on mount
   useEffect(() => {
     initializeFromStorage();
   }, [initializeFromStorage]);
 
-  // Redirect if not authenticated
   useEffect(() => {
     if (!(isLoading || isAuthenticated)) {
       router.push(redirectTo);
