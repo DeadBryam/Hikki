@@ -1,5 +1,5 @@
 import type { FieldValues, UseFormSetError } from "react-hook-form";
-import { toast } from "@/lib/toast";
+import { toast } from "@/lib/utils/toast";
 import type { ApiError } from "@/types/api";
 
 /**
