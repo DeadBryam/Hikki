@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useTransitionRouter } from "next-view-transitions";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AuthCard } from "@/components/auth/auth-card";
@@ -14,10 +14,10 @@ import { PasswordInput } from "@/components/auth/password-input";
 import { PasswordStrength } from "@/components/auth/password-strength";
 import { type SignupInput, signupSchema } from "@/lib/schemas/auth";
 import { authService } from "@/lib/services/auth-service";
-import { toast } from "@/lib/toast";
+import { toast } from "@/lib/utils/toast";
 
 export default function SignupPage() {
-  const router = useRouter();
+  const router = useTransitionRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const { control, handleSubmit, watch } = useForm<SignupInput>({
@@ -40,7 +40,7 @@ export default function SignupPage() {
         description: "Please verify your email",
         title: "Account created",
       });
-      router.push("/auth/verify-email");
+      router.push("/auth/verify");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Error creating account";

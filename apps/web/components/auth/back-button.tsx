@@ -1,11 +1,11 @@
 "use client";
 
 import { ChevronLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useTransitionRouter } from "next-view-transitions";
 import { Button } from "@/components/ui/button";
 
 export function BackButton() {
-  const router = useRouter();
+  const router = useTransitionRouter();
 
   return (
     <Button

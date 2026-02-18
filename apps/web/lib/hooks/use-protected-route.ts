@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { useTransitionRouter } from "next-view-transitions";
 import { useEffect } from "react";
 import { useAuth } from "@/lib/hooks/use-auth";
 
@@ -40,7 +40,7 @@ export function useProtectedRoute(
 ): UseProtectedRouteReturn {
   const { redirectTo = "/auth/login" } = options;
   const { isAuthenticated, isLoading } = useAuth();
-  const router = useRouter();
+  const router = useTransitionRouter();
 
   useEffect(() => {
     if (!(isLoading || isAuthenticated)) {

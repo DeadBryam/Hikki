@@ -15,7 +15,7 @@ import {
   forgotPasswordSchema,
 } from "@/lib/schemas/auth";
 import { authService } from "@/lib/services/auth-service";
-import { toast } from "@/lib/toast";
+import { toast } from "@/lib/utils/toast";
 
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);

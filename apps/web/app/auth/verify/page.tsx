@@ -2,7 +2,8 @@
 
 import { CheckCircle, Mail } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useTransitionRouter } from "next-view-transitions";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AuthCard } from "@/components/auth/auth-card";
@@ -16,7 +17,7 @@ import displayErrorsFromServer from "@/lib/utils/display-error";
 import { toast } from "@/lib/utils/toast";
 
 export default function VerifyEmailPage() {
-  const router = useRouter();
+  const router = useTransitionRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [remainingTime, setRemainingTime] = useState(0);
