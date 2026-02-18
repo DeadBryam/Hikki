@@ -1,8 +1,14 @@
 import { useMutation } from "@tanstack/react-query";
-import { authService } from "@/lib/services/auth-service";
+import {
+  authService,
+  type ResendVerificationResponse,
+} from "@/lib/services/auth-service";
+import type { ApiResponse, ErrorResponse } from "@/types/api";
 
 export function useResendVerification() {
-  return useMutation({
-    mutationFn: (email: string) => authService.resendVerification(email),
-  });
+  return useMutation<
+    ApiResponse<ResendVerificationResponse>,
+    ErrorResponse<{ remaining?: number }>,
+    string
+  >({ mutationFn: (email: string) => authService.resendVerification(email) });
 }

@@ -8,17 +8,18 @@ import { useForm } from "react-hook-form";
 import { AuthCard } from "@/components/auth/auth-card";
 import { BackButton } from "@/components/auth/back-button";
 import { FormInput } from "@/components/auth/form-input";
-import { authService } from "@/lib/services/auth-service";
-import { toast } from "@/lib/toast";
+import Divider from "@/components/shared/divider";
+import { Button } from "@/components/ui/button";
+import { useResendVerification } from "@/lib/hooks/auth/mutations/use-resend-verification";
+import { useVerifyEmail } from "@/lib/hooks/auth/mutations/use-verify-email";
+import displayErrorsFromServer from "@/lib/utils/display-error";
+import { toast } from "@/lib/utils/toast";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-
-  const [isLoading, setIsLoading] = useState(!!token);
-  const [verified, setVerified] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [remainingTime, setRemainingTime] = useState(0);
 
   const { control, watch } = useForm({
     defaultValues: {
@@ -28,51 +29,79 @@ export default function VerifyEmailPage() {
 
   const userEmail = watch("email");
 
+  const verifyEmailMutation = useVerifyEmail();
+  const resendVerificationMutation = useResendVerification();
+
+  const isLoading =
+    verifyEmailMutation.isPending || resendVerificationMutation.isPending;
+  const verified = verifyEmailMutation.isSuccess;
+  const errorMessage = verifyEmailMutation.error?.message ?? null;
+
+  useEffect(() => {
+    if (remainingTime <= 0) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setRemainingTime((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [remainingTime]);
+
   useEffect(() => {
     if (!token) {
       return;
     }
 
-    async function verifyToken() {
-      try {
-        await authService.verifyEmail(token as string);
-        setVerified(true);
-        setTimeout(() => {
-          router.push("/");
-        }, 2000);
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Error al verificar email";
-        setErrorMessage(message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
+    verifyEmailMutation.mutate(token);
+  }, [token, verifyEmailMutation]);
 
-    verifyToken();
-  }, [token, router]);
+  useEffect(() => {
+    if (verified) {
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
+    }
+  }, [verified, router]);
 
   const handleResendEmail = async () => {
-    if (!userEmail) {
+    if (!userEmail || remainingTime > 0) {
       return;
     }
 
-    setIsLoading(true);
-    try {
-      await authService.resendVerification(userEmail);
-      toast.success({
-        description: "Check your inbox for the verification link",
-        title: "Email sent",
-      });
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Error sending verification email";
-      toast.error({ description: message });
-    } finally {
-      setIsLoading(false);
-    }
+    resendVerificationMutation.mutate(userEmail, {
+      onSuccess: (res) => {
+        console.log("Resend verification response:", res);
+        toast.success({
+          description:
+            res.message || "Check your inbox for the verification link",
+          title: "Email sent",
+        });
+        setRemainingTime(300);
+      },
+      onError: (error) => {
+        displayErrorsFromServer(error as any, {
+          type: "warning",
+        });
+
+        if (error.code === "CODE_RATE_LIMITED" && error.data?.remaining) {
+          setRemainingTime(error.data.remaining);
+        }
+      },
+    });
+  };
+
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   if (verified) {
@@ -106,7 +135,7 @@ export default function VerifyEmailPage() {
         <div className="space-y-6">
           {isLoading && !errorMessage ? (
             <div className="space-y-4 text-center">
-              <div className="flex animate-bounce justify-center">
+              <div className="flex animate-pulse justify-center">
                 <Mail className="size-12 text-orange-500 dark:text-orange-400" />
               </div>
               <p className="fade-in animate-in text-muted-foreground text-sm duration-500">
@@ -137,21 +166,27 @@ export default function VerifyEmailPage() {
               <div className="space-y-3">
                 <FormInput
                   control={control}
-                  disabled={isLoading}
+                  disabled={isLoading || remainingTime > 0}
                   label="Email Address"
                   name="email"
                   placeholder="your@email.com"
                   type="email"
                 />
 
-                <button
-                  className="w-full rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-orange-500/30 active:scale-95 disabled:opacity-50 dark:hover:shadow-orange-400/20"
-                  disabled={isLoading || !userEmail}
+                <Divider />
+
+                <Button
+                  className="w-full"
+                  disabled={isLoading || !userEmail || remainingTime > 0}
                   onClick={handleResendEmail}
                   type="button"
                 >
-                  {isLoading ? "Sending..." : "Resend Verification"}
-                </button>
+                  {isLoading && "Sending..."}
+                  {!isLoading &&
+                    remainingTime > 0 &&
+                    `Resend in ${formatTime(remainingTime)}`}
+                  {!isLoading && remainingTime === 0 && "Resend Verification"}
+                </Button>
               </div>
 
               <div className="border-border border-t pt-4 text-center">
