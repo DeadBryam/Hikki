@@ -55,13 +55,26 @@ export default function VerifyEmailPage() {
     return () => clearInterval(interval);
   }, [remainingTime]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Avoid re-renders
   useEffect(() => {
     if (!token) {
       return;
     }
 
-    verifyEmailMutation.mutate(token);
-  }, [token, verifyEmailMutation]);
+    verifyEmailMutation.mutate(token, {
+      onSuccess: (res) => {
+        toast.success({
+          description: res.message || "Your email has been verified",
+          title: "Email Verified",
+        });
+      },
+      onError: (error) => {
+        displayErrorsFromServer(error, {
+          type: "error",
+        });
+      },
+    });
+  }, [token]);
 
   useEffect(() => {
     if (verified) {
