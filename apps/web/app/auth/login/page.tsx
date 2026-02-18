@@ -31,7 +31,7 @@ export default function LoginPage() {
     login.mutate(data, {
       onSuccess: (res) => {
         toast.success({
-          description: `Welcome back, ${res?.data?.user?.name || "user"}! We're glad to see you again.`,
+          description: `Welcome back ${res?.data?.name || "user"}! We're glad to see you again.`,
           title: "Login successful",
         });
         router.replace("/chat");

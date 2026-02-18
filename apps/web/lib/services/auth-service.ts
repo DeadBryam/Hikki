@@ -11,10 +11,6 @@ export interface AuthUser {
   username: string;
 }
 
-export interface AuthResponse {
-  user: AuthUser;
-}
-
 export interface LogoutResponse {
   success: boolean;
 }
@@ -41,7 +37,7 @@ export interface ResetPasswordResponse {
 }
 
 export const authService = {
-  async signup(data: SignupInput): Promise<ApiResponse<AuthResponse>> {
+  async signup(data: SignupInput): Promise<ApiResponse<AuthUser>> {
     const response = await api.post("api/v1/auth/signup", {
       json: {
         username: data.username,
@@ -52,7 +48,7 @@ export const authService = {
     return response.json();
   },
 
-  async login(data: LoginInput): Promise<ApiResponse<AuthResponse>> {
+  async login(data: LoginInput): Promise<ApiResponse<AuthUser>> {
     const response = await api.post("api/v1/auth/login", {
       json: {
         username: data.username,
