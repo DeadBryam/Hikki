@@ -1,11 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { AuthCard } from "@/components/auth/auth-card";
 import { AuthLink } from "@/components/auth/auth-link";
+import { BackButton } from "@/components/auth/back-button";
 import { FormInput } from "@/components/auth/form-input";
 import { FormSubmitButton } from "@/components/auth/form-submit-button";
 import { PasswordInput } from "@/components/auth/password-input";
@@ -18,12 +20,7 @@ export default function SignupPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    watch,
-  } = useForm<SignupInput>({
+  const { control, handleSubmit, watch } = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       username: "",
@@ -39,94 +36,84 @@ export default function SignupPage() {
     setIsLoading(true);
     try {
       await authService.signup(data);
-      toast.success("¡Registro exitoso! Verifica tu email");
+      toast.success({
+        description: "Please verify your email",
+        title: "Account created",
+      });
       router.push("/auth/verify-email");
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Error al registrarse";
-      toast.error(message);
+        error instanceof Error ? error.message : "Error creating account";
+      toast.error({ description: message });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <AuthCard subtitle="Únete a Hikki hoy mismo" title="Crear cuenta">
-      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-        <Controller
-          control={control}
-          name="username"
-          render={({ field }) => (
-            <FormInput
-              disabled={isLoading}
-              error={errors.username}
-              field={field}
-              label="Usuario"
-              name="username"
-              placeholder="Tu nombre de usuario"
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="email"
-          render={({ field }) => (
-            <FormInput
-              disabled={isLoading}
-              error={errors.email}
-              field={field}
-              label="Email"
-              name="email"
-              placeholder="tu@email.com"
-              type="email"
-            />
-          )}
-        />
-
-        <div className="space-y-2">
-          <Controller
-            control={control}
-            name="password"
-            render={({ field }) => (
-              <PasswordInput
+    <div className="w-full">
+      <BackButton />
+      <div className="fade-in slide-in-from-bottom-4 animate-in duration-500">
+        <AuthCard subtitle="Join Hikki today" title="Create Account">
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            {/* Row 1: Username & Email (2 columns on desktop, 1 on mobile) */}
+            <div className="grid gap-6 md:grid-cols-2">
+              <FormInput
+                control={control}
                 disabled={isLoading}
-                error={errors.password}
-                field={field}
-                label="Contraseña"
-                name="password"
-                placeholder="Contraseña segura"
+                label="Username"
+                name="username"
+                placeholder="Enter your username"
               />
+
+              <FormInput
+                control={control}
+                disabled={isLoading}
+                label="Email Address"
+                name="email"
+                placeholder="your@email.com"
+                type="email"
+              />
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <PasswordInput
+                control={control}
+                disabled={isLoading}
+                label="Password"
+                name="password"
+                placeholder="Create a strong password"
+              />
+
+              <PasswordInput
+                control={control}
+                disabled={isLoading}
+                label="Confirm Password"
+                name="passwordConfirm"
+                placeholder="Confirm your password"
+              />
+            </div>
+
+            {password && (
+              <AnimatePresence>
+                <PasswordStrength password={password} />
+              </AnimatePresence>
             )}
-          />
-          {password && <PasswordStrength password={password} />}
-        </div>
 
-        <Controller
-          control={control}
-          name="passwordConfirm"
-          render={({ field }) => (
-            <PasswordInput
-              disabled={isLoading}
-              error={errors.passwordConfirm}
-              field={field}
-              label="Confirmar contraseña"
-              name="passwordConfirm"
-              placeholder="Confirma tu contraseña"
-            />
-          )}
-        />
+            <FormSubmitButton isLoading={isLoading}>
+              Create Account
+            </FormSubmitButton>
 
-        <FormSubmitButton isLoading={isLoading}>Crear cuenta</FormSubmitButton>
-      </form>
-
-      <div className="pt-4">
-        <AuthLink
-          href="/auth/login"
-          linkText="Inicia sesión aquí"
-          text="¿Ya tienes cuenta?"
-        />
+            <div className="fade-in slide-in-from-bottom-2 animate-in pt-4 delay-100 duration-700">
+              <AuthLink
+                href="/auth/login"
+                linkText="Sign in here"
+                text="Already have an account?"
+              />
+            </div>
+          </form>
+        </AuthCard>
       </div>
-    </AuthCard>
+    </div>
   );
 }

@@ -1,11 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { AuthCard } from "@/components/auth/auth-card";
 import { AuthLink } from "@/components/auth/auth-link";
+import { BackButton } from "@/components/auth/back-button";
 import { FormInput } from "@/components/auth/form-input";
 import { FormSubmitButton } from "@/components/auth/form-submit-button";
 import {
@@ -19,11 +21,7 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-  } = useForm<ForgotPasswordInput>({
+  const { control, handleSubmit } = useForm<ForgotPasswordInput>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
@@ -35,13 +33,16 @@ export default function ForgotPasswordPage() {
     try {
       await authService.requestPasswordReset(data.email);
       setSubmitted(true);
-      toast.success("Instrucciones enviadas a tu email");
+      toast.success({
+        description: "Check your email for the reset link",
+        title: "Instructions sent",
+      });
     } catch (error) {
       const message =
         error instanceof Error
           ? error.message
-          : "Error al solicitar reset de contraseña";
-      toast.error(message);
+          : "Error requesting password reset";
+      toast.error({ description: message });
     } finally {
       setIsLoading(false);
     }
@@ -49,61 +50,64 @@ export default function ForgotPasswordPage() {
 
   if (submitted) {
     return (
-      <AuthCard
-        subtitle="Revisa tu email para continuar"
-        title="Instrucciones enviadas"
-      >
-        <div className="space-y-6 text-center">
-          <p className="text-muted-foreground text-sm">
-            Hemos enviado instrucciones para resetear tu contraseña a tu email.
-            Por favor, revisa tu bandeja de entrada (y spam si es necesario).
-          </p>
+      <div className="w-full">
+        <BackButton />
+        <AuthCard
+          subtitle="Check your email to continue"
+          title="Instructions Sent"
+        >
+          <div className="space-y-6 text-center">
+            <div className="success-icon flex animate-success-bounce justify-center">
+              <CheckCircle className="size-12 text-green-600 drop-shadow-lg dark:text-green-500" />
+            </div>
 
-          <Link
-            className="inline-block rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground hover:opacity-90"
-            href="/auth/login"
-          >
-            Volver a iniciar sesión
-          </Link>
-        </div>
-      </AuthCard>
+            <p className="fade-in animate-in text-muted-foreground text-sm delay-200 duration-500">
+              We've sent password reset instructions to your email. Please check
+              your inbox (and spam folder if needed).
+            </p>
+
+            <Link
+              className="inline-block rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-orange-500/30 active:scale-95 dark:hover:shadow-orange-400/20"
+              href="/auth/login"
+            >
+              Back to Sign In
+            </Link>
+          </div>
+        </AuthCard>
+      </div>
     );
   }
 
   return (
-    <AuthCard
-      subtitle="Ingresa tu email para recibir instrucciones"
-      title="¿Olvidaste tu contraseña?"
-    >
-      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-        <Controller
-          control={control}
-          name="email"
-          render={({ field }) => (
-            <FormInput
-              disabled={isLoading}
-              error={errors.email}
-              field={field}
-              label="Email"
-              name="email"
-              placeholder="tu@email.com"
-              type="email"
-            />
-          )}
-        />
+    <div className="w-full">
+      <BackButton />
+      <AuthCard
+        subtitle="Enter your email to receive reset instructions"
+        title="Reset Password"
+      >
+        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <FormInput
+            control={control}
+            disabled={isLoading}
+            label="Email Address"
+            name="email"
+            placeholder="your@email.com"
+            type="email"
+          />
 
-        <FormSubmitButton isLoading={isLoading}>
-          Enviar instrucciones
-        </FormSubmitButton>
-      </form>
+          <FormSubmitButton isLoading={isLoading}>
+            Send Reset Link
+          </FormSubmitButton>
+        </form>
 
-      <div className="pt-4">
-        <AuthLink
-          href="/auth/login"
-          linkText="Aquí"
-          text="¿Recordaste tu contraseña?"
-        />
-      </div>
-    </AuthCard>
+        <div className="pt-4">
+          <AuthLink
+            href="/auth/login"
+            linkText="Here"
+            text="Remembered your password?"
+          />
+        </div>
+      </AuthCard>
+    </div>
   );
 }

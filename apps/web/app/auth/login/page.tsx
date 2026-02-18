@@ -3,9 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { AuthCard } from "@/components/auth/auth-card";
 import { AuthLink } from "@/components/auth/auth-link";
+import { BackButton } from "@/components/auth/back-button";
 import { FormInput } from "@/components/auth/form-input";
 import { FormSubmitButton } from "@/components/auth/form-submit-button";
 import { PasswordInput } from "@/components/auth/password-input";
@@ -17,11 +18,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-  } = useForm<LoginInput>({
+  const { control, handleSubmit } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       username: "",
@@ -33,66 +30,58 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       await authService.login(data);
-      toast.success("¡Bienvenido!");
-      router.push("/chat");
+      toast.success({
+        description: "Logged in successfully",
+        title: "Welcome!",
+      });
+      router.push("/");
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Error al iniciar sesión";
-      toast.error(message);
+        error instanceof Error ? error.message : "Error signing in";
+      toast.error({ description: message });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <AuthCard subtitle="Bienvenido de vuelta a Hikki" title="Iniciar sesión">
-      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-        <Controller
-          control={control}
-          name="username"
-          render={({ field }) => (
+    <div className="w-full">
+      <BackButton />
+      <div className="fade-in slide-in-from-bottom-4 animate-in duration-500">
+        <AuthCard subtitle="Welcome back to Hikki" title="Sign In">
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <FormInput
+              control={control}
               disabled={isLoading}
-              error={errors.username}
-              field={field}
-              label="Usuario"
+              label="Username or Email"
               name="username"
-              placeholder="Tu usuario o email"
+              placeholder="Enter your username or email"
             />
-          )}
-        />
 
-        <Controller
-          control={control}
-          name="password"
-          render={({ field }) => (
             <PasswordInput
+              control={control}
               disabled={isLoading}
-              error={errors.password}
-              field={field}
               name="password"
-              placeholder="Ingresa tu contraseña"
+              placeholder="Enter your password"
             />
-          )}
-        />
 
-        <FormSubmitButton isLoading={isLoading}>
-          Iniciar sesión
-        </FormSubmitButton>
-      </form>
+            <FormSubmitButton isLoading={isLoading}>Sign In</FormSubmitButton>
+          </form>
 
-      <div className="space-y-3 pt-4">
-        <AuthLink
-          href="/auth/forgot-password"
-          linkText="Recuperar contraseña"
-          text="¿Olvidaste tu contraseña?"
-        />
-        <AuthLink
-          href="/auth/signup"
-          linkText="Regístrate aquí"
-          text="¿No tienes cuenta?"
-        />
+          <div className="fade-in slide-in-from-bottom-2 animate-in space-y-3 pt-4 delay-100 duration-700">
+            <AuthLink
+              href="/auth/forgot-password"
+              linkText="Click here"
+              text="Forgot your password?"
+            />
+            <AuthLink
+              href="/auth/signup"
+              linkText="Sign up here"
+              text="Don't have an account?"
+            />
+          </div>
+        </AuthCard>
       </div>
-    </AuthCard>
+    </div>
   );
 }

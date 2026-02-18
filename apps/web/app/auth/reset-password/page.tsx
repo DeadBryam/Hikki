@@ -1,11 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { AuthCard } from "@/components/auth/auth-card";
+import { BackButton } from "@/components/auth/back-button";
 import { FormError } from "@/components/auth/form-error";
 import { FormSubmitButton } from "@/components/auth/form-submit-button";
 import { PasswordInput } from "@/components/auth/password-input";
@@ -26,12 +28,7 @@ export default function ResetPasswordPage() {
   const [tokenValid, setTokenValid] = useState<boolean | null>(null);
   const [tokenError, setTokenError] = useState<string | null>(null);
 
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    watch,
-  } = useForm<ResetPasswordInput>({
+  const { control, handleSubmit, watch } = useForm<ResetPasswordInput>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
       password: "",
@@ -44,7 +41,7 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     if (!token) {
       setTokenValid(false);
-      setTokenError("El enlace es inválido");
+      setTokenError("The link is invalid");
       return;
     }
 
@@ -60,7 +57,7 @@ export default function ResetPasswordPage() {
         const message =
           error instanceof Error
             ? error.message
-            : "El enlace es inválido o ha expirado";
+            : "The link is invalid or has expired";
         setTokenError(message);
       }
     }
@@ -70,19 +67,25 @@ export default function ResetPasswordPage() {
 
   const onSubmit = async (data: ResetPasswordInput) => {
     if (!token) {
-      toast.error("Token no proporcionado");
+      toast.error({
+        description: "Token not provided",
+        title: "Invalid request",
+      });
       return;
     }
 
     setIsLoading(true);
     try {
       await authService.resetPassword(token, data.password);
-      toast.success("Contraseña reseteada exitosamente");
+      toast.success({
+        description: "You can now sign in with your new password",
+        title: "Password updated",
+      });
       router.push("/auth/login");
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Error al resetear contraseña";
-      toast.error(message);
+        error instanceof Error ? error.message : "Error resetting password";
+      toast.error({ description: message });
     } finally {
       setIsLoading(false);
     }
@@ -90,85 +93,80 @@ export default function ResetPasswordPage() {
 
   if (tokenValid === false) {
     return (
-      <AuthCard
-        subtitle="El enlace no es válido o ha expirado"
-        title="Enlace inválido"
-      >
-        <div className="space-y-6">
-          <FormError message={tokenError || "Enlace inválido o expirado"} />
-          <Link
-            className="inline-block rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground hover:opacity-90"
-            href="/auth/forgot-password"
-          >
-            Solicitar nuevo enlace
-          </Link>
-        </div>
-      </AuthCard>
+      <div className="w-full">
+        <BackButton />
+        <AuthCard
+          subtitle="The link is invalid or has expired"
+          title="Invalid Link"
+        >
+          <div className="space-y-6">
+            <FormError message={tokenError || "Invalid or expired link"} />
+            <Link
+              className="inline-block rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-orange-500/30 active:scale-95 dark:hover:shadow-orange-400/20"
+              href="/auth/forgot-password"
+            >
+              Request New Link
+            </Link>
+          </div>
+        </AuthCard>
+      </div>
     );
   }
 
   if (tokenValid === null) {
     return (
-      <AuthCard subtitle="Validando enlace..." title="Restablecer contraseña">
-        <div className="text-center">
-          <p className="text-muted-foreground text-sm">Por favor espera...</p>
-        </div>
-      </AuthCard>
+      <div className="w-full">
+        <BackButton />
+        <AuthCard subtitle="Validating link..." title="Set New Password">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <Loader className="size-8 animate-spin text-orange-500 dark:text-orange-400" />
+            <p className="fade-in animate-in text-muted-foreground text-sm duration-500">
+              Please wait...
+            </p>
+          </div>
+        </AuthCard>
+      </div>
     );
   }
 
   return (
-    <AuthCard
-      subtitle="Ingresa tu nueva contraseña"
-      title="Restablecer contraseña"
-    >
-      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-        <div className="space-y-2">
-          <Controller
-            control={control}
-            name="password"
-            render={({ field }) => (
-              <PasswordInput
-                disabled={isLoading}
-                error={errors.password}
-                field={field}
-                label="Nueva contraseña"
-                name="password"
-                placeholder="Nueva contraseña"
-              />
-            )}
-          />
-          {password && <PasswordStrength password={password} />}
-        </div>
-
-        <Controller
-          control={control}
-          name="passwordConfirm"
-          render={({ field }) => (
+    <div className="w-full">
+      <BackButton />
+      <AuthCard subtitle="Enter your new password" title="Set New Password">
+        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <div className="space-y-2">
             <PasswordInput
+              control={control}
               disabled={isLoading}
-              error={errors.passwordConfirm}
-              field={field}
-              label="Confirmar contraseña"
-              name="passwordConfirm"
-              placeholder="Confirma tu contraseña"
+              label="New Password"
+              name="password"
+              placeholder="Enter your new password"
             />
-          )}
-        />
+            {password && <PasswordStrength password={password} />}
+          </div>
 
-        <FormSubmitButton isLoading={isLoading}>
-          Cambiar contraseña
-        </FormSubmitButton>
-      </form>
+          <PasswordInput
+            control={control}
+            disabled={isLoading}
+            label="Confirm Password"
+            name="passwordConfirm"
+            placeholder="Confirm your password"
+          />
 
-      <div className="border-border border-t pt-4 text-center">
-        <Link
-          className="text-primary text-sm hover:underline"
-          href="/auth/login"
-        >
-          Volver a iniciar sesión
-        </Link>
-      </div>
-    </AuthCard>
+          <FormSubmitButton isLoading={isLoading}>
+            Update Password
+          </FormSubmitButton>
+        </form>
+
+        <div className="border-border border-t pt-4 text-center">
+          <Link
+            className="text-primary text-sm hover:underline"
+            href="/auth/login"
+          >
+            Back to Sign In
+          </Link>
+        </div>
+      </AuthCard>
+    </div>
   );
 }

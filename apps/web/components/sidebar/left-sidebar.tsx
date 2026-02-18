@@ -2,15 +2,16 @@
 
 import { motion } from "framer-motion";
 import {
+  LogOut,
   MessageSquare,
   PanelLeft,
   Pin,
   Plus,
-  Settings,
   Sparkles,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -25,17 +26,22 @@ import {
   staggerContainerVariants,
 } from "@/lib/animations";
 import { env } from "@/lib/env";
+import { useAuth } from "@/lib/hooks/use-auth";
 import {
   formatRelativeTime,
   groupConversationsByDate,
   mockConversations,
 } from "@/lib/mock-data";
+import { authService } from "@/lib/services/auth-service";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
 export function LeftSidebar() {
   const [isOpen, setIsOpen] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
   const params = useParams();
+  const { user, logout: logoutFromStore } = useAuth();
   const activeConversation = params?.slug as string | undefined;
   const groupedConversations = groupConversationsByDate(mockConversations);
 
@@ -45,6 +51,22 @@ export function LeftSidebar() {
 
   const handleNewChat = () => {
     router.push("/chat");
+  };
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await authService.logout();
+      logoutFromStore();
+      toast.success({ description: "Logged out successfully" });
+      router.push("/auth/login");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to logout";
+      toast.error({ description: errorMessage, title: "Error" });
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -185,38 +207,58 @@ export function LeftSidebar() {
         </ScrollArea>
 
         {/* Footer */}
-        <div className="p-3">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className={cn(
-                  "w-full justify-start gap-2",
-                  !isOpen && "justify-center px-1"
-                )}
-                variant="ghost"
-              >
-                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-red-400 to-orange-400 font-bold text-white text-xs">
-                  U
-                </div>
-                {isOpen && (
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-sm">User</p>
-                    <p className="truncate text-muted-foreground text-xs">
-                      Free plan
-                    </p>
-                  </div>
-                )}
-                {isOpen && (
-                  <Settings className="h-4 w-4 shrink-0 text-muted-foreground" />
-                )}
-              </Button>
-            </TooltipTrigger>
-            {!isOpen && (
-              <TooltipContent side="right">
-                <p>Settings</p>
-              </TooltipContent>
+        <div className="border-border border-t p-3">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-8 w-8 shrink-0">
+              <AvatarFallback className="bg-gradient-to-br from-red-400 to-orange-400 font-bold text-white text-xs">
+                {user?.username?.charAt(0).toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+            {isOpen && (
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium text-sm">
+                  {user?.username || "User"}
+                </p>
+                <p className="truncate text-muted-foreground text-xs">
+                  {user?.email || "No email"}
+                </p>
+              </div>
             )}
-          </Tooltip>
+            {isOpen && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    disabled={isLoggingOut}
+                    onClick={handleLogout}
+                    size="icon"
+                    variant="ghost"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>Logout</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+            {!isOpen && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    disabled={isLoggingOut}
+                    onClick={handleLogout}
+                    size="icon"
+                    variant="ghost"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>Logout</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
         </div>
       </motion.aside>
     </TooltipProvider>
