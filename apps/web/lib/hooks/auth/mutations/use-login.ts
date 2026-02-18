@@ -1,22 +1,10 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import type { LoginInput } from "@/lib/schemas/auth";
-import { authService } from "@/lib/services/auth-service";
-import { useAuthStore } from "@/lib/stores/auth-store";
+import { type AuthResponse, authService } from "@/lib/services/auth-service";
+import type { ApiResponse, ErrorResponse } from "@/types/api";
 
 export function useLogin() {
-  const queryClient = useQueryClient();
-  const router = useRouter();
-  const setUser = useAuthStore((state) => state.setUser);
-  const clearError = useAuthStore((state) => state.clearError);
-
-  return useMutation({
+  return useMutation<ApiResponse<AuthResponse>, ErrorResponse, LoginInput>({
     mutationFn: (data: LoginInput) => authService.login(data),
-    onSuccess: (data) => {
-      clearError();
-      setUser(data.user);
-      queryClient.invalidateQueries({ queryKey: ["user"] });
-      router.push("/dashboard");
-    },
   });
 }

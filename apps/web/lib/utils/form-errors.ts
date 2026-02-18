@@ -1,6 +1,6 @@
 import type { FieldValues, UseFormSetError } from "react-hook-form";
 import { toast } from "@/lib/utils/toast";
-import type { ApiError } from "@/types/api";
+import type { ErrorResponse } from "@/types/api";
 
 /**
  * Map server validation `details` to react-hook-form field errors.
@@ -8,13 +8,13 @@ import type { ApiError } from "@/types/api";
  */
 export function setFormErrorsFromServer<T extends FieldValues = FieldValues>(
   setError: UseFormSetError<T>,
-  error: ApiError
+  error: ErrorResponse
 ): void {
   const details = error.details || [];
 
   if (details) {
     for (const d of details) {
-      if (!d?.field) {
+      if (typeof d === "string" || !d?.field) {
         continue;
       }
       setError(d.field as any, {

@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useTransitionRouter } from "next-view-transitions";
 import { useForm } from "react-hook-form";
 import { AuthCard } from "@/components/auth/auth-card";
 import { AuthLink } from "@/components/auth/auth-link";
@@ -9,14 +9,14 @@ import { BackButton } from "@/components/auth/back-button";
 import { FormInput } from "@/components/auth/form-input";
 import { FormSubmitButton } from "@/components/auth/form-submit-button";
 import { PasswordInput } from "@/components/auth/password-input";
-import { env } from "@/lib/env";
-import setFormErrorsFromServer from "@/lib/form-errors";
 import { useLogin } from "@/lib/hooks/auth/mutations/use-login";
 import { type LoginInput, loginSchema } from "@/lib/schemas/auth";
-import { toast } from "@/lib/toast";
+import { env } from "@/lib/utils/env";
+import setFormErrorsFromServer from "@/lib/utils/form-errors";
+import { toast } from "@/lib/utils/toast";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const router = useTransitionRouter();
   const login = useLogin();
 
   const { control, handleSubmit, setError } = useForm<LoginInput>({
@@ -29,12 +29,12 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginInput) => {
     login.mutate(data, {
-      onSuccess: () => {
-        router.push("/");
+      onSuccess: (res) => {
         toast.success({
-          description: "Logged in successfully",
-          title: "Welcome back!",
+          description: `Welcome back, ${res?.data?.user?.name || "user"}! We're glad to see you again.`,
+          title: "Login successful",
         });
+        router.replace("/chat");
       },
       onError: (error) => {
         setFormErrorsFromServer(setError, error);

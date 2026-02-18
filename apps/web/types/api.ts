@@ -29,12 +29,3 @@ export interface ErrorResponse<T = undefined> {
   success: false;
   timestamp: string;
 }
-
-/**
- * Simplified error type for client-side handling
- */
-export interface ApiError {
-  code?: string;
-  details?: Record<string, string>[];
-  message: string;
-}
