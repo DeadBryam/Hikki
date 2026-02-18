@@ -20,8 +20,9 @@ export interface ValidationErrorDetail {
 /**
  * Standard error response type
  */
-export interface ErrorResponse {
+export interface ErrorResponse<T = undefined> {
   code?: string;
+  data?: T;
   details?: string[] | ValidationErrorDetail[];
   message: string;
   requestId?: string;

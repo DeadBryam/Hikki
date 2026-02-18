@@ -4,8 +4,9 @@ import type {
   ValidationErrorDetail,
 } from "@/types/api";
 
-interface CreateErrorResponseOptions {
+interface CreateErrorResponseOptions<T = undefined> {
   code?: string;
+  data?: T;
   details?: string[] | ValidationErrorDetail[];
   requestId?: string;
 }
@@ -31,15 +32,16 @@ export class ConflictError extends Error {
 /**
  * Creates a standardized error response
  */
-export function createErrorResponse(
+export function createErrorResponse<T = undefined>(
   error: string,
-  options: CreateErrorResponseOptions = {}
-): ErrorResponse {
+  options: CreateErrorResponseOptions<T> = {}
+): ErrorResponse<T> {
   return {
     success: false,
     message: error,
     details: options.details,
     code: options.code,
+    data: options.data,
     timestamp: new Date().toISOString(),
   };
 }

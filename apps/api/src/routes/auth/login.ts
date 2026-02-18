@@ -4,7 +4,7 @@ import { env } from "@/config/env";
 import type { LoginParams } from "@/types/auth";
 import type { AuthenticatedContext } from "@/types/context";
 import { createErrorResponse, createSuccessResponse } from "@/utils/errors";
-import { errorSchemas, simpleSuccessResponseSchema } from "@/utils/schemas";
+import { createDataResponseSchema, errorSchemas } from "@/utils/schemas";
 
 export const loginHandler = async (
   context: AuthenticatedContext<LoginParams>
@@ -31,7 +31,12 @@ export const loginHandler = async (
     maxAge: result.cookieMaxAge,
   });
 
-  return createSuccessResponse({ message: "Login successful" });
+  const user = authService.findUserByUsername(body.username);
+
+  return createSuccessResponse({
+    message: "Login successful",
+    data: user,
+  });
 };
 
 export const loginSchema = {
@@ -53,7 +58,22 @@ export const loginSchema = {
     tags: ["Authentication"],
   },
   response: {
-    200: simpleSuccessResponseSchema,
+    200: createDataResponseSchema(
+      t.Object({
+        name: t.String({ description: "Display name of the user" }),
+        email: t.String({ description: "Email of the user" }),
+        username: t.String({ description: "Username of the user" }),
+        onboarding_completed_at: t.Union(
+          [
+            t.String({
+              description: "ISO timestamp when onboarding was completed",
+            }),
+            t.Null({ description: "Onboarding not completed" }),
+          ],
+          { description: "Onboarding completion timestamp" }
+        ),
+      })
+    ),
     ...errorSchemas,
   },
 };
