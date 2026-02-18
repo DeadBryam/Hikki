@@ -1,33 +1,35 @@
 import { useAuthStore } from "@/lib/stores/auth-store";
+import { useUser } from "./auth/queries/use-user";
 
-export const useAuth = () => {
+export function useAuth() {
   const {
-    user,
-    token,
-    isLoading,
-    error,
-    getIsAuthenticated,
+    user: storeUser,
+    isLoading: storeLoading,
+    error: storeError,
     setUser,
-    setToken,
-    setLoading,
     setError,
     clearError,
     logout,
-    initializeFromStorage,
   } = useAuthStore();
+  const {
+    data: userData,
+    isLoading: queryLoading,
+    error: queryError,
+  } = useUser();
+
+  const isAuthenticated = Boolean(userData || storeUser);
+  const isLoading = storeLoading || queryLoading;
+  const error =
+    storeError || (queryError instanceof Error ? queryError.message : null);
 
   return {
-    user,
-    token,
+    user: userData ?? storeUser,
     isLoading,
     error,
-    isAuthenticated: getIsAuthenticated(),
+    isAuthenticated,
     setUser,
-    setToken,
-    setLoading,
     setError,
     clearError,
     logout,
-    initializeFromStorage,
   };
-};
+}

@@ -39,12 +39,8 @@ export function useProtectedRoute(
   options: UseProtectedRouteOptions = {}
 ): UseProtectedRouteReturn {
   const { redirectTo = "/auth/login" } = options;
-  const { isAuthenticated, isLoading, initializeFromStorage } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
-
-  useEffect(() => {
-    initializeFromStorage();
-  }, [initializeFromStorage]);
 
   useEffect(() => {
     if (!(isLoading || isAuthenticated)) {
