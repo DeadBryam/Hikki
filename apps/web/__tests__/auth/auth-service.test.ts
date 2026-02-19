@@ -17,21 +17,9 @@ describe("Auth Service", () => {
         passwordConfirm: "StrongPass123!",
       });
 
-      expect(response.token).toBe("test-token");
-      expect(response.user.username).toBe("testuser");
-      expect(response.user.email).toBe("test@example.com");
-    });
-
-    it("should store token in localStorage after signup", async () => {
-      await authService.signup({
-        username: "testuser",
-        email: "test@example.com",
-        password: "StrongPass123!",
-        passwordConfirm: "StrongPass123!",
-      });
-
-      const token = localStorage.getItem("auth_token");
-      expect(token).toBe("test-token");
+      expect(response.success).toBe(true);
+      expect(response.data?.username).toBe("testuser");
+      expect(response.data?.email).toBe("test@example.com");
     });
 
     it("should throw error on duplicate email", async () => {
@@ -79,19 +67,8 @@ describe("Auth Service", () => {
         password: "StrongPass123!",
       });
 
-      expect(response.token).toBe("test-token");
-      expect(response.user.username).toBe("testuser");
-      expect(response.user.emailVerified).toBe(true);
-    });
-
-    it("should store token in localStorage after login", async () => {
-      await authService.login({
-        username: "testuser",
-        password: "StrongPass123!",
-      });
-
-      const token = localStorage.getItem("auth_token");
-      expect(token).toBe("test-token");
+      expect(response.success).toBe(true);
+      expect(response.data?.username).toBe("testuser");
     });
 
     it("should throw error on invalid credentials", async () => {
@@ -109,7 +86,7 @@ describe("Auth Service", () => {
           username: "testuser",
           password: "WrongPassword123!",
         })
-      ).rejects.toThrow("Usuario o contraseña inválidos");
+      ).rejects.toThrow("Error 401");
     });
 
     it("should throw error on user not found", async () => {
@@ -132,28 +109,9 @@ describe("Auth Service", () => {
   });
 
   describe("logout", () => {
-    it("should remove token from localStorage on logout", async () => {
-      localStorage.setItem("auth_token", "test-token");
-      await authService.logout();
-      expect(localStorage.getItem("auth_token")).toBeNull();
-    });
-
     it("should return success response", async () => {
-      localStorage.setItem("auth_token", "test-token");
       const response = await authService.logout();
       expect(response.success).toBe(true);
-    });
-
-    it("should clear token even on API failure", async () => {
-      localStorage.setItem("auth_token", "test-token");
-      server.use(
-        http.post("/api/v1/auth/logout", () => {
-          return HttpResponse.json({ error: "Logout failed" }, { status: 500 });
-        })
-      );
-
-      await expect(authService.logout()).rejects.toThrow();
-      expect(localStorage.getItem("auth_token")).toBeNull();
     });
 
     it("should succeed even without token", async () => {
@@ -237,7 +195,8 @@ describe("Auth Service", () => {
   describe("validateResetToken", () => {
     it("should validate reset token", async () => {
       const response = await authService.validateResetToken("valid-token");
-      expect(response.valid).toBe(true);
+      expect(response.success).toBe(true);
+      expect(response.data?.valid).toBe(true);
     });
 
     it("should throw error on invalid token", async () => {
@@ -299,33 +258,6 @@ describe("Auth Service", () => {
       await expect(
         authService.resetPassword("valid-token", "weak")
       ).rejects.toThrow();
-    });
-  });
-
-  describe("getToken", () => {
-    it("should return token from localStorage", () => {
-      localStorage.setItem("auth_token", "test-token");
-      const token = authService.getToken();
-      expect(token).toBe("test-token");
-    });
-
-    it("should return null if no token", () => {
-      localStorage.clear();
-      const token = authService.getToken();
-      expect(token).toBeNull();
-    });
-  });
-
-  describe("clearToken", () => {
-    it("should remove token from localStorage", () => {
-      localStorage.setItem("auth_token", "test-token");
-      authService.clearToken();
-      expect(localStorage.getItem("auth_token")).toBeNull();
-    });
-
-    it("should not throw error if no token exists", () => {
-      localStorage.clear();
-      expect(() => authService.clearToken()).not.toThrow();
     });
   });
 });

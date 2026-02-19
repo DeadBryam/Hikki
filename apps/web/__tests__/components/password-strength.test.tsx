@@ -5,90 +5,90 @@ import { PasswordStrength } from "@/components/auth/password-strength";
 describe("PasswordStrength Component", () => {
   it("should render with empty password", () => {
     render(<PasswordStrength password="" />);
-    expect(screen.getByText("Fortaleza de contraseña")).toBeInTheDocument();
+    expect(screen.getByText("Password Strength")).toBeInTheDocument();
   });
 
   it("should show all 5 requirements", () => {
     render(<PasswordStrength password="Test123!" />);
-    expect(screen.getByText("8 caracteres mínimo")).toBeInTheDocument();
-    expect(screen.getByText("1 mayúscula")).toBeInTheDocument();
-    expect(screen.getByText("1 minúscula")).toBeInTheDocument();
-    expect(screen.getByText("1 número")).toBeInTheDocument();
-    expect(screen.getByText("1 carácter especial")).toBeInTheDocument();
+    expect(screen.getByText("At least 8 characters")).toBeInTheDocument();
+    expect(screen.getByText("1 uppercase letter")).toBeInTheDocument();
+    expect(screen.getByText("1 lowercase letter")).toBeInTheDocument();
+    expect(screen.getByText("1 number")).toBeInTheDocument();
+    expect(screen.getByText("1 special character")).toBeInTheDocument();
   });
 
   it("should show very weak strength with no requirements met", () => {
     render(<PasswordStrength password="a" />);
-    expect(screen.getByText("Muy débil")).toBeInTheDocument();
+    expect(screen.getByText("Very Weak")).toBeInTheDocument();
   });
 
   it("should show very weak strength with 2 requirements met", () => {
     render(<PasswordStrength password="Aa" />);
-    expect(screen.getByText("Muy débil")).toBeInTheDocument();
+    expect(screen.getByText("Very Weak")).toBeInTheDocument();
   });
 
   it("should show weak strength with 3 requirements met", () => {
     render(<PasswordStrength password="Aa1" />);
-    expect(screen.getByText("Débil")).toBeInTheDocument();
+    expect(screen.getByText("Weak")).toBeInTheDocument();
   });
 
   it("should show normal strength with 4 requirements met", () => {
     render(<PasswordStrength password="Aa1!" />);
-    expect(screen.getByText("Normal")).toBeInTheDocument();
+    expect(screen.getByText("Fair")).toBeInTheDocument();
   });
 
   it("should show strong strength with all 5 requirements met", () => {
     render(<PasswordStrength password="Test123!" />);
-    expect(screen.getByText("Fuerte")).toBeInTheDocument();
+    expect(screen.getByText("Strong")).toBeInTheDocument();
   });
 
   it("should validate minimum length requirement", () => {
     const { rerender } = render(<PasswordStrength password="Short" />);
-    let minLengthText = screen.getByText("8 caracteres mínimo");
+    let minLengthText = screen.getByText("At least 8 characters");
     expect(minLengthText).toHaveClass("text-muted-foreground");
 
     rerender(<PasswordStrength password="LongEnough1!" />);
-    minLengthText = screen.getByText("8 caracteres mínimo");
+    minLengthText = screen.getByText("At least 8 characters");
     expect(minLengthText).toHaveClass("text-foreground");
   });
 
   it("should validate uppercase requirement", () => {
     const { rerender } = render(<PasswordStrength password="lowercase123!" />);
-    let uppercaseText = screen.getByText("1 mayúscula");
+    let uppercaseText = screen.getByText("1 uppercase letter");
     expect(uppercaseText).toHaveClass("text-muted-foreground");
 
     rerender(<PasswordStrength password="Uppercase123!" />);
-    uppercaseText = screen.getByText("1 mayúscula");
+    uppercaseText = screen.getByText("1 uppercase letter");
     expect(uppercaseText).toHaveClass("text-foreground");
   });
 
   it("should validate lowercase requirement", () => {
     const { rerender } = render(<PasswordStrength password="UPPERCASE123!" />);
-    let lowercaseText = screen.getByText("1 minúscula");
+    let lowercaseText = screen.getByText("1 lowercase letter");
     expect(lowercaseText).toHaveClass("text-muted-foreground");
 
     rerender(<PasswordStrength password="Uppercase123!" />);
-    lowercaseText = screen.getByText("1 minúscula");
+    lowercaseText = screen.getByText("1 lowercase letter");
     expect(lowercaseText).toHaveClass("text-foreground");
   });
 
   it("should validate number requirement", () => {
     const { rerender } = render(<PasswordStrength password="NoNumbers!" />);
-    let numberText = screen.getByText("1 número");
+    let numberText = screen.getByText("1 number");
     expect(numberText).toHaveClass("text-muted-foreground");
 
     rerender(<PasswordStrength password="WithNumbers123!" />);
-    numberText = screen.getByText("1 número");
+    numberText = screen.getByText("1 number");
     expect(numberText).toHaveClass("text-foreground");
   });
 
   it("should validate special character requirement", () => {
     const { rerender } = render(<PasswordStrength password="NoSpecial123" />);
-    let specialText = screen.getByText("1 carácter especial");
+    let specialText = screen.getByText("1 special character");
     expect(specialText).toHaveClass("text-muted-foreground");
 
     rerender(<PasswordStrength password="WithSpecial123!" />);
-    specialText = screen.getByText("1 carácter especial");
+    specialText = screen.getByText("1 special character");
     expect(specialText).toHaveClass("text-foreground");
   });
 
@@ -98,7 +98,7 @@ describe("PasswordStrength Component", () => {
       const { unmount } = render(
         <PasswordStrength password={`Test123${char}`} />
       );
-      const specialText = screen.getByText("1 carácter especial");
+      const specialText = screen.getByText("1 special character");
       expect(specialText).toHaveClass("text-foreground");
       unmount();
     }
@@ -106,14 +106,12 @@ describe("PasswordStrength Component", () => {
 
   it("should hide label when showLabel is false", () => {
     render(<PasswordStrength password="Test123!" showLabel={false} />);
-    expect(
-      screen.queryByText("Fortaleza de contraseña")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Password Strength")).not.toBeInTheDocument();
   });
 
   it("should still show requirements when label is hidden", () => {
     render(<PasswordStrength password="Test123!" showLabel={false} />);
-    expect(screen.getByText("8 caracteres mínimo")).toBeInTheDocument();
+    expect(screen.getByText("At least 8 characters")).toBeInTheDocument();
   });
 
   it("should render password strength component", () => {
@@ -124,12 +122,14 @@ describe("PasswordStrength Component", () => {
 
   it("should not show progress bar for empty password", () => {
     const { container } = render(<PasswordStrength password="" />);
-    const roundedDiv = container.querySelector("div[class*='rounded-full']");
-    expect(roundedDiv).not.toBeInTheDocument();
+    const progressBar = container.querySelector(
+      "div.h-2.overflow-hidden.rounded-full"
+    );
+    expect(progressBar).not.toBeInTheDocument();
   });
 
   it("should show strength indicator text", () => {
     render(<PasswordStrength password="Pass1" />);
-    expect(screen.getByText("Débil")).toBeInTheDocument();
+    expect(screen.getByText("Weak")).toBeInTheDocument();
   });
 });

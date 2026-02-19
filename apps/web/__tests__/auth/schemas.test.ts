@@ -19,7 +19,7 @@ describe("Auth Schemas", () => {
       const result = passwordSchema.safeParse("Weak1!");
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain("8 caracteres");
+        expect(result.error.issues[0].message).toContain("8 characters");
       }
     });
 

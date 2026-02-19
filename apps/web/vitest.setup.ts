@@ -47,12 +47,13 @@ export const server = setupServer(
   http.post("/api/v1/auth/signup", () => {
     return HttpResponse.json(
       {
-        token: "test-token",
-        user: {
+        success: true,
+        timestamp: new Date().toISOString(),
+        data: {
           id: "1",
+          name: "Test User",
           username: "testuser",
           email: "test@example.com",
-          emailVerified: false,
           createdAt: new Date().toISOString(),
         },
       },
@@ -63,12 +64,13 @@ export const server = setupServer(
   http.post("/api/v1/auth/login", () => {
     return HttpResponse.json(
       {
-        token: "test-token",
-        user: {
+        success: true,
+        timestamp: new Date().toISOString(),
+        data: {
           id: "1",
+          name: "Test User",
           username: "testuser",
           email: "test@example.com",
-          emailVerified: true,
           createdAt: new Date().toISOString(),
         },
       },
@@ -93,7 +95,10 @@ export const server = setupServer(
   }),
 
   http.get("/api/v1/auth/verify/validate-reset-token", () => {
-    return HttpResponse.json({ valid: true }, { status: 200 });
+    return HttpResponse.json(
+      { success: true, data: { valid: true } },
+      { status: 200 }
+    );
   }),
 
   http.post("/api/v1/auth/verify/reset-password", () => {

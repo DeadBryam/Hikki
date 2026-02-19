@@ -41,7 +41,7 @@ describe("FormSubmitButton Component", () => {
 
   it("should have sr-only loading text", () => {
     render(<FormSubmitButton isLoading={true}>Enviar</FormSubmitButton>);
-    const srText = screen.getByText("Cargando...");
+    const srText = screen.getByText("Loading...");
     expect(srText).toHaveClass("sr-only");
   });
 
