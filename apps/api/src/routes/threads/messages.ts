@@ -34,7 +34,7 @@ export const messagesHandler = (
 
   if (messages === null || messages === undefined) {
     set.status = 404;
-    return createErrorResponse("Thread not found", {
+    return createErrorResponse<undefined>("Thread not found", {
       code: "THREAD_NOT_FOUND",
     });
   }

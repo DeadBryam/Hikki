@@ -15,7 +15,7 @@ export const deleteHandler = (
 
   if (success === false) {
     set.status = 404;
-    return createErrorResponse("Thread not found", {
+    return createErrorResponse<undefined>("Thread not found", {
       code: "THREAD_NOT_FOUND",
     });
   }

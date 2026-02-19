@@ -7,14 +7,17 @@ import { createDataResponseSchema, errorSchemas } from "@/utils/schemas";
 
 export const userHandler = (
   context: AuthenticatedContext
-): ApiResponse<UserResponse> | ErrorResponse => {
+): ApiResponse<UserResponse> | ErrorResponse<undefined> => {
   const { user } = context;
 
   if (user === null || user === undefined) {
     context.set.status = 401;
-    return createErrorResponse("Unauthorized: No user session found", {
-      code: "NO_USER_SESSION",
-    });
+    return createErrorResponse<undefined>(
+      "Unauthorized: No user session found",
+      {
+        code: "NO_USER_SESSION",
+      }
+    );
   }
 
   return createSuccessResponse({

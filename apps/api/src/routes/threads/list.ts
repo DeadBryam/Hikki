@@ -75,7 +75,7 @@ export const listHandler = (
     });
   } catch (error) {
     set.status = 500;
-    return createErrorResponse((error as Error).message, {
+    return createErrorResponse<undefined>((error as Error).message, {
       code: "LIST_CONVERSATIONS_FAILED",
     });
   }

@@ -11,7 +11,9 @@ export const completeOnboardingHandler = (
 
   if (!user) {
     context.set.status = 401;
-    return createErrorResponse("Unauthorized", { code: "UNAUTHORIZED" });
+    return createErrorResponse<undefined>("Unauthorized", {
+      code: "UNAUTHORIZED",
+    });
   }
 
   userRepository.completeOnboarding(user.id);
