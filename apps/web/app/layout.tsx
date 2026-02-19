@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 
 import "@/styles/globals.css";
 import { Toaster } from "@/components/providers/toaster";
+import { env } from "@/lib/utils/env";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -20,7 +21,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   description: "Your intelligent note management companion",
-  title: "Hikki - AI Note Manager",
+  title: {
+    default: "AI Note Manager",
+    template: `${env.APP_NAME} | %s`,
+  },
 };
 
 export const viewport: Viewport = {
