@@ -6,6 +6,7 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
 import "@/styles/globals.css";
+import { Suspense } from "react";
 import { Toaster } from "@/components/providers/toaster";
 import { env } from "@/lib/utils/env";
 
@@ -40,24 +41,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ViewTransitions>
-      <html data-scroll-behavior="smooth" lang="en" suppressHydrationWarning>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background font-sans antialiased`}
-        >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            disableTransitionOnChange
-            enableSystem
-          >
-            <QueryProvider>
-              {children}
-              <Toaster />
-            </QueryProvider>
-          </ThemeProvider>
-        </body>
-      </html>
-    </ViewTransitions>
+    <html data-scroll-behavior="smooth" lang="en" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background font-sans antialiased`}
+      >
+        <Suspense>
+          <ViewTransitions>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              disableTransitionOnChange
+              enableSystem
+            >
+              <QueryProvider>
+                {children}
+                <Toaster />
+              </QueryProvider>
+            </ThemeProvider>
+          </ViewTransitions>
+        </Suspense>
+      </body>
+    </html>
   );
 }
