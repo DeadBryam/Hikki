@@ -15,8 +15,9 @@ export const corsPlugin: ReturnType<typeof cors> = cors({
     "Authorization",
     "Cookie",
     "X-Requested-With",
+    "X-Thread-ID",
   ],
-  exposeHeaders: ["Set-Cookie"],
+  exposeHeaders: ["Set-Cookie", "X-Thread-ID", "X-Message-ID", "X-Model"],
   maxAge: 86_400,
 });
 
