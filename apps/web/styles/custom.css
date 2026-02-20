@@ -120,4 +120,16 @@
   .button-hover-effect {
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
+
+  pre:has(code.hljs) {
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.07);
+    border-radius: 6px;
+    @apply overflow-x-auto;
+  }
+
+  code:not(.hljs) {
+    background-color: rgba(255, 255, 255, 0.1);
+    @apply px-2 py-0.5 rounded-sm text-rose-500;
+  }
 }
