@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import type { Context } from "elysia";
 import { AUTH_CONSTANTS } from "@/config/constants";
 import { env } from "@/config/env";
 import { logger } from "@/config/logger";
@@ -497,5 +498,42 @@ export default class AuthService {
       token: session.token,
       cookieMaxAge: Math.floor(this.SESSION_DURATION / 1000),
     };
+  }
+
+  /**
+   * Sets a valid session cookie with the provided token.
+   * Used after successful login or email verification.
+   * @param context - Elysia context with cookie support
+   * @param token - The session token to set
+   * @param maxAgeSeconds - Optional max age in seconds (defaults to SESSION_DURATION)
+   */
+  setValidSessionCookie(
+    context: Pick<Context, "cookie">,
+    token: string,
+    maxAgeSeconds?: number
+  ): void {
+    context.cookie.session.set({
+      value: token,
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: maxAgeSeconds ?? Math.floor(this.SESSION_DURATION / 1000),
+    });
+  }
+
+  /**
+   * Clears the session cookie by setting maxAge to 0.
+   * Used for logout and error responses (e.g., invalid session).
+   * Ensures browser automatically removes the httpOnly cookie.
+   * @param context - Elysia context with cookie support
+   */
+  setClearSessionCookie(context: Pick<Context, "cookie">): void {
+    context.cookie.session.set({
+      value: "",
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 0,
+    });
   }
 }

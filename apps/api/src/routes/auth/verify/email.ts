@@ -32,14 +32,11 @@ export const verifyEmailGetHandler = async ({
   verificationTokenRepository.delete(verificationToken.id);
 
   const session = await authService.createSession(verificationToken.user_id);
-
-  cookie.session.set({
-    value: session.token,
-    httpOnly: true,
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 30,
-  });
+  authService.setValidSessionCookie(
+    { cookie },
+    session.token,
+    60 * 60 * 24 * 30
+  );
 
   return redirect(`${env.FRONT_END_URL}/auth/verify?success=true`);
 };

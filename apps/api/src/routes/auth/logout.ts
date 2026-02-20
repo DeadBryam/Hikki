@@ -1,5 +1,4 @@
 import { authService } from "@/config/dependencies";
-import { env } from "@/config/env";
 import type { ExtendedContext } from "@/types/context";
 import { errorSchemas, simpleSuccessResponseSchema } from "@/utils/schemas";
 
@@ -7,14 +6,7 @@ export const logoutHandler = async (context: ExtendedContext) => {
   const { cookie } = context;
 
   await authService.invalidateSession(cookie.session.value as string);
-
-  cookie.session.set({
-    value: "",
-    httpOnly: true,
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 0,
-  });
+  authService.setClearSessionCookie(context);
 
   return {
     success: true,

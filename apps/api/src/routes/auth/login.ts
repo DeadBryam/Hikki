@@ -1,6 +1,5 @@
 import { t } from "elysia";
 import { authService } from "@/config/dependencies";
-import { env } from "@/config/env";
 import type { LoginParams } from "@/types/auth";
 import type { AuthenticatedContext } from "@/types/context";
 import { createErrorResponse, createSuccessResponse } from "@/utils/errors";
@@ -9,7 +8,7 @@ import { createDataResponseSchema, errorSchemas } from "@/utils/schemas";
 export const loginHandler = async (
   context: AuthenticatedContext<LoginParams>
 ) => {
-  const { body, set, cookie, ip, userAgent } = context;
+  const { body, set, ip, userAgent } = context;
 
   const result = await authService.login({
     username: body.username,
@@ -23,13 +22,7 @@ export const loginHandler = async (
     return createErrorResponse(result.message, { code: "LOGIN_FAILED" });
   }
 
-  cookie.session.set({
-    value: result.token,
-    httpOnly: true,
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: result.cookieMaxAge,
-  });
+  authService.setValidSessionCookie(context, result.token, result.cookieMaxAge);
 
   const user = authService.findUserByUsername(body.username);
 
