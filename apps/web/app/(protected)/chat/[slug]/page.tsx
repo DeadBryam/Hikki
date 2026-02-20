@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { ChatContainer } from "../_componentes/chat-container";
+import { ChatContainer } from "../_components/chat-container";
 
 export default function ChatConversationPage() {
   const params = useParams();

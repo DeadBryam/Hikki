@@ -1,6 +1,4 @@
-"use client";
-
-import { ChatContainer } from "@/app/(protected)/chat/_componentes/chat-container";
+import { ChatContainer } from "./_components/chat-container";
 
 export default function ChatPage() {
   return <ChatContainer />;

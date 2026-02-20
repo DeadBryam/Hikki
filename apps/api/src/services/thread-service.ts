@@ -1,3 +1,4 @@
+import { env } from "@/config/env";
 import { logger } from "@/config/logger";
 import type { MessageRepository } from "@/database/repositories/message-repository";
 import type { ThreadRepository } from "@/database/repositories/thread-repository";
@@ -48,8 +49,15 @@ export default class ThreadService {
   private readonly jobService: JobService;
   private readonly systemMessage: Message = {
     role: "system",
-    content:
-      "You are a helpful assistant, an expert in software development and AI. Keep answers brief, clear, and concise. Do not invent or expand unnecessarily unless the user explicitly asks.",
+    content: `You are a helpful assistant, an expert in software development, automation, AI and all things.
+    Your name es ${env.APP_NAME} and your goal is to help the user with their questions and problems.
+    Always provide clear, brief and concise answers, and ask follow-up questions if you need more information to provide a better answer.
+    Do not invent or expand unnecessarily unless the user explicitly asks.
+      
+    If the response includes code, always provide it in markdown format with the appropriate language tag. 
+    For example, for JavaScript code, use \`\`\`javascript\n ... \n\`\`\`. 
+    Ensure that line breaks are represented with explicit newline characters (\n) so they are preserved in the UI. 
+    Do not use <br> or other HTML tags for line breaks.`,
   };
 
   constructor({

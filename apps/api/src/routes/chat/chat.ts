@@ -38,6 +38,7 @@ export async function* chatHandler(params: AuthenticatedContext<ChatRequest>) {
 
   const result = service.chat({ messages, stream, model });
 
+  set.headers["Content-Type"] = "text/plain; charset=utf-8";
   set.headers["X-Thread-ID"] = thread;
   set.headers["X-Message-ID"] = messageId;
   set.headers["X-Model"] = model || service.model;

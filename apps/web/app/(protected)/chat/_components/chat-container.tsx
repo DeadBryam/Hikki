@@ -1,64 +1,49 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { type Message, mockMessagesByConversation } from "@/lib/mock/mock-data";
+import { useSendMessage } from "@/lib/hooks/chat/mutations/use-send-message";
+import { useMessages } from "@/lib/hooks/chat/queries/use-messages";
 import { messageVariants } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/misc";
 import { EmptyState } from "./empty-state";
 import { MessageBubble } from "./message-bubble";
 import { MessageInput } from "./message-input";
-import { TypingIndicator } from "./typing-indicator";
 
 interface ChatContainerProps {
   conversationId?: string;
 }
 
 export function ChatContainer({ conversationId }: ChatContainerProps) {
-  const [messages, setMessages] = useState<Message[]>(
-    conversationId ? mockMessagesByConversation[conversationId] || [] : []
-  );
-  const [isTyping, setIsTyping] = useState(false);
+  const { data: messages = [] } = useMessages(conversationId);
+
   const scrollRef = useRef<HTMLDivElement>(null);
+  const prevMessageCount = useRef(messages.length);
+
+  const sendMessageMutation = useSendMessage(conversationId);
 
   const isEmpty = messages.length === 0;
+  const isTyping = messages.some((m) => m.isStreaming);
 
   useEffect(() => {
-    if (scrollRef.current) {
+    if (prevMessageCount.current !== messages.length && scrollRef.current) {
+      prevMessageCount.current = messages.length;
       scrollRef.current.scrollTo({
         top: scrollRef.current.scrollHeight,
         behavior: "smooth",
       });
     }
-  }, []);
+  });
 
-  const handleSendMessage = (content: string) => {
+  const handleSendMessage = async (content: string) => {
     if (!content.trim()) {
       return;
     }
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content,
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setIsTyping(true);
-
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: `Entiendo tu mensaje sobre "${content.slice(0, 30)}...". Esto es una respuesta simulada mientras implementamos la integración completa con el API.`,
-        timestamp: new Date(),
-        model: "gemini-pro",
-      };
-      setMessages((prev) => [...prev, aiMessage]);
-      setIsTyping(false);
-    }, 1500);
+    await sendMessageMutation.mutateAsync({
+      question: content,
+    });
   };
 
   const handleSuggestionClick = (prompt: string) => {
@@ -112,16 +97,6 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
                       <MessageBubble message={message} />
                     </motion.div>
                   ))}
-
-                  {isTyping && (
-                    <motion.div
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      initial={{ opacity: 0, y: 10 }}
-                    >
-                      <TypingIndicator />
-                    </motion.div>
-                  )}
 
                   {/* Bottom padding for input */}
                   <div className="h-24" />
