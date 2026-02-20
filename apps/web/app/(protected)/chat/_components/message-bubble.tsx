@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Copy, RotateCcw, Sparkles, ThumbsDown, ThumbsUp } from "lucide-react";
+import { Else, If, Then } from "react-if";
+import MarkdownViewer from "@/components/shared/markdown-viewer";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +15,7 @@ import {
 import type { Message } from "@/lib/mock/mock-data";
 import { cardHoverVariants } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/misc";
+import { TypingIndicator } from "./typing-indicator";
 
 interface MessageBubbleProps {
   message: Message;
@@ -37,12 +40,12 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         <div className="shrink-0">
           {isUser ? (
             <Avatar className="h-8 w-8 border-2 border-red-500/20">
-              <AvatarFallback className="bg-gradient-to-br from-red-400 to-orange-400 font-bold text-white text-xs">
+              <AvatarFallback className="bg-linear-to-br from-red-400 to-orange-400 font-bold text-white text-xs">
                 U
               </AvatarFallback>
             </Avatar>
           ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 shadow-lg shadow-red-500/20">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-to-br from-red-500 to-orange-500 shadow-lg shadow-red-500/20">
               <Sparkles className="h-4 w-4 text-white" />
             </div>
           )}
@@ -67,15 +70,22 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           {/* Bubble */}
           <div
             className={cn(
-              "relative max-w-[85%] rounded-2xl px-4 py-3 md:max-w-[75%]",
+              "relative w-fit max-w-[85%] rounded-2xl px-4 py-3 md:max-w-[75%]",
               isUser
-                ? "ml-auto border border-red-500/20 bg-gradient-to-br from-red-500/20 to-orange-500/20"
+                ? "ml-auto border border-red-500/20 bg-linear-to-br from-red-500/20 to-orange-500/20"
                 : "border border-border/50 bg-card"
             )}
           >
             {/* Message text with markdown-like formatting */}
             <div className="whitespace-pre-wrap text-sm leading-relaxed">
-              <FormattedContent content={message.content} />
+              <If condition={Boolean(message.content.trim())}>
+                <Then>
+                  <MarkdownViewer content={message.content} />
+                </Then>
+                <Else>
+                  <TypingIndicator />
+                </Else>
+              </If>
             </div>
 
             {/* Hover actions for assistant messages */}
@@ -158,34 +168,5 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         </div>
       </motion.div>
     </TooltipProvider>
-  );
-}
-
-function FormattedContent({ content }: { content: string }) {
-  const parts = content.split(/(\*\*.*?\*\*|`.*?`)/g);
-
-  return (
-    <>
-      {parts.map((part, index) => {
-        if (part.startsWith("**") && part.endsWith("**")) {
-          return (
-            <strong className="font-semibold text-foreground" key={index}>
-              {part.slice(2, -2)}
-            </strong>
-          );
-        }
-        if (part.startsWith("`") && part.endsWith("`")) {
-          return (
-            <code
-              className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs"
-              key={index}
-            >
-              {part.slice(1, -1)}
-            </code>
-          );
-        }
-        return <span key={index}>{part}</span>;
-      })}
-    </>
   );
 }
