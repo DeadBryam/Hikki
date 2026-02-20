@@ -1,0 +1,108 @@
+[
+  {
+    "name": "Verify Email (GET)",
+    "what_it_does": "Verifies user email address via link click",
+    "when_to_use": "When user clicks email verification link",
+    "how_to_use": "Send GET request with token query param. Redirects to frontend with verification result.",
+    "path": "/api/v1/auth/verify",
+    "method": "GET",
+    "requires_auth": false,
+    "tags": ["Verification"],
+    "request": {
+      "query": {
+        "token": {
+          "type": "string",
+          "required": true,
+          "description": "Verification token from email",
+          "example": "abc123..."
+        }
+      }
+    },
+    "responses": {
+      "302": {
+        "description": "Redirects to frontend with ?verified=success or ?verified=error"
+      }
+    }
+  },
+  {
+    "name": "Verify Email (POST)",
+    "what_it_does": "Verifies user email address with token",
+    "when_to_use": "When user submits verification token via form",
+    "how_to_use": "Send POST request with token in body.",
+    "path": "/api/v1/auth/verify",
+    "method": "POST",
+    "requires_auth": false,
+    "tags": ["Verification"],
+    "request": {
+      "body": {
+        "token": {
+          "type": "string",
+          "required": true,
+          "description": "Verification token from email",
+          "example": "abc123..."
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Email verified successfully",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true on success"
+          },
+          "message": {
+            "type": "string",
+            "required": true,
+            "description": "Success message"
+          }
+        }
+      },
+      "400": { "description": "Invalid or expired token" }
+    }
+  },
+  {
+    "name": "Resend Verification Email",
+    "what_it_does": "Resends the email verification link",
+    "when_to_use": "When user didn't receive or lost the original verification email",
+    "how_to_use": "Send POST request with email address.",
+    "path": "/api/v1/auth/resend",
+    "method": "POST",
+    "requires_auth": false,
+    "tags": ["Verification"],
+    "request": {
+      "body": {
+        "email": {
+          "type": "string",
+          "required": true,
+          "description": "User's email address",
+          "example": "john@example.com"
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Verification email sent",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true on success"
+          },
+          "message": {
+            "type": "string",
+            "required": true,
+            "description": "Success message"
+          }
+        }
+      },
+      "400": { "description": "Invalid email or user already verified" }
+    },
+    "rate_limit": {
+      "requests": 3,
+      "window": "1 hour",
+      "description": "Prevent email spam"
+    }
+  }
+]

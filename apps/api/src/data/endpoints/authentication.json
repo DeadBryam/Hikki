@@ -1,0 +1,285 @@
+[
+  {
+    "name": "User Registration",
+    "what_it_does": "Creates a new user account with username, email, and password",
+    "when_to_use": "When a new user wants to create an account to access the application",
+    "how_to_use": "Send a POST request with username, email, and password. Returns user info on success. Session token is set as HTTP-only cookie.",
+    "path": "/api/v1/auth/signup",
+    "method": "POST",
+    "requires_auth": false,
+    "tags": ["Authentication"],
+    "request": {
+      "body": {
+        "username": {
+          "type": "string",
+          "required": true,
+          "description": "Unique username",
+          "constraints": "3-50 characters, alphanumeric",
+          "example": "johndoe"
+        },
+        "email": {
+          "type": "string",
+          "required": true,
+          "description": "User's email address",
+          "constraints": "Valid email format",
+          "example": "john@example.com"
+        },
+        "password": {
+          "type": "string",
+          "required": true,
+          "description": "User's password",
+          "constraints": "8-128 characters",
+          "example": "SecurePass123!"
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "User created successfully. Returns user data. Token set as HTTP-only cookie.",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true on success"
+          },
+          "message": {
+            "type": "string",
+            "required": true,
+            "description": "Success message"
+          },
+          "data": {
+            "type": "object",
+            "required": true,
+            "description": "User info (id, username, email, onboarding_completed_at)"
+          }
+        }
+      },
+      "400": { "description": "Validation error or user already exists" }
+    },
+    "examples": [
+      {
+        "summary": "Successful registration",
+        "request": {
+          "username": "johndoe",
+          "email": "john@example.com",
+          "password": "SecurePass123!"
+        },
+        "response": {
+          "success": true,
+          "message": "User created successfully",
+          "data": {
+            "user": {
+              "id": "uuid",
+              "username": "johndoe",
+              "email": "john@example.com",
+              "onboarding_completed_at": null
+            }
+          }
+        }
+      }
+    ],
+    "rate_limit": {
+      "requests": 5,
+      "window": "15 minutes",
+      "description": "Prevent abuse and spam registrations"
+    }
+  },
+  {
+    "name": "User Login",
+    "what_it_does": "Authenticates an existing user with username and password",
+    "when_to_use": "When an existing user wants to access their account",
+    "how_to_use": "Send username and password. User data returned in body, session token set as HTTP-only cookie (NOT in response body).",
+    "path": "/api/v1/auth/login",
+    "method": "POST",
+    "requires_auth": false,
+    "tags": ["Authentication"],
+    "request": {
+      "body": {
+        "username": {
+          "type": "string",
+          "required": true,
+          "description": "User's username",
+          "example": "johndoe"
+        },
+        "password": {
+          "type": "string",
+          "required": true,
+          "description": "User's password",
+          "example": "SecurePass123!"
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Login successful. Token is set as HTTP-only cookie, NOT in response body.",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true on success"
+          },
+          "message": {
+            "type": "string",
+            "required": true,
+            "description": "Success message"
+          },
+          "data": {
+            "type": "object",
+            "required": true,
+            "description": "Contains user: { name, email, username, onboarding_completed_at }"
+          }
+        }
+      },
+      "400": { "description": "Invalid credentials" }
+    },
+    "examples": [
+      {
+        "summary": "Successful login",
+        "request": { "username": "johndoe", "password": "SecurePass123!" },
+        "response": {
+          "success": true,
+          "message": "Login successful",
+          "data": {
+            "user": {
+              "name": "John Doe",
+              "email": "john@example.com",
+              "username": "johndoe",
+              "onboarding_completed_at": "2026-01-15T10:00:00Z"
+            }
+          }
+        }
+      }
+    ],
+    "rate_limit": {
+      "requests": 10,
+      "window": "5 minutes",
+      "description": "Prevent brute force attacks"
+    }
+  },
+  {
+    "name": "User Logout",
+    "what_it_does": "Invalidates the current session token",
+    "when_to_use": "When a user wants to log out and end their session",
+    "how_to_use": "Send POST request. Clears the session cookie.",
+    "path": "/api/v1/auth/logout",
+    "method": "POST",
+    "requires_auth": true,
+    "tags": ["Authentication"],
+    "responses": {
+      "200": {
+        "description": "Logout successful",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true on success"
+          },
+          "message": {
+            "type": "string",
+            "required": true,
+            "description": "Success message"
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Get Current User",
+    "what_it_does": "Returns the authenticated user's profile information",
+    "when_to_use": "On app startup or when displaying user profile",
+    "how_to_use": "Send GET request with session cookie. Returns current user data.",
+    "path": "/api/v1/auth/user",
+    "method": "GET",
+    "requires_auth": true,
+    "tags": ["Authentication"],
+    "responses": {
+      "200": {
+        "description": "User data retrieved",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true on success"
+          },
+          "data": {
+            "type": "object",
+            "required": true,
+            "description": "User object with id, username, email, name, onboarding_completed_at"
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Complete Onboarding",
+    "what_it_does": "Completes the user onboarding process",
+    "when_to_use": "After initial signup when user completes onboarding steps",
+    "how_to_use": "Send POST request with onboarding data (e.g., name).",
+    "path": "/api/v1/auth/onboarding",
+    "method": "POST",
+    "requires_auth": true,
+    "tags": ["Authentication"],
+    "request": {
+      "body": {
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "User's display name",
+          "constraints": "1-100 characters",
+          "example": "John Doe"
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Onboarding completed",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true on success"
+          },
+          "message": {
+            "type": "string",
+            "required": true,
+            "description": "Success message"
+          },
+          "data": {
+            "type": "object",
+            "required": true,
+            "description": "Updated user object"
+          }
+        }
+      },
+      "400": { "description": "Validation error" }
+    }
+  },
+  {
+    "name": "Verify Session",
+    "what_it_does": "Checks if a session token is valid and returns user info",
+    "when_to_use": "When validating a token on app startup or before authenticated requests",
+    "how_to_use": "Session is validated automatically via cookie. Use other endpoints to check auth status.",
+    "path": "/api/v1/auth/verify",
+    "method": "POST",
+    "requires_auth": true,
+    "tags": ["Authentication"],
+    "responses": {
+      "200": {
+        "description": "Token is valid",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true"
+          },
+          "data": {
+            "type": "object",
+            "required": true,
+            "description": "User details"
+          }
+        }
+      },
+      "401": { "description": "Token is invalid or expired" }
+    }
+  }
+]

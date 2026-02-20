@@ -1,0 +1,70 @@
+[
+  {
+    "name": "Send Chat Message",
+    "what_it_does": "Sends a message to the AI assistant and gets a streaming response",
+    "when_to_use": "When user wants to chat with the AI assistant",
+    "how_to_use": "Send POST with question, optional thread ID, stream flag, and model. Returns streaming response.",
+    "path": "/api/v1/chat",
+    "method": "POST",
+    "requires_auth": true,
+    "tags": ["Chat"],
+    "request": {
+      "body": {
+        "question": {
+          "type": "string",
+          "required": true,
+          "description": "User's message to the AI",
+          "constraints": "1-4000 characters",
+          "example": "Hello! Can you help me plan my day?"
+        },
+        "stream": {
+          "type": "boolean",
+          "required": false,
+          "description": "Enable streaming response",
+          "constraints": "Default: true",
+          "example": true
+        },
+        "thread": {
+          "type": "string",
+          "required": false,
+          "description": "Thread UUID to continue conversation",
+          "example": "550e8400-e29b-41d4-a716-446655440000"
+        },
+        "model": {
+          "type": "string",
+          "required": false,
+          "description": "AI model to use",
+          "constraints": "Provider-specific model ID",
+          "example": "claude-3-5-sonnet-20241022"
+        }
+      }
+    },
+    "responses": {
+      "200": { "description": "Streaming AI response" },
+      "400": { "description": "Invalid request parameters" },
+      "404": { "description": "Thread not found" }
+    },
+    "examples": [
+      {
+        "summary": "Send message with streaming",
+        "request": {
+          "question": "Hello! Can you help me plan my day?",
+          "stream": true
+        }
+      },
+      {
+        "summary": "Continue existing thread",
+        "request": {
+          "question": "Tell me more about that",
+          "thread": "thread-uuid",
+          "stream": true
+        }
+      }
+    ],
+    "rate_limit": {
+      "requests": 50,
+      "window": "1 minute",
+      "description": "Prevent API abuse and manage AI costs"
+    }
+  }
+]

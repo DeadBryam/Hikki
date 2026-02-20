@@ -1,0 +1,333 @@
+[
+  {
+    "name": "List Threads",
+    "what_it_does": "Gets all conversation threads belonging to the authenticated user",
+    "when_to_use": "When showing user their conversation history",
+    "how_to_use": "Send GET with optional pagination, search, filter, and sort params.",
+    "path": "/api/v1/threads",
+    "method": "GET",
+    "requires_auth": true,
+    "tags": ["Threads"],
+    "request": {
+      "query": {
+        "limit": {
+          "type": "number",
+          "required": false,
+          "description": "Number of threads",
+          "constraints": "Default: 20, Max: 100",
+          "example": 20
+        },
+        "offset": {
+          "type": "number",
+          "required": false,
+          "description": "Threads to skip",
+          "constraints": "Default: 0",
+          "example": 0
+        },
+        "search": {
+          "type": "string",
+          "required": false,
+          "description": "Search in thread titles",
+          "example": "project"
+        },
+        "archived": {
+          "type": "boolean",
+          "required": false,
+          "description": "Filter by archived status",
+          "example": false
+        },
+        "sort": {
+          "type": "string",
+          "required": false,
+          "description": "Sort field",
+          "constraints": "created_at, updated_at",
+          "example": "updated_at"
+        },
+        "order": {
+          "type": "string",
+          "required": false,
+          "description": "Sort order",
+          "constraints": "asc, desc",
+          "example": "desc"
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "List of threads retrieved",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true"
+          },
+          "data": {
+            "type": "array",
+            "required": true,
+            "description": "Array of thread objects"
+          },
+          "pagination": {
+            "type": "object",
+            "required": true,
+            "description": "Pagination info (total, limit, offset)"
+          }
+        }
+      }
+    },
+    "examples": [
+      {
+        "summary": "Get threads with pagination",
+        "request": {
+          "limit": 20,
+          "offset": 0,
+          "sort": "updated_at",
+          "order": "desc"
+        },
+        "response": {
+          "success": true,
+          "data": [
+            {
+              "id": "uuid",
+              "title": "My Conversation",
+              "archived": false,
+              "createdAt": "2026-01-01",
+              "updatedAt": "2026-01-02"
+            }
+          ],
+          "pagination": { "total": 50, "limit": 20, "offset": 0 }
+        }
+      }
+    ]
+  },
+  {
+    "name": "Create Thread",
+    "what_it_does": "Creates a new conversation thread",
+    "when_to_use": "When user wants to start a new conversation",
+    "how_to_use": "Send POST with optional title. Returns created thread.",
+    "path": "/api/v1/threads",
+    "method": "POST",
+    "requires_auth": true,
+    "tags": ["Threads"],
+    "request": {
+      "body": {
+        "title": {
+          "type": "string",
+          "required": false,
+          "description": "Thread name",
+          "constraints": "Optional, max 100 characters",
+          "example": "Project Planning"
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Thread created",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true"
+          },
+          "data": {
+            "type": "object",
+            "required": true,
+            "description": "Thread object"
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Get Thread Messages",
+    "what_it_does": "Gets detailed information about a specific thread with all messages",
+    "when_to_use": "When loading a conversation to view messages",
+    "how_to_use": "Send GET with thread ID in URL. Returns thread with messages array.",
+    "path": "/api/v1/threads/:id",
+    "method": "GET",
+    "requires_auth": true,
+    "tags": ["Threads"],
+    "request": {
+      "params": {
+        "id": {
+          "type": "string",
+          "required": true,
+          "description": "Thread UUID",
+          "example": "550e8400-e29b-41d4-a716-446655440000"
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Thread details with messages",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true"
+          },
+          "data": {
+            "type": "object",
+            "required": true,
+            "description": "Thread with messages array"
+          }
+        }
+      },
+      "404": { "description": "Thread not found" }
+    }
+  },
+  {
+    "name": "Archive Thread",
+    "what_it_does": "Archives a conversation thread",
+    "when_to_use": "When user wants to hide a thread from active list without deleting",
+    "how_to_use": "Send POST to /threads/:id/archive. Soft delete - thread remains in DB.",
+    "path": "/api/v1/threads/:id/archive",
+    "method": "POST",
+    "requires_auth": true,
+    "tags": ["Threads"],
+    "request": {
+      "params": {
+        "id": {
+          "type": "string",
+          "required": true,
+          "description": "Thread UUID",
+          "example": "550e8400-e29b-41d4-a716-446655440000"
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Thread archived",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true"
+          },
+          "message": {
+            "type": "string",
+            "required": true,
+            "description": "Success message"
+          }
+        }
+      },
+      "404": { "description": "Thread not found" }
+    }
+  },
+  {
+    "name": "Delete Thread",
+    "what_it_does": "Soft deletes a conversation thread",
+    "when_to_use": "When user wants to permanently remove a conversation",
+    "how_to_use": "Send DELETE to /threads/:id. Marks thread as deleted but remains in DB.",
+    "path": "/api/v1/threads/:id",
+    "method": "DELETE",
+    "requires_auth": true,
+    "tags": ["Threads"],
+    "request": {
+      "params": {
+        "id": {
+          "type": "string",
+          "required": true,
+          "description": "Thread UUID",
+          "example": "550e8400-e29b-41d4-a716-446655440000"
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Thread deleted",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true"
+          },
+          "message": {
+            "type": "string",
+            "required": true,
+            "description": "Success message"
+          }
+        }
+      },
+      "404": { "description": "Thread not found" }
+    },
+    "rate_limit": {
+      "requests": 30,
+      "window": "1 minute",
+      "description": "Write operations"
+    }
+  },
+  {
+    "name": "Bulk Archive Threads",
+    "what_it_does": "Archives multiple threads at once",
+    "when_to_use": "When user wants to archive multiple conversations",
+    "how_to_use": "Send POST with array of thread IDs.",
+    "path": "/api/v1/threads/bulk/archive",
+    "method": "POST",
+    "requires_auth": true,
+    "tags": ["Threads"],
+    "request": {
+      "body": {
+        "ids": {
+          "type": "array",
+          "required": true,
+          "description": "Array of thread UUIDs",
+          "example": ["uuid1", "uuid2"]
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Threads archived",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true"
+          },
+          "message": {
+            "type": "string",
+            "required": true,
+            "description": "Success message"
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Bulk Delete Threads",
+    "what_it_does": "Soft deletes multiple threads at once",
+    "when_to_use": "When user wants to delete multiple conversations",
+    "how_to_use": "Send POST with array of thread IDs.",
+    "path": "/api/v1/threads/bulk/delete",
+    "method": "POST",
+    "requires_auth": true,
+    "tags": ["Threads"],
+    "request": {
+      "body": {
+        "ids": {
+          "type": "array",
+          "required": true,
+          "description": "Array of thread UUIDs",
+          "example": ["uuid1", "uuid2"]
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Threads deleted",
+        "body": {
+          "success": {
+            "type": "boolean",
+            "required": true,
+            "description": "Always true"
+          },
+          "message": {
+            "type": "string",
+            "required": true,
+            "description": "Success message"
+          }
+        }
+      }
+    }
+  }
+]

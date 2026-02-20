@@ -1,0 +1,32 @@
+{
+  "authentication": {
+    "id": "authentication",
+    "name": "Authentication",
+    "description": "User signup, login, logout, session management, and user profile"
+  },
+  "verification": {
+    "id": "verification",
+    "name": "Verification",
+    "description": "Email verification and resending verification emails"
+  },
+  "password-reset": {
+    "id": "password-reset",
+    "name": "Password Reset",
+    "description": "Password recovery and reset endpoints"
+  },
+  "threads": {
+    "id": "threads",
+    "name": "Conversation Threads",
+    "description": "Manage conversation threads for AI chat - create, list, archive, delete"
+  },
+  "chat": {
+    "id": "chat",
+    "name": "AI Chat",
+    "description": "Send messages and interact with the AI assistant"
+  },
+  "ai-discovery": {
+    "id": "ai-discovery",
+    "name": "AI Discovery",
+    "description": "Documentation and discovery endpoints for AI agents"
+  }
+}

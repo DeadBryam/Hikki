@@ -1,0 +1,102 @@
+[
+  {
+    "name": "API Documentation Index",
+    "what_it_does": "Returns the wiki index with all available documentation categories",
+    "when_to_use": "Call this first when learning about the API. Shows all categories and their URLs.",
+    "how_to_use": "Send GET request. No authentication required. Returns index of categories.",
+    "path": "/docs/ai",
+    "method": "GET",
+    "requires_auth": false,
+    "tags": ["AI Discovery"],
+    "responses": {
+      "200": {
+        "description": "Wiki index retrieved",
+        "body": {
+          "version": {
+            "type": "string",
+            "required": true,
+            "description": "API version"
+          },
+          "total_categories": {
+            "type": "number",
+            "required": true,
+            "description": "Number of categories"
+          },
+          "categories": {
+            "type": "array",
+            "required": true,
+            "description": "List of category summaries"
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Category Documentation",
+    "what_it_does": "Returns all endpoints for a specific category",
+    "when_to_use": "After getting the index, call the URL of the category you want to explore.",
+    "how_to_use": "Send the category ID (kebab-case) in the URL.",
+    "path": "/docs/ai/:category",
+    "method": "GET",
+    "requires_auth": false,
+    "tags": ["AI Discovery"],
+    "request": {
+      "params": {
+        "category": {
+          "type": "string",
+          "required": true,
+          "description": "Category identifier (kebab-case)",
+          "example": "authentication"
+        }
+      }
+    },
+    "responses": {
+      "200": { "description": "Markdown documentation" }
+    }
+  },
+  {
+    "name": "All Endpoints Documentation",
+    "what_it_does": "Returns all API endpoints from all categories at once",
+    "when_to_use": "When you need the complete API documentation in a single request",
+    "how_to_use": "Send GET request. Returns all endpoints grouped by category.",
+    "path": "/docs/ai/all",
+    "method": "GET",
+    "requires_auth": false,
+    "tags": ["AI Discovery"],
+    "responses": {
+      "200": {
+        "description": "All endpoints retrieved",
+        "body": {
+          "version": {
+            "type": "string",
+            "required": true,
+            "description": "API version identifier"
+          },
+          "total_endpoints": {
+            "type": "number",
+            "required": true,
+            "description": "Total number of available endpoints"
+          },
+          "categories": {
+            "type": "array",
+            "required": true,
+            "description": "List of endpoint categories"
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "Export as Markdown",
+    "what_it_does": "Returns the complete API documentation in Markdown format",
+    "when_to_use": "When you want to generate static documentation or export for external use",
+    "how_to_use": "Send GET request. Returns Markdown-formatted API documentation.",
+    "path": "/docs/ai/markdown",
+    "method": "GET",
+    "requires_auth": false,
+    "tags": ["AI Discovery"],
+    "responses": {
+      "200": { "description": "Markdown documentation" }
+    }
+  }
+]
