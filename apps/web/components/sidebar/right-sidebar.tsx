@@ -20,12 +20,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  formatJobTime,
-  mockJobs,
-  mockMemories,
-  mockReminders,
-} from "@/lib/mock/mock-data";
 import { cardHoverVariants, sidebarVariants } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/misc";
 
@@ -33,8 +27,8 @@ export function RightSidebar() {
   const [isOpen, setIsOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("memories");
 
-  const jobsRunning = mockJobs.filter((j) => j.status === "running").length;
-  const remindersPending = mockReminders.filter((r) => !r.completed).length;
+  const jobsRunning = 0;
+  const remindersPending = 0;
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -125,7 +119,7 @@ export function RightSidebar() {
                 <ScrollArea className="flex-1 px-3 py-2">
                   {/* Memories Tab */}
                   <TabsContent className="mt-0 space-y-2" value="memories">
-                    {mockMemories.map((memory) => (
+                    {[].map((memory: any) => (
                       <motion.div
                         className="group relative cursor-pointer overflow-hidden rounded-xl border border-border/50 bg-card p-3"
                         initial="rest"
@@ -137,7 +131,7 @@ export function RightSidebar() {
                           {memory.content}
                         </p>
                         <div className="flex flex-wrap items-center gap-1">
-                          {memory.tags.map((tag) => (
+                          {memory.tags.map((tag: any) => (
                             <Badge
                               className="h-4 px-1.5 py-0 text-[10px]"
                               key={tag}
@@ -159,7 +153,7 @@ export function RightSidebar() {
 
                   {/* Jobs Tab */}
                   <TabsContent className="mt-0 space-y-2" value="jobs">
-                    {mockJobs.map((job) => (
+                    {[].map((job: any) => (
                       <motion.div
                         className={cn(
                           "group relative cursor-pointer overflow-hidden rounded-xl border bg-card p-3",
@@ -190,9 +184,7 @@ export function RightSidebar() {
                               job.status === "failed" && "text-red-400"
                             )}
                           >
-                            {job.status === "running"
-                              ? "Running"
-                              : formatJobTime(job.nextRun)}
+                            {job.status === "running" ? "Running" : "---"}
                           </span>
                         </div>
                       </motion.div>
@@ -201,7 +193,7 @@ export function RightSidebar() {
 
                   {/* Reminders Tab */}
                   <TabsContent className="mt-0 space-y-2" value="reminders">
-                    {mockReminders.map((reminder) => (
+                    {[].map((reminder: any) => (
                       <motion.div
                         className={cn(
                           "group relative flex cursor-pointer items-start gap-3 overflow-hidden rounded-xl border border-border/50 bg-card p-3",
