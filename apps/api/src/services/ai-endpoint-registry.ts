@@ -300,3 +300,118 @@ export function getIndexMarkdown(): string {
 
   return md;
 }
+
+// TOON generation functions
+
+function endpointToTOON(endpoint: AIEndpointDoc, index: number): string {
+  const auth = endpoint.requires_auth ? "Auth" : "Public";
+  let toon = `${index + 1}.${endpoint.name}\n`;
+  toon += `  method:${endpoint.method}\n`;
+  toon += `  path:${endpoint.path}\n`;
+  toon += `  auth:${auth}\n`;
+  toon += `  what:${endpoint.what_it_does}\n`;
+  toon += `  when:${endpoint.when_to_use}\n`;
+  toon += `  how:${endpoint.how_to_use}\n`;
+
+  if (endpoint.request) {
+    if (endpoint.request.params) {
+      toon += "  params:";
+      const paramsList = Object.entries(endpoint.request.params).map(
+        ([k, v]) => `${k}:${v.type}${v.required ? "" : "?"}`
+      );
+      toon += `${paramsList.join(",")}\n`;
+    }
+    if (endpoint.request.query) {
+      toon += "  query:";
+      const queryList = Object.entries(endpoint.request.query).map(
+        ([k, v]) => `${k}:${v.type}${v.required ? "" : "?"}`
+      );
+      toon += `${queryList.join(",")}\n`;
+    }
+    if (endpoint.request.body) {
+      const bodyKeys = Object.keys(endpoint.request.body).join(",");
+      toon += `  body:${bodyKeys}\n`;
+    }
+  }
+
+  if (endpoint.responses) {
+    const respCodes = Object.keys(endpoint.responses).join(",");
+    toon += `  responses:${respCodes}\n`;
+  }
+  if (endpoint.rate_limit) {
+    toon += `  rate_limit:${endpoint.rate_limit.requests}/${endpoint.rate_limit.window}\n`;
+  }
+
+  return toon;
+}
+
+function categoryToTOONDoc(category: AICategoryDoc): string {
+  let toon = `#${category.name}\n`;
+  toon += `description:${category.description}\n`;
+  toon += `total:${category.total_endpoints}\n`;
+  toon += "---\n";
+
+  category.endpoints.forEach((ep, idx) => {
+    toon += endpointToTOON(ep, idx);
+    toon += "\n---\n";
+  });
+
+  return toon;
+}
+
+function getAllTOON(): string {
+  const index = getWikiIndex();
+  let toon = "#HikkiAPIDocumentation\n";
+  toon += `version:${index.version}\n`;
+  toon += "---\n";
+  toon += "##Categories\n";
+  toon += `categories[${index.categories.length}]{id,name,description,endpoint_count,url}:\n`;
+  for (const cat of index.categories) {
+    toon += `  ${cat.id},${cat.name},${cat.description},${cat.endpoint_count},${cat.url}\n`;
+  }
+  toon += "---\n";
+
+  const allDoc = getAllEndpointsDoc();
+  for (const cat of allDoc.categories) {
+    toon += `##${cat.id}\n`;
+    toon += categoryToTOONDoc(cat);
+  }
+
+  return toon;
+}
+
+/**
+ * Get all endpoints documentation as TOON
+ */
+export function getTOONDoc(): string {
+  return getAllTOON();
+}
+
+/**
+ * Get a specific category as TOON
+ */
+export function getCategoryTOON(categoryId: string): string | null {
+  const category = getCategoryDoc(categoryId);
+  if (!category) {
+    return null;
+  }
+  return categoryToTOONDoc(category);
+}
+
+/**
+ * Get brief index TOON with category summaries
+ */
+export function getIndexTOON(): string {
+  const index = getWikiIndex();
+  let toon = "#HikkiAPIDocumentation\n";
+  toon += `version:${index.version}\n`;
+  toon += `description:${index.description}\n`;
+  toon += "---\n";
+  toon += `categories[${index.categories.length}]{id,name,description,endpoint_count,url}:\n`;
+  for (const cat of index.categories) {
+    toon += `  ${cat.id},${cat.name},${cat.description},${cat.endpoint_count},/docs/ai?category=${cat.id}\n`;
+  }
+  toon += "---\n";
+  toon += "all_docs:/docs/ai?category=all\n";
+  return toon;
+}
