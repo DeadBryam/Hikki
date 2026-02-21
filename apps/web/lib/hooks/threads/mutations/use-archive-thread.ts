@@ -4,7 +4,10 @@ import type { ApiResponse, ErrorResponse } from "@/types/api";
 import type { PaginatedThreadsResponse, ThreadResponse } from "@/types/threads";
 
 interface ArchiveContext {
-  previousThreads: { data: PaginatedThreadsResponse } | undefined;
+  previousThreads: readonly [
+    readonly unknown[],
+    { data: PaginatedThreadsResponse } | undefined,
+  ][];
 }
 
 export function useArchiveThread() {
@@ -20,12 +23,13 @@ export function useArchiveThread() {
 
     onMutate: async (archivedId) => {
       await queryClient.cancelQueries({ queryKey: ["threads"] });
-      const previousThreads = queryClient.getQueryData<{
-        data: PaginatedThreadsResponse;
-      }>(["threads"]);
 
-      queryClient.setQueryData<{ data: PaginatedThreadsResponse }>(
-        ["threads"],
+      const previousThreads = queryClient.getQueriesData<{
+        data: PaginatedThreadsResponse;
+      }>({ queryKey: ["threads"] });
+
+      queryClient.setQueriesData<{ data: PaginatedThreadsResponse }>(
+        { queryKey: ["threads"] },
         (old) => {
           if (!old) {
             return old;
@@ -51,7 +55,9 @@ export function useArchiveThread() {
 
     onError: (_error, _archivedId, context) => {
       if (context?.previousThreads) {
-        queryClient.setQueryData(["threads"], context.previousThreads);
+        for (const [queryKey, data] of context.previousThreads) {
+          queryClient.setQueryData(queryKey as string[], data);
+        }
       }
     },
   });
