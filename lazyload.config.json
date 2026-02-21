@@ -1,0 +1,13 @@
+{
+  "directories": ["."],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.py"],
+  "exclude": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.git/**",
+    "**/venv/**",
+    "**/__pycache__/**",
+    "**/coverage/**"
+  ]
+}

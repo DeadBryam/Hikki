@@ -28,6 +28,7 @@ apps/web/src/  → routes/ → lib/{components,features,stores}/
 - Use MCPs and Skills **always when possible** to maximize efficiency.  
 - Prefer free MCPs first; trial MCPs only if free ones are insufficient.  
 - Read, save and analyze memories of project using mpcs.
+-  See .agents/LazyLoadingAI.md for LazyLoadingAI MCP usage.
 
 ---
 
