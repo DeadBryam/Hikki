@@ -63,5 +63,13 @@
   "[less]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "cSpell.words": ["elysia", "Elysia", "Hikki", "sileo", "toon", "ultracite"]
+  "cSpell.words": [
+    "conv",
+    "elysia",
+    "Elysia",
+    "Hikki",
+    "sileo",
+    "toon",
+    "ultracite"
+  ]
 }
