@@ -1,8 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  type ListThreadsParams,
-  threadsService,
-} from "@/lib/services/threads-service";
+import { threadsService } from "@/lib/services/threads-service";
+import type { ListThreadsParams } from "@/types/threads";
 
 export function useThreads(params: ListThreadsParams = {}) {
   return useQuery({

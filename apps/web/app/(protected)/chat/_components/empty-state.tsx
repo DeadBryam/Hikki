@@ -40,14 +40,14 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
                 rotate: [0, 5, -5, 0],
                 scale: [1, 1.05, 1],
               }}
-              className="absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500 to-orange-600"
+              className="absolute inset-0 rounded-2xl bg-linear-to-br from-red-500 to-orange-600"
               transition={{
                 duration: 6,
                 repeat: Number.POSITIVE_INFINITY,
                 ease: "easeInOut",
               }}
             />
-            <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 via-orange-500 to-yellow-500 shadow-lg shadow-red-500/30">
+            <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-linear-to-br from-red-500 via-orange-500 to-yellow-500 shadow-lg shadow-red-500/30">
               <Sparkles className="h-12 w-12 bg-clip-text text-white" />
             </div>
             {/* Glow effect */}
@@ -60,7 +60,7 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
           className="mb-4 font-bold text-4xl text-white tracking-tight sm:text-5xl"
           variants={itemVariants}
         >
-          <span className="bg-gradient-to-r from-red-400 via-orange-400 to-orange-400 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-red-400 via-orange-400 to-orange-400 bg-clip-text text-transparent">
             Hikki AI
           </span>
         </motion.h1>

@@ -146,7 +146,7 @@ export function RightSidebar() {
                         </p>
 
                         {/* Hover gradient */}
-                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-red-500/5 via-transparent to-cyan-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
+                        <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-red-500/5 via-transparent to-cyan-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
                       </motion.div>
                     ))}
                   </TabsContent>

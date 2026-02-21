@@ -7,22 +7,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { formatRelativeTime } from "@/lib/mock/mock-data";
 import { listItemVariants } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/misc";
-
-interface Conversation {
-  date: string;
-  id: string;
-  isPinned?: boolean;
-  messageCount: number;
-  title: string;
-}
-
-export type { Conversation };
+import { formatRelativeTime } from "@/lib/utils/relative-time";
+import type { ThreadResponse } from "@/types/threads";
 
 interface ConversationItemProps {
-  conversation: Conversation;
+  conversation: ThreadResponse;
   isActive: boolean;
   isOpen: boolean;
   onArchive: (e: React.MouseEvent) => void;
@@ -63,13 +54,13 @@ export function ConversationItem({
                   <span className="truncate font-medium">
                     {conversation.title}
                   </span>
-                  {conversation.isPinned && (
+                  {conversation.is_pinned && (
                     <Pin className="h-3 w-3 shrink-0 text-amber-400" />
                   )}
                 </div>
                 <p className="truncate text-muted-foreground text-xs">
-                  {formatRelativeTime(conversation.date)} •{" "}
-                  {conversation.messageCount} messages
+                  {formatRelativeTime(conversation.created_at)} •{" "}
+                  {conversation.messages_count} messages
                 </p>
               </div>
             )}
@@ -103,7 +94,7 @@ export function ConversationItem({
           <TooltipContent className="max-w-xs" side="right">
             <p className="font-medium">{conversation.title}</p>
             <p className="text-muted-foreground text-xs">
-              {formatRelativeTime(conversation.date)}
+              {formatRelativeTime(conversation.created_at)}
             </p>
           </TooltipContent>
         )}

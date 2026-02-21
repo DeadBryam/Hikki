@@ -1,35 +1,15 @@
 import { api } from "@/lib/api/api";
 import type { ApiResponse } from "@/types/api";
-
-export interface Thread {
-  archived_at?: string;
-  created_at: string;
-  deleted_at?: string;
-  id: string;
-  is_pinned?: boolean;
-  messages_count?: number;
-  title: string;
-  updated_at: string;
-}
-
-export interface ListThreadsParams {
-  archived?: boolean;
-  limit?: number;
-  offset?: number;
-  order?: "asc" | "desc";
-  search?: string;
-  sort?: "created_at" | "updated_at" | "title";
-}
-
-export interface CreateThreadResponse {
-  created_at: string;
-  id: string;
-  title: string;
-  updated_at: string;
-}
+import type {
+  CreateThreadResponse,
+  ListThreadsParams,
+  PaginatedThreadsResponse,
+} from "@/types/threads";
 
 export const threadsService = {
-  async list(params?: ListThreadsParams): Promise<ApiResponse<Thread[]>> {
+  async list(
+    params?: ListThreadsParams
+  ): Promise<ApiResponse<PaginatedThreadsResponse>> {
     const searchParams = new URLSearchParams();
     if (params?.limit) {
       searchParams.set("limit", String(params.limit));
@@ -67,7 +47,7 @@ export const threadsService = {
     return response.json();
   },
 
-  async archive(id: string): Promise<ApiResponse<Thread>> {
+  async archive(id: string): Promise<ApiResponse<CreateThreadResponse>> {
     const response = await api.post(`api/v1/threads/${id}/archive`);
     return response.json();
   },

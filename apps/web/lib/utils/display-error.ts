@@ -11,7 +11,7 @@ interface DisplayErrorOptions {
  */
 export function displayErrorsFromServer(
   error: ErrorResponse,
-  options: DisplayErrorOptions
+  options: DisplayErrorOptions = { type: "error" }
 ): void {
   if (options.type === "error") {
     toast.error({
