@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTransitionRouter } from "next-view-transitions";
-import type { CreateThreadResponse } from "@/lib/services/threads-service";
 import { threadsService } from "@/lib/services/threads-service";
 import type { ApiResponse, ErrorResponse } from "@/types/api";
+import type { CreateThreadResponse } from "@/types/threads";
 
 export function useCreateThread() {
   const queryClient = useQueryClient();
@@ -14,9 +14,13 @@ export function useCreateThread() {
     string | undefined
   >({
     mutationFn: (title?: string) => threadsService.create(title),
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       if (response.data?.id) {
-        queryClient.invalidateQueries({ queryKey: ["threads"] });
+        // Invalidate and refetch threads list immediately
+        await queryClient.invalidateQueries({
+          queryKey: ["threads"],
+          refetchType: "active",
+        });
         router.push(`/chat/${response.data.id}`);
       }
     },

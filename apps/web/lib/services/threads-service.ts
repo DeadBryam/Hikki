@@ -51,4 +51,14 @@ export const threadsService = {
     const response = await api.post(`api/v1/threads/${id}/archive`);
     return response.json();
   },
+
+  async unarchive(id: string): Promise<ApiResponse<CreateThreadResponse>> {
+    const response = await api.post(`api/v1/threads/${id}/unarchive`);
+    return response.json();
+  },
+
+  async togglePin(id: string): Promise<ApiResponse<CreateThreadResponse>> {
+    const response = await api.post(`api/v1/threads/${id}/pin`);
+    return response.json();
+  },
 };

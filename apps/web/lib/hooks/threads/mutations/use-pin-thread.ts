@@ -3,33 +3,27 @@ import { threadsService } from "@/lib/services/threads-service";
 import type { ApiResponse, ErrorResponse } from "@/types/api";
 import type { PaginatedThreadsResponse, ThreadResponse } from "@/types/threads";
 
-interface ArchiveVariables {
-  action: "archive" | "unarchive";
+interface PinVariables {
   id: string;
 }
 
-interface ArchiveContext {
+interface PinContext {
   previousThreads: readonly [
     readonly unknown[],
     { data: PaginatedThreadsResponse } | undefined,
   ][];
 }
 
-export function useArchiveThread() {
+export function usePinThread() {
   const queryClient = useQueryClient();
 
   return useMutation<
     ApiResponse<ThreadResponse>,
     ErrorResponse,
-    ArchiveVariables,
-    ArchiveContext
+    PinVariables,
+    PinContext
   >({
-    mutationFn: ({ id, action }: ArchiveVariables) => {
-      if (action === "unarchive") {
-        return threadsService.unarchive(id);
-      }
-      return threadsService.archive(id);
-    },
+    mutationFn: ({ id }: PinVariables) => threadsService.togglePin(id),
 
     onMutate: async ({ id }) => {
       await queryClient.cancelQueries({ queryKey: ["threads"] });
@@ -37,6 +31,16 @@ export function useArchiveThread() {
       const previousThreads = queryClient.getQueriesData<{
         data: PaginatedThreadsResponse;
       }>({ queryKey: ["threads"] });
+
+      // Get current pin state to toggle
+      let currentIsPinned = false;
+      for (const [, data] of previousThreads) {
+        const thread = data?.data.items.find((t) => t.id === id);
+        if (thread) {
+          currentIsPinned = thread.is_pinned ?? false;
+          break;
+        }
+      }
 
       queryClient.setQueriesData<{ data: PaginatedThreadsResponse }>(
         { queryKey: ["threads"] },
@@ -48,11 +52,11 @@ export function useArchiveThread() {
             ...old,
             data: {
               ...old.data,
-              items: old.data.items.filter((thread) => thread.id !== id),
-              pagination: {
-                ...old.data.pagination,
-                total: Math.max(0, old.data.pagination.total - 1),
-              },
+              items: old.data.items.map((thread) =>
+                thread.id === id
+                  ? { ...thread, is_pinned: !currentIsPinned }
+                  : thread
+              ),
             },
           };
         }
