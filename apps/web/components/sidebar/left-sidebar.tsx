@@ -48,7 +48,7 @@ export function LeftSidebar() {
     <motion.aside
       animate={isOpen ? "expanded" : "collapsed"}
       className={cn(
-        "relative flex h-full shrink-0 flex-col overflow-hidden bg-sidebar/80 backdrop-blur-xl"
+        "relative flex h-full shrink-0 flex-col overflow-hidden overflow-y-auto bg-sidebar/80 backdrop-blur-xl"
       )}
       initial={false}
       variants={sidebarVariants}

@@ -1,12 +1,17 @@
-import { motion } from "framer-motion";
-import { Archive, MessageSquare, Pin, Trash2 } from "lucide-react";
+import {
+  Archive,
+  ArchiveRestore,
+  MessageSquare,
+  Pin,
+  PinOff,
+  Trash2,
+} from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { listItemVariants } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/misc";
 import { formatRelativeTime } from "@/lib/utils/relative-time";
 import type { ThreadResponse } from "@/types/threads";
@@ -14,25 +19,29 @@ import type { ThreadResponse } from "@/types/threads";
 interface ConversationItemProps {
   conversation: ThreadResponse;
   isActive: boolean;
+  isArchivedView?: boolean;
   isOpen: boolean;
   onArchive: (e: React.MouseEvent) => void;
   onClick: () => void;
   onDelete: (e: React.MouseEvent) => void;
+  onPin?: (e: React.MouseEvent) => void;
 }
 
 export function ConversationItem({
   conversation,
+  isArchivedView = false,
   isOpen,
   isActive,
   onClick,
   onArchive,
   onDelete,
+  onPin,
 }: ConversationItemProps) {
   return (
     <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <motion.button
+          <button
             className={cn(
               "group relative flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-lg p-2 text-left text-sm transition-all duration-200",
               isActive
@@ -41,7 +50,7 @@ export function ConversationItem({
               !isOpen && "justify-center px-1"
             )}
             onClick={onClick}
-            variants={listItemVariants}
+            type="button"
           >
             <MessageSquare
               className={cn("h-4 w-4 shrink-0", isActive && "text-primary")}
@@ -65,17 +74,45 @@ export function ConversationItem({
             )}
 
             {isOpen && (
-              <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="flex shrink-0 gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                {!isArchivedView && onPin && (
+                  <button
+                    className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-md hover:bg-muted"
+                    onClick={(e) => onPin(e)}
+                    title={
+                      conversation.is_pinned
+                        ? "Unpin conversation"
+                        : "Pin conversation"
+                    }
+                    type="button"
+                  >
+                    {conversation.is_pinned ? (
+                      <PinOff className="h-3 w-3" />
+                    ) : (
+                      <Pin className="h-3 w-3" />
+                    )}
+                  </button>
+                )}
                 <button
                   className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-md hover:bg-muted"
                   onClick={(e) => onArchive(e)}
+                  title={
+                    isArchivedView
+                      ? "Unarchive conversation"
+                      : "Archive conversation"
+                  }
                   type="button"
                 >
-                  <Archive className="h-3 w-3" />
+                  {isArchivedView ? (
+                    <ArchiveRestore className="h-3 w-3" />
+                  ) : (
+                    <Archive className="h-3 w-3" />
+                  )}
                 </button>
                 <button
                   className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-md hover:bg-muted"
                   onClick={(e) => onDelete(e)}
+                  title="Delete conversation"
                   type="button"
                 >
                   <Trash2 className="h-3 w-3" />
@@ -84,7 +121,7 @@ export function ConversationItem({
             )}
 
             <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-red-500/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-          </motion.button>
+          </button>
         </TooltipTrigger>
 
         {!isOpen && (

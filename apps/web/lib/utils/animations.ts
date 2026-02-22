@@ -70,8 +70,15 @@ export const staggerContainerVariants: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.1,
+      staggerChildren: 0.03,
+      delayChildren: 0,
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: {
+      staggerChildren: 0.02,
+      staggerDirection: -1,
     },
   },
 };
@@ -163,7 +170,12 @@ export const listItemVariants: Variants = {
   visible: {
     opacity: 1,
     x: 0,
-    transition: springs.smooth,
+    transition: { ...springs.smooth, duration: 0.2 },
+  },
+  exit: {
+    opacity: 0,
+    x: 10,
+    transition: { duration: 0.15 },
   },
 };
 
