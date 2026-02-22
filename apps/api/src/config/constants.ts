@@ -1,3 +1,5 @@
+import { env } from "./env";
+
 export const AUTH_CONSTANTS = {
   SESSION_DURATION: 5 * 24 * 60 * 60 * 1000,
   ABSOLUTE_MAX_DURATION: 15 * 24 * 60 * 60 * 1000,
@@ -19,4 +21,9 @@ export const JOB_CONSTANTS = {
   MAX_RETRY_ATTEMPTS: 3,
   RETRY_BASE_DELAY: 30 * 1000,
   RETRY_BACKOFF_MULTIPLIER: 2,
+} as const;
+
+export const CHAT_CONSTANTS = {
+  MAX_MESSAGE_LENGTH: Number(env.CHAT_MAX_MESSAGE_LENGTH) || 4000,
+  MAX_MESSAGES_PER_CONVERSATION: Number(env.CHAT_MAX_MESSAGES) || 10,
 } as const;

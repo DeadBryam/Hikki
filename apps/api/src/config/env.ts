@@ -15,6 +15,13 @@ const envSchema = z.object({
   RESEND_FROM_EMAIL: z.string().email().optional(),
   SESSION_CACHE_SIZE: z.string().regex(/^\d+$/).transform(Number).default(100),
 
+  CHAT_MAX_MESSAGE_LENGTH: z
+    .string()
+    .regex(/^\d+$/)
+    .transform(Number)
+    .default(4000),
+  CHAT_MAX_MESSAGES: z.string().regex(/^\d+$/).transform(Number).default(10),
+
   AI_CONFIG_PATH: z.string().optional(),
   LLM_PRIMARY_SERVICE: z.enum(["cerebras", "groq"]).default("cerebras"),
   LLM_CIRCUIT_BREAKER_THRESHOLD: z
