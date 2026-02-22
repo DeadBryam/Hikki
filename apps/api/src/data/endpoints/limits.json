@@ -1,0 +1,72 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Limits API",
+    "description": "API for retrieving system limits",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "{server}",
+      "variables": {
+        "server": {
+          "default": "http://localhost:7300"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/api/v1/limits": {
+      "get": {
+        "summary": "Get System Limits",
+        "description": "Retrieve system limits such as maximum message length and maximum messages per conversation",
+        "operationId": "getLimits",
+        "tags": ["Limits"],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "maxMessageLength": {
+                          "type": "number",
+                          "description": "Maximum characters allowed per message",
+                          "example": 4000
+                        },
+                        "maxMessages": {
+                          "type": "number",
+                          "description": "Maximum messages to load per conversation",
+                          "example": 10
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Limits retrieved successfully"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}

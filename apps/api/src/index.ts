@@ -22,6 +22,7 @@ import { aiDocsIndex } from "./routes/ai";
 import { authRoutes } from "./routes/auth";
 import { chatRoute } from "./routes/chat";
 import { appRoute } from "./routes/health";
+import { limitsRoutes } from "./routes/limits";
 import { rootRoute } from "./routes/root";
 import { threadsRoutes } from "./routes/threads";
 
@@ -46,6 +47,7 @@ const app = new Elysia(serveConfig)
     app
       .use(appRoute)
       .use(chatRoute)
+      .use(limitsRoutes)
       .use(authRoutes)
       .use(threadsRoutes)
       .use(adminRoutes)

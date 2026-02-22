@@ -5,9 +5,23 @@ import type { AuthenticatedContext } from "@/types/context";
 import type { ChatRequest } from "@/types/llm";
 import { createErrorResponse } from "@/utils/errors";
 
+const MAX_MESSAGE_LENGTH = 4000;
+
 export async function* chatHandler(params: AuthenticatedContext<ChatRequest>) {
   const { body, logestic, user, set, requestId } = params;
   const { question, stream = true, thread: providedThread, model } = body;
+
+  if (question.length > MAX_MESSAGE_LENGTH) {
+    set.status = 400;
+    return yield JSON.stringify(
+      createErrorResponse(
+        `Message exceeds maximum length of ${MAX_MESSAGE_LENGTH} characters`,
+        {
+          code: "MESSAGE_TOO_LONG",
+        }
+      )
+    );
+  }
 
   const userId = user.id;
   const thread = providedThread || crypto.randomUUID();
@@ -66,7 +80,9 @@ export async function* chatHandler(params: AuthenticatedContext<ChatRequest>) {
 export const chatSchema = {
   body: t.Object({
     question: t.String({
-      description: "The question or message to send to the AI assistant",
+      minLength: 1,
+      maxLength: MAX_MESSAGE_LENGTH,
+      description: `The question or message to send to the AI assistant (max ${MAX_MESSAGE_LENGTH} characters)`,
       examples: [
         "Hello, how are you?",
         "Explain quantum computing in simple terms",

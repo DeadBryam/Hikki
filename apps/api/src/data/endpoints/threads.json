@@ -139,10 +139,10 @@
   },
   {
     "name": "Get Thread Messages",
-    "what_it_does": "Gets detailed information about a specific thread with all messages",
-    "when_to_use": "When loading a conversation to view messages",
-    "how_to_use": "Send GET with thread ID in URL. Returns thread with messages array.",
-    "path": "/api/v1/threads/:id",
+    "what_it_does": "Gets all messages for a specific thread",
+    "when_to_use": "When loading a conversation to view message history",
+    "how_to_use": "Send GET to /threads/:id/messages. Returns array of messages.",
+    "path": "/api/v1/threads/:id/messages",
     "method": "GET",
     "requires_auth": true,
     "tags": ["Threads"],
@@ -154,11 +154,20 @@
           "description": "Thread UUID",
           "example": "550e8400-e29b-41d4-a716-446655440000"
         }
+      },
+      "query": {
+        "limit": {
+          "type": "number",
+          "required": false,
+          "description": "Number of messages to return",
+          "constraints": "Default: 50, Max: 100",
+          "example": 10
+        }
       }
     },
     "responses": {
       "200": {
-        "description": "Thread details with messages",
+        "description": "Messages retrieved",
         "body": {
           "success": {
             "type": "boolean",
@@ -166,9 +175,9 @@
             "description": "Always true"
           },
           "data": {
-            "type": "object",
+            "type": "array",
             "required": true,
-            "description": "Thread with messages array"
+            "description": "Array of message objects"
           }
         }
       },
