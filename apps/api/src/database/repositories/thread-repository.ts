@@ -49,7 +49,13 @@ export class ThreadRepository {
     return this.db
       .select()
       .from(threads)
-      .where(and(eq(threads.user_id, userId), isNull(threads.deleted_at)))
+      .where(
+        and(
+          eq(threads.user_id, userId),
+          isNull(threads.deleted_at),
+          isNull(threads.archived_at)
+        )
+      )
       .orderBy(desc(threads.updated_at))
       .all();
   }

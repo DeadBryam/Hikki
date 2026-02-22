@@ -39,10 +39,6 @@ const localStorageMock = (() => {
   };
 })();
 
-Object.defineProperty(window, "localStorage", {
-  value: localStorageMock,
-});
-
 export const server = setupServer(
   http.post("/api/v1/auth/signup", () => {
     return HttpResponse.json(
@@ -106,9 +102,17 @@ export const server = setupServer(
   })
 );
 
-beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
+beforeAll(() => {
+  // Setup localStorage mock after jsdom environment is ready
+  Object.defineProperty(window, "localStorage", {
+    value: localStorageMock,
+  });
+  server.listen({ onUnhandledRequest: "error" });
+});
+
 afterEach(() => {
   server.resetHandlers();
   localStorage.clear();
 });
+
 afterAll(() => server.close());

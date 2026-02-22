@@ -1,6 +1,7 @@
 /** biome-ignore-all lint/performance/noNamespaceImport: Schema import */
 
 import { Database } from "bun:sqlite";
+import { join } from "node:path";
 import { drizzle } from "drizzle-orm/bun-sqlite";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
 import { env } from "@/config/env";
@@ -26,8 +27,9 @@ sqlite.run("PRAGMA mmap_size = 268435456;");
 // biome-ignore lint/suspicious/useAwait: Migrations should run synchronously at startup
 export async function initDatabase() {
   try {
+    const migrationsFolder = join(import.meta.dirname, "../../drizzle");
     migrate(db, {
-      migrationsFolder: "./drizzle",
+      migrationsFolder,
       migrationsTable: "__migrations",
     });
     logger.info("✅ Migrations completed successfully");
