@@ -2,22 +2,28 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
+import { Case, Default, Switch } from "react-if";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSendMessage } from "@/lib/hooks/chat/mutations/use-send-message";
 import { useMessages } from "@/lib/hooks/chat/queries/use-messages";
 import { useLimits } from "@/lib/hooks/use-limits";
-import { messageVariants } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/misc";
 import { EmptyState } from "./empty-state";
 import { MessageBubble } from "./message-bubble";
 import { MessageInput } from "./message-input";
+import { MessageSkeleton } from "./message-skeleton";
 
 interface ChatContainerProps {
   conversationId?: string;
 }
 
+const messageVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
 export function ChatContainer({ conversationId }: ChatContainerProps) {
-  const { data: messages = [] } = useMessages(conversationId);
+  const { data: messages = [], isPending } = useMessages(conversationId);
   const { data: limits } = useLimits();
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -76,45 +82,62 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-linear-to-b from-background to-transparent" />
 
         <AnimatePresence mode="wait">
-          {isEmpty ? (
-            <motion.div
-              animate={{ opacity: 1 }}
-              className="h-full"
-              exit={{ opacity: 0 }}
-              initial={{ opacity: 0 }}
-              key="empty"
-              transition={{ duration: 0.3 }}
-            >
-              <EmptyState onSuggestionClick={handleSuggestionClick} />
-            </motion.div>
-          ) : (
-            <motion.div
-              animate={{ opacity: 1 }}
-              className="h-full"
-              exit={{ opacity: 0 }}
-              initial={{ opacity: 0 }}
-              key="chat"
-              transition={{ duration: 0.3 }}
-            >
-              <ScrollArea className="h-full" ref={scrollRef}>
-                <div className="mx-auto max-w-3xl space-y-6 px-6 py-10">
-                  {messages.map((message) => (
-                    <motion.div
-                      animate="visible"
-                      initial="hidden"
-                      key={message.id}
-                      variants={messageVariants}
-                    >
-                      <MessageBubble message={message} />
-                    </motion.div>
-                  ))}
+          <Switch>
+            <Case condition={isPending}>
+              <motion.div
+                animate={{ opacity: 1 }}
+                className="h-full"
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+                key="loading"
+                transition={{ duration: 0.3 }}
+              >
+                <MessageSkeleton />
+              </motion.div>
+            </Case>
 
-                  {/* Bottom padding for input */}
-                  <div className="h-24" />
-                </div>
-              </ScrollArea>
-            </motion.div>
-          )}
+            <Case condition={isEmpty}>
+              <motion.div
+                animate={{ opacity: 1 }}
+                className="h-full"
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+                key="empty"
+                transition={{ duration: 0.3 }}
+              >
+                <EmptyState onSuggestionClick={handleSuggestionClick} />
+              </motion.div>
+            </Case>
+
+            <Default>
+              <motion.div
+                animate={{ opacity: 1 }}
+                className="h-full"
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+                key="chat"
+                transition={{ duration: 0.3 }}
+              >
+                <ScrollArea className="h-full" ref={scrollRef}>
+                  <div className="mx-auto max-w-3xl space-y-6 px-6 py-10">
+                    {messages.map((message) => (
+                      <motion.div
+                        animate="visible"
+                        initial="hidden"
+                        key={message.id}
+                        variants={messageVariants}
+                      >
+                        <MessageBubble message={message} />
+                      </motion.div>
+                    ))}
+
+                    {/* Bottom padding for input */}
+                    <div className="h-24" />
+                  </div>
+                </ScrollArea>
+              </motion.div>
+            </Default>
+          </Switch>
         </AnimatePresence>
       </div>
 
