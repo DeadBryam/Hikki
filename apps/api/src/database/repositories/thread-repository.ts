@@ -77,7 +77,31 @@ export class ThreadRepository {
   archiveThread(threadId: string): void {
     this.db
       .update(threads)
+      .set({ archived_at: sql`CURRENT_TIMESTAMP` })
+      .where(eq(threads.id, threadId))
+      .run();
+  }
+
+  unarchiveThread(threadId: string): void {
+    this.db
+      .update(threads)
+      .set({ archived_at: sql`NULL` })
+      .where(eq(threads.id, threadId))
+      .run();
+  }
+
+  softDeleteThread(threadId: string): void {
+    this.db
+      .update(threads)
       .set({ deleted_at: sql`CURRENT_TIMESTAMP` })
+      .where(eq(threads.id, threadId))
+      .run();
+  }
+
+  togglePinThread(threadId: string, isPinned: boolean): void {
+    this.db
+      .update(threads)
+      .set({ is_pinned: isPinned })
       .where(eq(threads.id, threadId))
       .run();
   }
@@ -169,12 +193,15 @@ export class ThreadRepository {
       sortOrder = "desc",
     } = filters;
 
-    const whereConditions = [eq(threads.user_id, userId)];
+    const whereConditions = [
+      eq(threads.user_id, userId),
+      isNull(threads.deleted_at),
+    ];
 
     if (archived === true) {
-      whereConditions.push(isNotNull(threads.deleted_at));
-    } else if (archived === false) {
-      whereConditions.push(isNull(threads.deleted_at));
+      whereConditions.push(isNotNull(threads.archived_at));
+    } else {
+      whereConditions.push(isNull(threads.archived_at));
     }
 
     if (search) {
@@ -191,7 +218,8 @@ export class ThreadRepository {
     let column:
       | typeof threads.title
       | typeof threads.created_at
-      | typeof threads.updated_at;
+      | typeof threads.updated_at
+      | typeof threads.is_pinned;
     if (sortBy === "title") {
       column = threads.title;
     } else if (sortBy === "created_at") {
@@ -206,7 +234,7 @@ export class ThreadRepository {
       .select()
       .from(threads)
       .where(and(...whereConditions))
-      .orderBy(orderBy)
+      .orderBy(desc(threads.is_pinned), orderBy)
       .limit(limit)
       .offset(offset)
       .all();
@@ -215,12 +243,15 @@ export class ThreadRepository {
   countThreadsWithFilters(filters: CountThreadsFilters): number {
     const { userId, search, archived, dateFrom, dateTo } = filters;
 
-    const whereConditions = [eq(threads.user_id, userId)];
+    const whereConditions = [
+      eq(threads.user_id, userId),
+      isNull(threads.deleted_at),
+    ];
 
     if (archived === true) {
-      whereConditions.push(isNotNull(threads.deleted_at));
-    } else if (archived === false) {
-      whereConditions.push(isNull(threads.deleted_at));
+      whereConditions.push(isNotNull(threads.archived_at));
+    } else {
+      whereConditions.push(isNull(threads.archived_at));
     }
 
     if (search) {

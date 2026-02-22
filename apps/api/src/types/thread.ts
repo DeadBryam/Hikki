@@ -1,7 +1,9 @@
 export interface Thread {
+  archived_at: string | null;
   created_at: string | null;
   deleted_at: string | null;
   id: string;
+  is_pinned: boolean | null;
   message_count: number | null;
   title: string;
   updated_at: string | null;

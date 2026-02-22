@@ -81,6 +81,14 @@
       "tag": "0010_add_missing_indexes",
       "hash": "b0bb49b00e04ee1da594238b2915bafa9da51e0a1e36bce777842bc2c132b533",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1771741643694,
+      "tag": "0011_add_archived_and_pinned_to_threads",
+      "hash": "4a1d102b31980421a5463289fbf5bd9470ca5c7ed8f9e534f7b7cce07b41f3d1",
+      "breakpoints": true
     }
   ]
 }

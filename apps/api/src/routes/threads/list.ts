@@ -4,11 +4,7 @@ import { threadService } from "@/config/dependencies";
 import type { PaginatedThreadsResponse } from "@/services/thread-service";
 import type { ApiResponse, ErrorResponse } from "@/types/api";
 import type { AuthenticatedContext } from "@/types/context";
-import {
-  generateETag,
-  isNotModified,
-  setETagAndCacheHeaders,
-} from "@/utils/cache";
+import { generateETag, isNotModified } from "@/utils/cache";
 import { createErrorResponse, createSuccessResponse } from "@/utils/errors";
 import { createDataResponseSchema, errorSchemas } from "@/utils/schemas";
 
@@ -62,12 +58,12 @@ export const listHandler = (
       sortOrder,
     });
 
-    if (isNotModified(context.request, generateETag(result))) {
+    const etag = generateETag(result);
+
+    if (isNotModified(context.request, etag)) {
       set.status = 304;
       return;
     }
-
-    setETagAndCacheHeaders(set, result);
 
     return createSuccessResponse({
       data: result,
@@ -164,6 +160,12 @@ export const listSchema = {
             created_at: t.String({ description: "Thread creation timestamp" }),
             updated_at: t.String({
               description: "Thread last update timestamp",
+            }),
+            archived_at: t.Union([t.String(), t.Null()], {
+              description: "Thread archive timestamp (null if not archived)",
+            }),
+            is_pinned: t.Boolean({
+              description: "Whether the thread is pinned",
             }),
           })
         ),

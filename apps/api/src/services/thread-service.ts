@@ -207,6 +207,19 @@ export default class ThreadService {
     return true;
   }
 
+  unarchiveConversation(conversationId: string, userId: string): boolean {
+    const thread = this.threadRepo.findById(conversationId);
+    if (thread === null || thread === undefined || thread.user_id !== userId) {
+      logger.warn(
+        `Access denied: User ${userId} attempted to unarchive thread ${conversationId}`
+      );
+      return false;
+    }
+
+    this.threadRepo.unarchiveThread(conversationId);
+    return true;
+  }
+
   deleteConversation(conversationId: string, userId: string): boolean {
     const thread = this.threadRepo.findById(conversationId);
     if (thread === null || thread === undefined || thread.user_id !== userId) {
@@ -216,7 +229,21 @@ export default class ThreadService {
       return false;
     }
 
-    this.threadRepo.archiveThread(conversationId);
+    this.threadRepo.softDeleteThread(conversationId);
+    return true;
+  }
+
+  togglePinConversation(conversationId: string, userId: string): boolean {
+    const thread = this.threadRepo.findById(conversationId);
+    if (thread === null || thread === undefined || thread.user_id !== userId) {
+      logger.warn(
+        `Access denied: User ${userId} attempted to toggle pin for thread ${conversationId}`
+      );
+      return false;
+    }
+
+    const newPinnedState = !(thread.is_pinned ?? false);
+    this.threadRepo.togglePinThread(conversationId, newPinnedState);
     return true;
   }
 
@@ -240,6 +267,8 @@ export default class ThreadService {
       created_at: null,
       updated_at: null,
       deleted_at: null,
+      archived_at: null,
+      is_pinned: false,
     };
   }
 }

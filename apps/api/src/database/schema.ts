@@ -23,8 +23,10 @@ export const threads = sqliteTable(
       .references(() => users.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
     message_count: integer("message_count").default(0),
+    is_pinned: integer("is_pinned", { mode: "boolean" }).default(false),
     created_at: text("created_at").default(sql`CURRENT_TIMESTAMP`),
     updated_at: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
+    archived_at: text("archived_at"),
     deleted_at: text("deleted_at"),
   },
   (table) => [index("idx_threads_user_id").on(table.user_id)]

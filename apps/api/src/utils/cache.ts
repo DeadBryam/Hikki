@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
  * Uses SHA-256 hash of the JSON stringified data
  */
 export function generateETag(data: unknown): string {
-  const jsonString = JSON.stringify(data, Object.keys(data || {}).sort());
+  const jsonString = JSON.stringify(data);
   const hash = createHash("sha256").update(jsonString).digest("hex");
   return `"${hash.slice(0, 16)}"`;
 }
@@ -31,7 +31,7 @@ export function setCacheHeaders(
   isPrivate = true
 ): void {
   set.headers["Cache-Control"] =
-    `${isPrivate ? "private" : "public"}, max-age=${maxAge}`;
+    `${isPrivate ? "private" : "public"}, max-age=${maxAge}, must-revalidate`;
 }
 
 /**

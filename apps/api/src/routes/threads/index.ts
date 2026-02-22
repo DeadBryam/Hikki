@@ -13,6 +13,8 @@ import { createHandler, createSchema } from "./create";
 import { deleteHandler, deleteSchema } from "./delete";
 import { listHandler, listSchema } from "./list";
 import { messagesHandler, messagesSchema } from "./messages";
+import { pinHandler, pinSchema } from "./pin";
+import { unarchiveHandler, unarchiveSchema } from "./unarchive";
 
 export const threadsRoutes = new Elysia({ prefix: "/threads" })
   .use(logesticPlugin)
@@ -20,7 +22,9 @@ export const threadsRoutes = new Elysia({ prefix: "/threads" })
   .get("/", listHandler, listSchema)
   .get("/:id/messages", messagesHandler, messagesSchema)
   .post("/", createHandler, createSchema)
-  .put("/:id/archive", archiveHandler, archiveSchema)
+  .post("/:id/archive", archiveHandler, archiveSchema)
+  .post("/:id/unarchive", unarchiveHandler, unarchiveSchema)
+  .post("/:id/pin", pinHandler, pinSchema)
   .delete("/:id", deleteHandler, deleteSchema)
   .post("/bulk/archive", bulkArchiveHandler, bulkArchiveSchema)
   .delete("/bulk", bulkDeleteHandler, bulkDeleteSchema);
