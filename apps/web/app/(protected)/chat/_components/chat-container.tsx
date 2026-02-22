@@ -4,13 +4,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { Case, Default, Switch } from "react-if";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useSendMessage } from "@/lib/hooks/chat/mutations/use-send-message";
 import { useMessages } from "@/lib/hooks/chat/queries/use-messages";
-import { useLimits } from "@/lib/hooks/use-limits";
 import { cn } from "@/lib/utils/misc";
 import { EmptyState } from "./empty-state";
 import { MessageBubble } from "./message-bubble";
-import { MessageInput } from "./message-input";
+import { MessageInput, type MessageInputHandle } from "./message-input";
 import { MessageSkeleton } from "./message-skeleton";
 
 interface ChatContainerProps {
@@ -23,19 +21,13 @@ const messageVariants = {
 };
 
 export function ChatContainer({ conversationId }: ChatContainerProps) {
-  const { data: messages = [], isPending } = useMessages(conversationId);
-  const { data: limits } = useLimits();
+  const { data: messages = [], isLoading } = useMessages(conversationId);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<MessageInputHandle>(null);
   const prevMessageCount = useRef(messages.length);
 
-  const sendMessageMutation = useSendMessage(conversationId);
-
   const isEmpty = messages.length === 0;
-  const isTyping = messages.some((m) => m.isStreaming);
-
-  const maxMessageLength = limits?.maxMessageLength ?? 4000;
-  const maxMessages = limits?.maxMessages ?? 10;
 
   useEffect(() => {
     if (prevMessageCount.current !== messages.length && scrollRef.current) {
@@ -47,19 +39,8 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
     }
   });
 
-  const handleSendMessage = async (content: string) => {
-    if (!content.trim()) {
-      return;
-    }
-
-    await sendMessageMutation.mutateAsync({
-      question: content,
-    });
-  };
-
-  const handleSuggestionClick = (prompt: string) => {
-    handleSendMessage(prompt);
-  };
+  // biome-ignore lint/suspicious/noEmptyBlockStatements: I'm thinking about adding suggestions here in the future
+  const handleSuggestionClick = () => {};
 
   return (
     <div
@@ -72,12 +53,12 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
       <div
         className={cn(
           "relative my-5 overflow-hidden",
-          isEmpty ? "h-auto" : "flex-1"
+          isEmpty ? "h-auto w-full" : "flex-1"
         )}
       >
         <AnimatePresence mode="wait">
           <Switch>
-            <Case condition={isPending}>
+            <Case condition={isLoading}>
               <motion.div
                 animate={{ opacity: 1 }}
                 className="h-full"
@@ -143,14 +124,7 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
         )}
       >
         <div className={cn("mx-auto max-w-3xl", isEmpty && "w-full")}>
-          <MessageInput
-            isCentered={isEmpty}
-            isLoading={isTyping}
-            maxMessageLength={maxMessageLength}
-            maxMessages={maxMessages}
-            messageCount={messages.length}
-            onSend={handleSendMessage}
-          />
+          <MessageInput conversationId={conversationId} ref={inputRef} />
         </div>
       </div>
     </div>
