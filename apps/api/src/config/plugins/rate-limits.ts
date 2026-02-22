@@ -5,7 +5,7 @@ import { rateLimit } from "elysia-rate-limit";
  * Applies default rate limiting rules to API endpoints
  */
 export const genericRateLimit = rateLimit({
-  duration: 60 * 1000,
+  duration: 15 * 1000,
   max: 15,
   headers: true,
 });
