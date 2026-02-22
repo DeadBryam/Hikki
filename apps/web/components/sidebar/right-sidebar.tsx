@@ -19,7 +19,7 @@ import { cardHoverVariants, sidebarVariants } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/misc";
 
 export function RightSidebar() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("memories");
 
   const jobsRunning = 0;
@@ -30,16 +30,21 @@ export function RightSidebar() {
       animate={isOpen ? "expanded" : "collapsed"}
       className={cn(
         "relative flex h-full shrink-0 flex-col overflow-hidden border-border/50 border-l bg-sidebar/80 backdrop-blur-xl",
-        !isOpen && "border-l-transparent"
+        !isOpen && "min-w-[60px] border-l-transparent"
       )}
       initial={false}
       variants={sidebarVariants}
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-border/50 border-b p-3">
+      <div
+        className={cn(
+          "flex items-center border-border/50 border-b p-3",
+          isOpen ? "justify-between" : "justify-center"
+        )}
+      >
         <motion.span
-          animate={{ opacity: isOpen ? 1 : 0 }}
-          className="whitespace-nowrap font-semibold text-sm"
+          animate={{ opacity: isOpen ? 1 : 0, width: isOpen ? "auto" : 0 }}
+          className="overflow-hidden whitespace-nowrap font-semibold text-sm"
         >
           Context
         </motion.span>
@@ -53,7 +58,12 @@ export function RightSidebar() {
           size="icon"
           variant="ghost"
         >
-          <PanelRight className="h-4 w-4" />
+          <PanelRight
+            className={cn(
+              "h-4 w-4 transition-transform",
+              !isOpen && "rotate-180"
+            )}
+          />
         </Button>
         <Tooltip
           className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"

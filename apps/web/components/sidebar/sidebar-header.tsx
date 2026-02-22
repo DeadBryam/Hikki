@@ -1,8 +1,9 @@
-import { motion } from "framer-motion";
 import { PanelLeft, Plus, Sparkles } from "lucide-react";
+import { Link } from "next-view-transitions";
 import { Tooltip } from "react-tooltip";
 import { Button } from "@/components/ui/button";
 import { env } from "@/lib/utils/env";
+import { cn } from "@/lib/utils/misc";
 
 interface SidebarHeaderProps {
   isOpen: boolean;
@@ -17,22 +18,26 @@ export function SidebarHeader({
 }: SidebarHeaderProps) {
   return (
     <div className="flex items-center justify-between p-3">
-      <motion.div
-        animate={{ opacity: isOpen ? 1 : 0 }}
-        className="flex items-center gap-2 overflow-hidden"
-        transition={{ type: "spring" }}
+      <Link
+        className={cn("flex items-center gap-2 overflow-hidden", {
+          invisible: !isOpen,
+        })}
+        href="/"
       >
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-rose-500 to-orange-500">
           <Sparkles className="h-4 w-4 text-white" />
         </div>
-        {isOpen && (
-          <span className="whitespace-nowrap font-semibold text-sm">
-            {env.APP_NAME}
-          </span>
-        )}
-      </motion.div>
+        <span className="whitespace-nowrap font-semibold text-sm">
+          {env.APP_NAME}
+        </span>
+      </Link>
 
-      <div className="flex items-center gap-1">
+      <div
+        className={cn(
+          "flex items-center gap-1",
+          isOpen ? "flex-row" : "flex-col-reverse"
+        )}
+      >
         <Button
           className="h-8 w-8 shrink-0"
           data-tooltip-content="New chat"
@@ -48,7 +53,6 @@ export function SidebarHeader({
           className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
           id="btn-new-chat"
         />
-
         <Button
           className="h-8 w-8 shrink-0"
           data-tooltip-content={isOpen ? "Collapse sidebar" : "Expand sidebar"}
