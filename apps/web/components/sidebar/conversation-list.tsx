@@ -84,6 +84,7 @@ export function ConversationList({
           animate="visible"
           className="space-y-4 p-2"
           initial="hidden"
+          key={showArchived ? "archived" : "active"}
           variants={staggerContainerVariants}
         >
           {groupedConversations.map(([group, items]) => (
