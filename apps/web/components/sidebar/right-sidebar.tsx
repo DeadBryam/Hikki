@@ -10,11 +10,11 @@ import {
   Play,
 } from "lucide-react";
 import { useState } from "react";
-import { Tooltip } from "react-tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip } from "@/components/ui/tooltip";
 import { cardHoverVariants, sidebarVariants } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/misc";
 
@@ -65,10 +65,7 @@ export function RightSidebar() {
             )}
           />
         </Button>
-        <Tooltip
-          className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
-          id="toggle-sidebar"
-        />
+        <Tooltip id="toggle-sidebar" />
       </div>
 
       {/* Content */}
@@ -274,10 +271,7 @@ export function RightSidebar() {
             >
               <Brain className="h-5 w-5" />
             </Button>
-            <Tooltip
-              className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
-              id="tab-memories"
-            />
+            <Tooltip id="tab-memories" />
 
             <Button
               className="relative h-10 w-10 rounded-xl"
@@ -294,10 +288,7 @@ export function RightSidebar() {
                 </span>
               )}
             </Button>
-            <Tooltip
-              className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
-              id="tab-jobs"
-            />
+            <Tooltip id="tab-jobs" />
 
             <Button
               className="relative h-10 w-10 rounded-xl"
@@ -314,10 +305,7 @@ export function RightSidebar() {
                 </span>
               )}
             </Button>
-            <Tooltip
-              className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
-              id="tab-tasks"
-            />
+            <Tooltip id="tab-tasks" />
           </motion.div>
         )}
       </AnimatePresence>

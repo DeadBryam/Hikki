@@ -6,7 +6,7 @@ import {
   PinOff,
   Trash2,
 } from "lucide-react";
-import { Tooltip } from "react-tooltip";
+import { Tooltip } from "@/components/ui/tooltip";
 import { TruncatedText } from "@/components/ui/truncated-text";
 import { cn } from "@/lib/utils/misc";
 import { formatRelativeTime } from "@/lib/utils/relative-time";
@@ -128,25 +128,10 @@ export function ConversationItem({
 
       <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-rose-500/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
 
-      {/* Tooltips with custom styles */}
-      {!isOpen && (
-        <Tooltip
-          className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg !max-w-xs"
-          id={`${baseId}-title`}
-        />
-      )}
-      <Tooltip
-        className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
-        id={`${baseId}-pin`}
-      />
-      <Tooltip
-        className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
-        id={`${baseId}-archive`}
-      />
-      <Tooltip
-        className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
-        id={`${baseId}-delete`}
-      />
+      {!isOpen && <Tooltip className="max-w-xs" id={`${baseId}-title`} />}
+      <Tooltip id={`${baseId}-pin`} />
+      <Tooltip id={`${baseId}-archive`} />
+      <Tooltip id={`${baseId}-delete`} />
     </button>
   );
 }

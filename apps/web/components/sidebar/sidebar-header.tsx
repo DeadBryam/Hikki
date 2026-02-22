@@ -1,7 +1,7 @@
 import { PanelLeft, Plus, Sparkles } from "lucide-react";
 import { Link } from "next-view-transitions";
-import { Tooltip } from "react-tooltip";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 import { env } from "@/lib/utils/env";
 import { cn } from "@/lib/utils/misc";
 
@@ -49,10 +49,7 @@ export function SidebarHeader({
         >
           <Plus className="h-4 w-4" />
         </Button>
-        <Tooltip
-          className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
-          id="btn-new-chat"
-        />
+        <Tooltip id="btn-new-chat" />
         <Button
           className="h-8 w-8 shrink-0"
           data-tooltip-content={isOpen ? "Collapse sidebar" : "Expand sidebar"}
@@ -64,10 +61,7 @@ export function SidebarHeader({
         >
           <PanelLeft className="h-4 w-4" />
         </Button>
-        <Tooltip
-          className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
-          id="btn-toggle"
-        />
+        <Tooltip id="btn-toggle" />
       </div>
     </div>
   );

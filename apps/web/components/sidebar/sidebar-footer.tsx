@@ -1,7 +1,7 @@
 import { LogOut } from "lucide-react";
-import { Tooltip } from "react-tooltip";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 import type { AuthUser } from "@/lib/services/auth-service";
 
 interface SidebarFooterProps {
@@ -47,10 +47,7 @@ export function SidebarFooter({
         >
           <LogOut className="h-4 w-4" />
         </Button>
-        <Tooltip
-          className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
-          id="btn-logout"
-        />
+        <Tooltip id="btn-logout" />
       </div>
     </div>
   );

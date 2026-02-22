@@ -1,4 +1,4 @@
-import { Tooltip } from "react-tooltip";
+import { Tooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/misc";
 
 interface TruncatedTextProps {
@@ -30,11 +30,7 @@ export function TruncatedText({
         {displayText}
       </span>
       {shouldTruncate && tooltipId && (
-        <Tooltip
-          className="border! rounded-lg! border-border/50! bg-popover! px-3! py-2! text-popover-foreground! text-sm! shadow-lg!"
-          id={tooltipId}
-          positionStrategy="fixed"
-        />
+        <Tooltip id={tooltipId} positionStrategy="fixed" />
       )}
     </>
   );

@@ -3,10 +3,10 @@
 import { motion } from "framer-motion";
 import { Copy, RotateCcw, Sparkles, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Else, If, Then } from "react-if";
-import { Tooltip } from "react-tooltip";
 import MarkdownViewer from "@/components/shared/markdown-viewer";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 import type { Message } from "@/lib/types/chat";
 import { cardHoverVariants } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/misc";
@@ -97,11 +97,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               >
                 <Copy className="h-3.5 w-3.5" />
               </Button>
-              <Tooltip
-                className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
-                delayShow={200}
-                id="action-copy"
-              />
+              <Tooltip delayShow={200} id="action-copy" />
 
               <Button
                 className="h-7 w-7 rounded-md"
@@ -113,11 +109,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               >
                 <ThumbsUp className="h-3.5 w-3.5" />
               </Button>
-              <Tooltip
-                className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
-                delayShow={200}
-                id="action-helpful"
-              />
+              <Tooltip delayShow={200} id="action-helpful" />
 
               <Button
                 className="h-7 w-7 rounded-md"
@@ -129,11 +121,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               >
                 <ThumbsDown className="h-3.5 w-3.5" />
               </Button>
-              <Tooltip
-                className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
-                delayShow={200}
-                id="action-unhelpful"
-              />
+              <Tooltip delayShow={200} id="action-unhelpful" />
 
               <Button
                 className="h-7 w-7 rounded-md"
@@ -145,11 +133,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               >
                 <RotateCcw className="h-3.5 w-3.5" />
               </Button>
-              <Tooltip
-                className="!rounded-lg !border !border-border/50 !bg-popover !px-3 !py-2 !text-sm !text-popover-foreground !shadow-lg"
-                delayShow={200}
-                id="action-regenerate"
-              />
+              <Tooltip delayShow={200} id="action-regenerate" />
             </motion.div>
           )}
         </div>
