@@ -34,7 +34,7 @@ export function ConversationItem({
         <TooltipTrigger asChild>
           <motion.button
             className={cn(
-              "group relative flex w-full items-center gap-2 overflow-hidden rounded-lg p-2 text-left text-sm transition-all duration-200",
+              "group relative flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-lg p-2 text-left text-sm transition-all duration-200",
               isActive
                 ? "bg-primary/10 text-primary"
                 : "border-transparent border-l-2 text-foreground hover:bg-muted/50",
