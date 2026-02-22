@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSendMessage } from "@/lib/hooks/chat/mutations/use-send-message";
 import { useMessages } from "@/lib/hooks/chat/queries/use-messages";
+import { useLimits } from "@/lib/hooks/use-limits";
 import { messageVariants } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/misc";
 import { EmptyState } from "./empty-state";
@@ -17,6 +18,7 @@ interface ChatContainerProps {
 
 export function ChatContainer({ conversationId }: ChatContainerProps) {
   const { data: messages = [] } = useMessages(conversationId);
+  const { data: limits } = useLimits();
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const prevMessageCount = useRef(messages.length);
@@ -25,6 +27,9 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
 
   const isEmpty = messages.length === 0;
   const isTyping = messages.some((m) => m.isStreaming);
+
+  const maxMessageLength = limits?.maxMessageLength ?? 4000;
+  const maxMessages = limits?.maxMessages ?? 10;
 
   useEffect(() => {
     if (prevMessageCount.current !== messages.length && scrollRef.current) {
@@ -118,6 +123,9 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
           <MessageInput
             isCentered={isEmpty}
             isLoading={isTyping}
+            maxMessageLength={maxMessageLength}
+            maxMessages={maxMessages}
+            messageCount={messages.length}
             onSend={handleSendMessage}
           />
         </div>

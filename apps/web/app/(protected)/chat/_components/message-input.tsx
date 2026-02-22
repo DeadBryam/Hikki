@@ -11,6 +11,9 @@ import { cn } from "@/lib/utils/misc";
 interface MessageInputProps {
   isCentered?: boolean;
   isLoading?: boolean;
+  maxMessageLength?: number;
+  maxMessages?: number;
+  messageCount?: number;
   onSend: (message: string) => void;
 }
 
@@ -18,13 +21,18 @@ export function MessageInput({
   onSend,
   isLoading,
   isCentered,
+  messageCount = 0,
+  maxMessageLength = 4000,
+  maxMessages = 10,
 }: MessageInputProps) {
   const [message, setMessage] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const isOverLimit = message.length > maxMessageLength;
+
   const handleSend = () => {
-    if (!message.trim() || isLoading) {
+    if (!message.trim() || isLoading || isOverLimit) {
       return;
     }
     onSend(message);
@@ -44,7 +52,13 @@ export function MessageInput({
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const target = e.target;
-    setMessage(target.value);
+    const value = target.value;
+
+    if (value.length > maxMessageLength) {
+      return;
+    }
+
+    setMessage(value);
 
     target.style.height = "auto";
     target.style.height = `${Math.min(target.scrollHeight, 200)}px`;
@@ -79,7 +93,7 @@ export function MessageInput({
               "scrollbar-thin max-h-[200px] min-h-[24px] w-full resize-none border-0 bg-transparent px-2 py-2 text-base placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0",
               isCentered && "text-center text-lg md:text-left"
             )}
-            disabled={isLoading}
+            disabled={isLoading || isOverLimit}
             onBlur={() => setIsFocused(false)}
             onChange={handleInput}
             onFocus={() => setIsFocused(true)}
@@ -93,6 +107,21 @@ export function MessageInput({
             rows={1}
             value={message}
           />
+
+          {/* Character and message count */}
+          <div
+            className={cn(
+              "absolute right-3 bottom-1 flex gap-2 text-xs transition-colors",
+              isOverLimit ? "text-red-500" : "text-muted-foreground/50"
+            )}
+          >
+            <span>
+              {messageCount}/{maxMessages} msg
+            </span>
+            <span>
+              {message.length}/{maxMessageLength}
+            </span>
+          </div>
 
           {/* Action buttons */}
           <div className="mt-2 flex items-center justify-between border-border/30 border-t pt-2">
@@ -127,11 +156,11 @@ export function MessageInput({
               <Button
                 className={cn(
                   "h-9 w-9 rounded-xl transition-all duration-300",
-                  message.trim() && !isLoading
+                  message.trim() && !isLoading && !isOverLimit
                     ? "bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg shadow-red-500/25 hover:from-red-600 hover:to-orange-600"
                     : "bg-muted text-muted-foreground"
                 )}
-                disabled={!message.trim() || isLoading}
+                disabled={!message.trim() || isLoading || isOverLimit}
                 onClick={handleSend}
                 size="icon"
               >

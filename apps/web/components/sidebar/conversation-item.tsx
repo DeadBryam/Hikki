@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { Archive, MessageSquare, Pin, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -67,22 +66,20 @@ export function ConversationItem({
 
             {isOpen && (
               <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                <Button
-                  className="h-6 w-6 p-0"
-                  onClick={onArchive}
-                  size="icon"
-                  variant="ghost"
+                <button
+                  className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-md hover:bg-muted"
+                  onClick={(e) => onArchive(e)}
+                  type="button"
                 >
                   <Archive className="h-3 w-3" />
-                </Button>
-                <Button
-                  className="h-6 w-6 p-0"
-                  onClick={onDelete}
-                  size="icon"
-                  variant="ghost"
+                </button>
+                <button
+                  className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-md hover:bg-muted"
+                  onClick={(e) => onDelete(e)}
+                  type="button"
                 >
                   <Trash2 className="h-3 w-3" />
-                </Button>
+                </button>
               </div>
             )}
 
