@@ -1,11 +1,12 @@
 import { t } from "elysia";
+import { CHAT_CONSTANTS } from "@/config/constants";
 import { threadRepository, threadService } from "@/config/dependencies";
 import { createLLMService } from "@/services/api/llm";
 import type { AuthenticatedContext } from "@/types/context";
 import type { ChatRequest } from "@/types/llm";
 import { createErrorResponse } from "@/utils/errors";
 
-const MAX_MESSAGE_LENGTH = 4000;
+const { MAX_MESSAGE_LENGTH, MAX_MESSAGES_PER_CONVERSATION } = CHAT_CONSTANTS;
 
 export async function* chatHandler(params: AuthenticatedContext<ChatRequest>) {
   const { body, logestic, user, set, requestId } = params;
@@ -13,14 +14,13 @@ export async function* chatHandler(params: AuthenticatedContext<ChatRequest>) {
 
   if (question.length > MAX_MESSAGE_LENGTH) {
     set.status = 400;
-    return yield JSON.stringify(
-      createErrorResponse(
-        `Message exceeds maximum length of ${MAX_MESSAGE_LENGTH} characters`,
-        {
-          code: "MESSAGE_TOO_LONG",
-        }
-      )
+    yield createErrorResponse(
+      `Message exceeds maximum length of ${MAX_MESSAGE_LENGTH} characters`,
+      {
+        code: "MESSAGE_TOO_LONG",
+      }
     );
+    return;
   }
 
   const userId = user.id;
@@ -31,9 +31,9 @@ export async function* chatHandler(params: AuthenticatedContext<ChatRequest>) {
     const existingThread = threadRepository.findById(providedThread);
     if (existingThread && existingThread.user_id !== userId) {
       set.status = 403;
-      yield JSON.stringify(
-        createErrorResponse("Access denied", { code: "THREAD_ACCESS_DENIED" })
-      );
+      yield createErrorResponse("Access denied", {
+        code: "THREAD_ACCESS_DENIED",
+      });
       return;
     }
   }
@@ -43,6 +43,18 @@ export async function* chatHandler(params: AuthenticatedContext<ChatRequest>) {
   logestic?.info(`[${requestId}] [${name}] selected for thread. ID: ${thread}`);
 
   const messages = threadService.getThreadMessages(thread, userId);
+
+  if (messages.length >= MAX_MESSAGES_PER_CONVERSATION) {
+    set.status = 400;
+    yield createErrorResponse(
+      `Conversation has reached the maximum limit of ${MAX_MESSAGES_PER_CONVERSATION} messages`,
+      {
+        code: "CONVERSATION_LIMIT_REACHED",
+      }
+    );
+    return;
+  }
+
   messages.push({ role: "user", content: question });
   threadService.storeUserMessageInThread(thread, question, name);
 
@@ -113,10 +125,20 @@ export const chatSchema = {
       })
     ),
   }),
-  response: t.String({
-    description:
-      "The AI assistant's response. When streaming=true, this will be streamed in chunks.",
-  }),
+  response: t.Union([
+    t.String({
+      description:
+        "The AI assistant's response. When streaming=true, this will be streamed in chunks.",
+    }),
+    t.Object({
+      success: t.Boolean({ description: "Whether the request was successful" }),
+      message: t.String({ description: "Error or success message" }),
+      code: t.Optional(t.String({ description: "Error code" })),
+      details: t.Optional(t.Array(t.String())),
+      data: t.Optional(t.Any()),
+      timestamp: t.String({ description: "ISO timestamp" }),
+    }),
+  ]),
   detail: {
     tags: ["Chat"],
     description: `
