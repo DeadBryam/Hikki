@@ -75,12 +75,6 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
           isEmpty ? "h-auto" : "flex-1"
         )}
       >
-        {/* Subtle Pattern Background */}
-        <div className="chat-bg-pattern absolute inset-0 opacity-40" />
-
-        {/* Top Gradient Fade */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-linear-to-b from-background to-transparent" />
-
         <AnimatePresence mode="wait">
           <Switch>
             <Case condition={isPending}>
@@ -99,7 +93,7 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
             <Case condition={isEmpty}>
               <motion.div
                 animate={{ opacity: 1 }}
-                className="h-full"
+                className="h-full py-4"
                 exit={{ opacity: 0 }}
                 initial={{ opacity: 0 }}
                 key="empty"
