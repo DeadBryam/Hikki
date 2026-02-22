@@ -126,7 +126,7 @@ export function ConversationItem({
         </div>
       )}
 
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-red-500/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-rose-500/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
 
       {/* Tooltips with custom styles */}
       {!isOpen && (

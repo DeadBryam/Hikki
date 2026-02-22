@@ -21,7 +21,7 @@ export function SidebarFooter({
     <div className="border-border border-t p-3">
       <div className="flex items-center gap-3">
         <Avatar className="h-8 w-8 shrink-0">
-          <AvatarFallback className="bg-linear-to-br from-red-400 to-orange-400 font-bold text-white text-xs">
+          <AvatarFallback className="bg-linear-to-br from-rose-400 to-orange-400 font-bold text-white text-xs">
             {user?.username?.charAt(0).toUpperCase() || "H"}
           </AvatarFallback>
         </Avatar>

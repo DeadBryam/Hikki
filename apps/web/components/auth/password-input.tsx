@@ -44,9 +44,9 @@ function PasswordInput({
               aria-invalid={error ? "true" : "false"}
               className={cn(
                 "h-14 pr-10 transition-all duration-300",
-                "focus:ring-2 focus:ring-red-500/50 focus:ring-offset-2 focus:ring-offset-background",
-                "dark:focus:ring-red-500/40 dark:focus:ring-offset-slate-900",
-                "group-focus-within:shadow-lg group-focus-within:shadow-red-500/25",
+                "focus:ring-2 focus:ring-rose-500/50 focus:ring-offset-2 focus:ring-offset-background",
+                "dark:focus:ring-rose-500/40 dark:focus:ring-offset-slate-900",
+                "group-focus-within:shadow-lg group-focus-within:shadow-rose-500/25",
                 error && "border-destructive/50 focus:ring-destructive/50"
               )}
               disabled={disabled}
@@ -56,14 +56,14 @@ function PasswordInput({
               {...field}
             />
             {!disabled && (
-              <div className="pointer-events-none absolute inset-0 rounded-md bg-gradient-to-r from-red-500/0 via-orange-500/0 to-orange-500/0 opacity-0 blur transition-opacity duration-300 group-focus-within:opacity-15" />
+              <div className="pointer-events-none absolute inset-0 rounded-md bg-gradient-to-r from-rose-500/0 via-orange-500/0 to-orange-500/0 opacity-0 blur transition-opacity duration-300 group-focus-within:opacity-15" />
             )}
             <Button
               aria-label={showPassword ? "Hide password" : "Show password"}
               className={cn(
                 "absolute top-0 right-0 h-full px-3 hover:bg-transparent",
                 "transition-all duration-200",
-                "hover:text-red-500 dark:hover:text-red-400"
+                "hover:text-rose-500 dark:hover:text-rose-400"
               )}
               onClick={() => setShowPassword(!showPassword)}
               size="icon"

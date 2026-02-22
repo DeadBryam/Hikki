@@ -75,22 +75,22 @@ export function MessageInput({
       <div
         className={cn(
           "relative rounded-2xl border bg-card/50 backdrop-blur-xl transition-all duration-300",
-          isCentered ? "shadow-2xl shadow-red-500/10" : "shadow-lg",
+          isCentered ? "shadow-2xl shadow-rose-500/10" : "shadow-lg",
           isFocused
-            ? "border-red-500/50 ring-2 ring-violet-500/20"
+            ? "border-rose-500/50 ring-2 ring-violet-500/20"
             : "border-border/50 hover:border-border"
         )}
       >
         {/* Gradient border effect on focus */}
         {isFocused && (
-          <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-red-500/30 via-cyan-500/20 to-violet-500/30 opacity-50 blur-sm" />
+          <div className="absolute -inset-px rounded-2xl bg-linear-to-r from-rose-500/30 via-cyan-500/20 to-violet-500/30 opacity-50 blur-sm" />
         )}
 
         <div className="relative p-3">
           {/* Textarea */}
           <Textarea
             className={cn(
-              "scrollbar-thin max-h-[200px] min-h-[24px] w-full resize-none border-0 bg-transparent px-2 py-2 text-base placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0",
+              "scrollbar-thin max-h-50 min-h-6 w-full resize-none border-0 bg-transparent px-2 py-2 text-base placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0",
               isCentered && "text-center text-lg md:text-left"
             )}
             disabled={isLoading || isOverLimit}
@@ -112,7 +112,7 @@ export function MessageInput({
           <div
             className={cn(
               "absolute right-3 bottom-1 flex gap-2 text-xs transition-colors",
-              isOverLimit ? "text-red-500" : "text-muted-foreground/50"
+              isOverLimit ? "text-rose-500" : "text-muted-foreground/50"
             )}
           >
             <span>
@@ -157,7 +157,7 @@ export function MessageInput({
                 className={cn(
                   "h-9 w-9 rounded-xl transition-all duration-300",
                   message.trim() && !isLoading && !isOverLimit
-                    ? "bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg shadow-red-500/25 hover:from-red-600 hover:to-orange-600"
+                    ? "bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-lg shadow-rose-500/25 hover:from-rose-600 hover:to-orange-600"
                     : "bg-muted text-muted-foreground"
                 )}
                 disabled={!message.trim() || isLoading || isOverLimit}

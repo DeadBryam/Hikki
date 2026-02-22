@@ -140,7 +140,7 @@ export function RightSidebar() {
                       </p>
 
                       {/* Hover gradient */}
-                      <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-red-500/5 via-transparent to-cyan-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
+                      <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-rose-500/5 via-transparent to-cyan-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
                     </motion.div>
                   ))}
                 </TabsContent>
@@ -152,7 +152,7 @@ export function RightSidebar() {
                       className={cn(
                         "group relative cursor-pointer overflow-hidden rounded-xl border bg-card p-3",
                         job.status === "running" && "border-cyan-500/30",
-                        job.status === "failed" && "border-red-500/30",
+                        job.status === "failed" && "border-rose-500/30",
                         job.status === "pending" && "border-border/50",
                         job.status === "completed" && "border-green-500/30"
                       )}
@@ -175,7 +175,7 @@ export function RightSidebar() {
                         <span
                           className={cn(
                             job.status === "running" && "text-cyan-400",
-                            job.status === "failed" && "text-red-400"
+                            job.status === "failed" && "text-rose-400"
                           )}
                         >
                           {job.status === "running" ? "Running" : "---"}
@@ -225,7 +225,7 @@ export function RightSidebar() {
                             className={cn(
                               "h-4 px-1.5 py-0 text-[10px]",
                               reminder.priority === "high" &&
-                                "border-red-400/50 text-red-400",
+                                "border-rose-400/50 text-rose-400",
                               reminder.priority === "medium" &&
                                 "border-amber-400/50 text-amber-400",
                               reminder.priority === "low" &&
@@ -325,8 +325,8 @@ function StatusIcon({ status }: { status: string }) {
       );
     case "failed":
       return (
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500/20">
-          <AlertCircle className="h-3 w-3 text-red-400" />
+        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-500/20">
+          <AlertCircle className="h-3 w-3 text-rose-400" />
         </div>
       );
     case "completed":

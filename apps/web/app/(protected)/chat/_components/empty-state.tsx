@@ -40,18 +40,18 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
                 rotate: [0, 5, -5, 0],
                 scale: [1, 1.05, 1],
               }}
-              className="absolute inset-0 rounded-2xl bg-linear-to-br from-red-500 to-orange-600"
+              className="absolute inset-0 rounded-2xl bg-linear-to-br from-rose-500 to-orange-600"
               transition={{
                 duration: 6,
                 repeat: Number.POSITIVE_INFINITY,
                 ease: "easeInOut",
               }}
             />
-            <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-linear-to-br from-red-500 via-orange-500 to-yellow-500 shadow-lg shadow-red-500/30">
+            <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-linear-to-br from-rose-500 via-orange-500 to-yellow-500 shadow-lg shadow-rose-500/30">
               <Sparkles className="h-12 w-12 bg-clip-text text-white" />
             </div>
             {/* Glow effect */}
-            <div className="absolute -inset-2 rounded-2xl bg-red-500/20 blur-xl" />
+            <div className="absolute -inset-2 rounded-2xl bg-rose-500/20 blur-xl" />
           </div>
         </motion.div>
 
@@ -60,7 +60,7 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
           className="mb-4 font-bold text-4xl text-white tracking-tight sm:text-5xl"
           variants={itemVariants}
         >
-          <span className="bg-linear-to-r from-red-400 via-orange-400 to-orange-400 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-rose-400 via-orange-400 to-orange-400 bg-clip-text text-transparent">
             Hikki AI
           </span>
         </motion.h1>
@@ -84,13 +84,13 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
             const Icon = suggestion.icon;
             return (
               <motion.button
-                className="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 text-left transition-all duration-200 hover:border-red-500/30 hover:bg-red-500/10"
+                className="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 text-left transition-all duration-200 hover:border-rose-500/30 hover:bg-rose-500/10"
                 key={suggestion.text}
                 onClick={() => onSuggestionClick(suggestion.prompt)}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Icon className="h-5 w-5 text-red-400 transition-colors group-hover:text-red-300" />
+                <Icon className="h-5 w-5 text-rose-400 transition-colors group-hover:text-rose-300" />
                 <span className="text-sm text-white/80 group-hover:text-white">
                   {suggestion.text}
                 </span>

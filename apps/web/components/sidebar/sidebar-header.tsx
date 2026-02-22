@@ -22,7 +22,7 @@ export function SidebarHeader({
         className="flex items-center gap-2 overflow-hidden"
         transition={{ type: "spring" }}
       >
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-red-500 to-orange-500">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-rose-500 to-orange-500">
           <Sparkles className="h-4 w-4 text-white" />
         </div>
         {isOpen && (

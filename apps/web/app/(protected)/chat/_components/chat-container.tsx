@@ -58,17 +58,23 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col",
+        "relative flex h-full flex-col bg-linear-to-b from-background via-card/30 to-background",
         isEmpty && "items-center justify-center"
       )}
     >
       {/* Messages Area */}
       <div
         className={cn(
-          "relative overflow-hidden",
+          "relative my-5 overflow-hidden",
           isEmpty ? "h-auto" : "flex-1"
         )}
       >
+        {/* Subtle Pattern Background */}
+        <div className="chat-bg-pattern absolute inset-0 opacity-40" />
+
+        {/* Top Gradient Fade */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-linear-to-b from-background to-transparent" />
+
         <AnimatePresence mode="wait">
           {isEmpty ? (
             <motion.div
@@ -91,7 +97,7 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
               transition={{ duration: 0.3 }}
             >
               <ScrollArea className="h-full" ref={scrollRef}>
-                <div className="mx-auto max-w-3xl space-y-6 px-4 py-8">
+                <div className="mx-auto max-w-3xl space-y-6 px-6 py-10">
                   {messages.map((message) => (
                     <motion.div
                       animate="visible"
@@ -112,10 +118,10 @@ export function ChatContainer({ conversationId }: ChatContainerProps) {
         </AnimatePresence>
       </div>
 
-      {/* Input Area */}
+      {/* Input Area with Glass Effect */}
       <div
         className={cn(
-          "w-full p-4",
+          "w-full border-border/30 p-4 backdrop-blur-xl",
           isEmpty ? "relative" : "absolute right-0 bottom-0 left-0"
         )}
       >

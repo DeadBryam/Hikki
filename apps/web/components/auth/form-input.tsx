@@ -45,14 +45,14 @@ function FormInput({
               {...field}
               className={cn(
                 "h-14 transition-all duration-300",
-                "focus:ring-2 focus:ring-red-500/50 focus:ring-offset-2 focus:ring-offset-background",
-                "dark:focus:ring-red-500/40 dark:focus:ring-offset-slate-900",
-                "group-focus-within:shadow-lg group-focus-within:shadow-red-500/25",
+                "focus:ring-2 focus:ring-rose-500/50 focus:ring-offset-2 focus:ring-offset-background",
+                "dark:focus:ring-rose-500/40 dark:focus:ring-offset-slate-900",
+                "group-focus-within:shadow-lg group-focus-within:shadow-rose-500/25",
                 error && "border-destructive/50 focus:ring-destructive/50"
               )}
             />
             {!disabled && (
-              <div className="pointer-events-none absolute inset-0 rounded-md bg-linear-to-r from-red-500/0 via-orange-500/0 to-orange-500/0 opacity-0 blur transition-opacity duration-300 group-focus-within:opacity-15" />
+              <div className="pointer-events-none absolute inset-0 rounded-md bg-linear-to-r from-rose-500/0 via-orange-500/0 to-orange-500/0 opacity-0 blur transition-opacity duration-300 group-focus-within:opacity-15" />
             )}
           </div>
           {error && (

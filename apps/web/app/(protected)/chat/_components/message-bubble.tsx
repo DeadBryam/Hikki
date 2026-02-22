@@ -33,15 +33,15 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       {/* Avatar */}
       <div className="shrink-0">
         {isUser ? (
-          <Avatar className="h-8 w-8 border-2 border-red-500/20">
-            <AvatarFallback className="bg-linear-to-br from-red-400 to-orange-400 font-bold text-white text-xs">
+          <Avatar className="h-8 w-8 shadow-sm">
+            <AvatarFallback className="font-bold text-white text-xs">
               U
             </AvatarFallback>
           </Avatar>
         ) : (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-to-br from-red-500 to-orange-500 shadow-lg shadow-red-500/20">
+          <Avatar className="flex h-8 w-8 items-center justify-center rounded-full shadow-lg shadow-rose-500/20">
             <Sparkles className="h-4 w-4 text-white" />
-          </div>
+          </Avatar>
         )}
       </div>
 
@@ -62,9 +62,9 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         {/* Bubble */}
         <div
           className={cn(
-            "relative w-fit max-w-[85%] rounded-2xl px-4 py-3 md:max-w-[75%]",
+            "relative w-fit max-w-[85%] rounded-2xl px-4 py-3 shadow-sm md:max-w-[75%]",
             isUser
-              ? "ml-auto border border-red-500/20 bg-linear-to-br from-red-500/20 to-orange-500/20"
+              ? "ml-auto border border-rose-500/20 bg-linear-to-br from-rose-500/20 to-orange-500/20"
               : "border border-border/50 bg-card"
           )}
         >
