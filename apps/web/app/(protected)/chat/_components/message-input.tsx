@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mic, Paperclip, Send, Sparkles } from "lucide-react";
+import { Mic, Paperclip, Send } from "lucide-react";
 import {
   forwardRef,
   type KeyboardEvent as ReactKeyboardEvent,
@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { MemoryChip, SlashCommandsDropdown } from "@/components/slash-commands";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useSendMessage } from "@/lib/hooks/chat/mutations/use-send-message";
@@ -26,10 +27,16 @@ export interface MessageInputHandle {
   focus: () => void;
 }
 
+interface ActiveChip {
+  args?: string;
+  command: string;
+}
+
 export const MessageInput = forwardRef<MessageInputHandle, MessageInputProps>(
   function MessageInput({ conversationId }, ref) {
     const [message, setMessage] = useState("");
     const [isFocused, setIsFocused] = useState(false);
+    const [activeChips, setActiveChips] = useState<ActiveChip[]>([]);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const { data: messages = [] } = useMessages(conversationId);
@@ -54,8 +61,18 @@ export const MessageInput = forwardRef<MessageInputHandle, MessageInputProps>(
       if (!message.trim() || isLoading || isOverLimit) {
         return;
       }
-      sendMessage({ question: message });
+
+      const fullMessage = activeChips
+        .map((chip) => `${chip.command} ${chip.args || ""}`.trim())
+        .join(" | ");
+
+      const finalMessage = fullMessage
+        ? `${fullMessage} | ${message}`
+        : message;
+
+      sendMessage({ question: finalMessage });
       setMessage("");
+      setActiveChips([]);
 
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
@@ -83,10 +100,32 @@ export const MessageInput = forwardRef<MessageInputHandle, MessageInputProps>(
       target.style.height = `${Math.min(target.scrollHeight, 200)}px`;
     };
 
+    const handleCommand = (command: string, args?: string) => {
+      const existingIndex = activeChips.findIndex(
+        (chip) => chip.command === command
+      );
+
+      if (existingIndex >= 0) {
+        const newChips = [...activeChips];
+        newChips[existingIndex] = { command, args };
+        setActiveChips(newChips);
+      } else {
+        setActiveChips([...activeChips, { command, args }]);
+      }
+
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 0);
+    };
+
+    const handleRemoveChip = (command: string) => {
+      setActiveChips(activeChips.filter((chip) => chip.command !== command));
+    };
+
     useEffect(() => {
       const handleKeyDown = (e: globalThis.KeyboardEvent) => {
         if (
-          e.key === "/" &&
+          e.key === "Enter" &&
           !e.ctrlKey &&
           !e.metaKey &&
           !e.altKey &&
@@ -112,6 +151,12 @@ export const MessageInput = forwardRef<MessageInputHandle, MessageInputProps>(
         initial={false}
         variants={inputFocusVariants}
       >
+        <SlashCommandsDropdown
+          onChange={setMessage}
+          onCommand={handleCommand}
+          value={message}
+        />
+
         {/* Input container with glassmorphism */}
         <div
           className={cn(
@@ -128,6 +173,20 @@ export const MessageInput = forwardRef<MessageInputHandle, MessageInputProps>(
           )}
 
           <div className="relative p-3">
+            {/* Active Chips */}
+            {activeChips.length > 0 && (
+              <div className="mb-2 flex flex-wrap gap-1.5">
+                {activeChips.map((chip) => (
+                  <MemoryChip
+                    args={chip.args}
+                    command={chip.command}
+                    key={chip.command}
+                    onRemove={() => handleRemoveChip(chip.command)}
+                  />
+                ))}
+              </div>
+            )}
+
             {/* Textarea */}
             <Textarea
               className={cn(
@@ -142,7 +201,7 @@ export const MessageInput = forwardRef<MessageInputHandle, MessageInputProps>(
               placeholder={
                 isCentered
                   ? "What can I help you with today?"
-                  : "Type your message..."
+                  : "Type your message... (press / for commands)"
               }
               ref={textareaRef}
               rows={1}
@@ -187,18 +246,11 @@ export const MessageInput = forwardRef<MessageInputHandle, MessageInputProps>(
               </div>
 
               <div className="flex items-center gap-2">
-                {/* Model indicator */}
-                <div className="hidden items-center gap-1.5 rounded-md bg-muted/50 px-2 py-1 text-muted-foreground text-xs md:flex">
-                  <Sparkles className="h-3 w-3" />
-                  <span>Gemini Pro</span>
-                </div>
-
-                {/* Send button */}
                 <Button
                   className={cn(
                     "h-9 w-9 rounded-xl transition-all duration-300",
                     message.trim() && !isLoading && !isOverLimit
-                      ? "bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-lg shadow-rose-500/25 hover:from-rose-600 hover:to-orange-600"
+                      ? "bg-linear-to-r from-rose-500 to-orange-500 text-white shadow-lg shadow-rose-500/25 hover:from-rose-600 hover:to-orange-600"
                       : "bg-muted text-muted-foreground"
                   )}
                   disabled={!message.trim() || isLoading || isOverLimit}

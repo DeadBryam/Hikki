@@ -106,7 +106,7 @@ export function EmptyState({ onSuggestionClick }: EmptyStateProps) {
         >
           Press{" "}
           <kbd className="rounded bg-white/10 px-2 py-1 font-mono text-white/60 text-xs">
-            /
+            Enter
           </kbd>{" "}
           to focus the input
         </motion.p>
