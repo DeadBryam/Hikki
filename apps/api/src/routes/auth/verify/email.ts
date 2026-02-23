@@ -5,7 +5,6 @@ import {
   userRepository,
   verificationTokenRepository,
 } from "@/config/dependencies";
-import { env } from "@/config/env";
 
 interface VerifyEmailGetContext extends Context {
   query: { token: string };
@@ -13,7 +12,7 @@ interface VerifyEmailGetContext extends Context {
 
 export const verifyEmailGetHandler = async ({
   query,
-  redirect,
+  set,
   cookie,
 }: VerifyEmailGetContext) => {
   const { token } = query;
@@ -21,11 +20,13 @@ export const verifyEmailGetHandler = async ({
   const verificationToken = verificationTokenRepository.findByToken(token);
 
   if (!verificationToken) {
-    return redirect(`${env.FRONT_END_URL}/auth/verify?error=invalid_token`);
+    set.status = 400;
+    return { success: false, error: "invalid_token" };
   }
 
   if (verificationToken.type !== "email_verification") {
-    return redirect(`${env.FRONT_END_URL}/auth/verify?error=invalid_token`);
+    set.status = 400;
+    return { success: false, error: "invalid_token" };
   }
 
   userRepository.setEmailVerified(verificationToken.user_id, true);
@@ -38,7 +39,8 @@ export const verifyEmailGetHandler = async ({
     60 * 60 * 24 * 30
   );
 
-  return redirect(`${env.FRONT_END_URL}/auth/verify?success=true`);
+  set.status = 200;
+  return { success: true };
 };
 
 export const verifyEmailGetSchema = {
