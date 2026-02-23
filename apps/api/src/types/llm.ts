@@ -12,26 +12,25 @@ export interface LLMConfig {
   service?: string;
 }
 
-export interface ChatRequest {
+/** Common options for LLM requests (temperature, streaming, model selection) */
+export interface LLMRequestOptions {
   model?: string;
-  question: string;
   stream?: boolean;
+  temperature?: number;
+}
+
+export interface ChatRequest extends LLMRequestOptions {
+  question: string;
   thread?: string;
 }
 
-export interface ChatRequestOptions {
+export interface ChatRequestOptions extends LLMRequestOptions {
   memoryService?: IMemoryService;
   messages: Message[];
-  model?: string;
-  stream?: boolean;
-  temperature?: number;
 }
 
-export interface CompletionRequestOptions {
-  model?: string;
+export interface CompletionRequestOptions extends LLMRequestOptions {
   prompt: string;
-  stream?: boolean;
-  temperature?: number;
 }
 
 export type ChatResponse = AsyncGenerator<string>;

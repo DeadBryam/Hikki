@@ -241,6 +241,112 @@ class LLMService {
   }
 
   /**
+   * Executes all tool calls and collects results
+   */
+  private async executeToolCalls(
+    toolCalls: Array<{
+      type: string;
+      function?: { name: string; arguments: string };
+      id: string;
+    }>,
+    memoryService: IMemoryService
+  ): Promise<
+    Array<{
+      role: "tool";
+      content: string;
+      tool_call_id: string;
+    }>
+  > {
+    const toolResults: Array<{
+      role: "tool";
+      content: string;
+      tool_call_id: string;
+    }> = [];
+
+    for (const toolCall of toolCalls) {
+      if (toolCall.type !== "function" || !toolCall.function) {
+        continue;
+      }
+
+      const toolName = toolCall.function.name;
+      const args = JSON.parse(toolCall.function.arguments);
+
+      logger.info(
+        `Executing tool: ${toolName} with args: ${JSON.stringify(args)}`
+      );
+
+      const result = executeTool(toolName, args, memoryService);
+      toolResults.push({
+        role: "tool",
+        content: result,
+        tool_call_id: toolCall.id,
+      });
+    }
+
+    return toolResults;
+  }
+
+  /**
+   * Sends tool results back to LLM and streams final response
+   */
+  private async *streamFinalCompletion(
+    selectedModel: string,
+    originalMessages: Array<{ role?: string; content: string }>,
+    initialMessage: OpenAI.Chat.Completions.ChatCompletionMessage,
+    toolResults: Array<{
+      role: "tool";
+      content: string;
+      tool_call_id: string;
+    }>,
+    temperature: number,
+    stream: boolean
+  ): AsyncGenerator<string, void, unknown> {
+    const messagesWithResults = [
+      ...originalMessages.map((m) => ({
+        role: m.role || "user",
+        content: m.content,
+      })),
+      initialMessage,
+      ...toolResults,
+    ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
+
+    const finalCompletion = await this.client.chat.completions.create({
+      model: selectedModel,
+      messages: messagesWithResults,
+      temperature,
+      stream,
+    });
+
+    if (stream) {
+      yield* this.handleStreaming(
+        finalCompletion as unknown as AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>
+      );
+    } else {
+      const result = this.handleNonStreamingCompletion(
+        finalCompletion as OpenAI.Chat.Completions.ChatCompletion
+      );
+      yield result;
+    }
+  }
+
+  /**
+   * Handles initial LLM response without tool calls
+   */
+  private async *streamInitialCompletion(
+    initialCompletion: OpenAI.Chat.Completions.ChatCompletion,
+    stream: boolean
+  ): AsyncGenerator<string, void, unknown> {
+    if (stream) {
+      yield* this.handleStreaming(
+        initialCompletion as unknown as AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>
+      );
+    } else {
+      const result = this.handleNonStreamingCompletion(initialCompletion);
+      yield result;
+    }
+  }
+
+  /**
    * Executes chat with tools and handles tool calls recursively.
    * This implements the tool calling flow:
    * 1. User message -> LLM (with tools)
@@ -266,7 +372,6 @@ class LLMService {
     }
 
     try {
-      // First call - get the initial response with potential tool_calls
       const initialCompletion = await this.createChatCompletion(
         selectedModel,
         messages,
@@ -275,8 +380,6 @@ class LLMService {
       );
 
       const initialMessage = initialCompletion.choices[0]?.message;
-
-      // Check if the model wants to call tools
       const toolCalls = initialMessage?.tool_calls;
 
       if (toolCalls && toolCalls.length > 0 && memoryService) {
@@ -284,72 +387,21 @@ class LLMService {
           `LLM ${this.serviceN} triggered ${toolCalls.length} tool call(s)`
         );
 
-        // Build the tool results messages
-        const toolResults: Array<{
-          role: "tool";
-          content: string;
-          tool_call_id: string;
-        }> = [];
+        const toolResults = await this.executeToolCalls(
+          toolCalls,
+          memoryService
+        );
 
-        // Execute each tool call
-        for (const toolCall of toolCalls) {
-          // Only handle function-type tool calls
-          if (toolCall.type !== "function") {
-            continue;
-          }
-          const toolName = toolCall.function.name;
-          const args = JSON.parse(toolCall.function.arguments);
-
-          logger.info(
-            `Executing tool: ${toolName} with args: ${JSON.stringify(args)}`
-          );
-
-          const result = executeTool(toolName, args, memoryService);
-          toolResults.push({
-            role: "tool",
-            content: result,
-            tool_call_id: toolCall.id,
-          });
-        }
-
-        // Second call - send tool results back to get final response
-        const messagesWithResults = [
-          ...messages.map((m) => ({
-            role: m.role || "user",
-            content: m.content,
-          })),
-          initialMessage as OpenAI.Chat.Completions.ChatCompletionMessage,
-          ...toolResults,
-        ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
-
-        const finalCompletion = await this.client.chat.completions.create({
-          model: selectedModel,
-          messages:
-            messagesWithResults as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+        yield* this.streamFinalCompletion(
+          selectedModel,
+          messages,
+          initialMessage,
+          toolResults,
           temperature,
-          stream,
-        });
-
-        if (stream) {
-          yield* this.handleStreaming(
-            finalCompletion as unknown as AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>
-          );
-        } else {
-          const result = this.handleNonStreamingCompletion(
-            finalCompletion as OpenAI.Chat.Completions.ChatCompletion
-          );
-          yield result;
-        }
-      } else if (stream) {
-        // No tool calls - return the initial response directly
-        yield* this.handleStreaming(
-          initialCompletion as unknown as AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>
+          stream
         );
       } else {
-        const result = this.handleNonStreamingCompletion(
-          initialCompletion as OpenAI.Chat.Completions.ChatCompletion
-        );
-        yield result;
+        yield* this.streamInitialCompletion(initialCompletion, stream);
       }
 
       circuitBreaker.recordSuccess(this.serviceN);
