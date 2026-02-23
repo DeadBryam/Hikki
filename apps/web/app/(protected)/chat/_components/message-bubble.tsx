@@ -16,9 +16,32 @@ interface MessageBubbleProps {
   message: Message;
 }
 
+const COMMAND_REGEX = /^\/(\w+)\s*\|\s*(.*)$/;
+
+/**
+ * Extracts command and content from user message
+ * @example "/memory | me gusta el rojo" → { command: "memory", content: "me gusta el rojo" }
+ */
+function parseUserCommand(content: string): {
+  command?: string;
+  content: string;
+} {
+  const match = content.match(COMMAND_REGEX);
+  if (match) {
+    return {
+      command: match[1],
+      content: match[2].trim(),
+    };
+  }
+  return { content };
+}
+
 export function MessageBubble({ message }: MessageBubbleProps) {
   const isUser = message.role === "user";
   const isAssistant = message.role === "assistant";
+  const { command, content: displayContent } = isUser
+    ? parseUserCommand(message.content)
+    : { command: undefined, content: message.content };
 
   return (
     <motion.div
@@ -68,11 +91,19 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               : "border border-border/50 bg-card"
           )}
         >
+          {/* Command chip for user messages */}
+          {isUser && command && (
+            <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-rose-500/30 px-2.5 py-1 font-medium text-rose-100 text-xs">
+              <span className="text-rose-300">/</span>
+              <span>{command}</span>
+            </div>
+          )}
+
           {/* Message text with markdown-like formatting */}
           <div className="whitespace-pre-wrap text-sm leading-relaxed">
-            <If condition={Boolean(message.content.trim())}>
+            <If condition={Boolean(displayContent.trim())}>
               <Then>
-                <MarkdownViewer content={message.content} />
+                <MarkdownViewer content={displayContent} />
               </Then>
               <Else>
                 <TypingIndicator />
