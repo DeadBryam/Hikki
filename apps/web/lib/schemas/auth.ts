@@ -22,12 +22,22 @@ export const passwordSchema = z
     "Password must contain at least one special character (!@#$%^&*)"
   );
 
+export const passwordConfirmSchema = z
+  .string()
+  .min(1, "Please confirm your password");
+
+export const nameSchema = z
+  .string()
+  .max(100, "Name must be less than 100 characters")
+  .optional();
+
 export const signupSchema = z
   .object({
+    name: nameSchema,
     username: usernameSchema,
     email: emailSchema,
     password: passwordSchema,
-    passwordConfirm: z.string(),
+    passwordConfirm: passwordConfirmSchema,
   })
   .refine((data) => data.password === data.passwordConfirm, {
     message: "Passwords do not match",
@@ -52,7 +62,7 @@ export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export const resetPasswordSchema = z
   .object({
     password: passwordSchema,
-    passwordConfirm: z.string(),
+    passwordConfirm: passwordConfirmSchema,
   })
   .refine((data) => data.password === data.passwordConfirm, {
     message: "Passwords do not match",

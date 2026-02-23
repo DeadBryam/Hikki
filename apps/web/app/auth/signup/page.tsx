@@ -23,6 +23,7 @@ export default function SignupPage() {
   const { control, handleSubmit, watch } = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
+      name: "",
       username: "",
       email: "",
       password: "",
@@ -56,8 +57,14 @@ export default function SignupPage() {
       <div className="fade-in slide-in-from-bottom-4 animate-in duration-500">
         <AuthCard subtitle="Join Hikki today" title="Create Account">
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            {/* Row 1: Username & Email (2 columns on desktop, 1 on mobile) */}
             <div className="grid gap-6 md:grid-cols-2">
+              <FormInput
+                control={control}
+                disabled={isLoading}
+                label="Name"
+                name="name"
+                placeholder="Enter your name"
+              />
               <FormInput
                 control={control}
                 disabled={isLoading}
@@ -65,16 +72,16 @@ export default function SignupPage() {
                 name="username"
                 placeholder="Enter your username"
               />
-
-              <FormInput
-                control={control}
-                disabled={isLoading}
-                label="Email Address"
-                name="email"
-                placeholder="your@email.com"
-                type="email"
-              />
             </div>
+
+            <FormInput
+              control={control}
+              disabled={isLoading}
+              label="Email Address"
+              name="email"
+              placeholder="your@email.com"
+              type="email"
+            />
 
             <div className="grid gap-6 md:grid-cols-2">
               <PasswordInput
