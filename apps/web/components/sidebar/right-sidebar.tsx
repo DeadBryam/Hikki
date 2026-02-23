@@ -7,9 +7,6 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useDeleteMemory } from "@/lib/hooks/memories/mutations/use-memory-mutations";
-import { useMemories } from "@/lib/hooks/memories/queries/use-memories";
-import { useMemorySSE } from "@/lib/hooks/memories/use-memory-sse";
 import { sidebarVariants } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/misc";
 import { MemoriesTab } from "./tabs/memories-tab";
@@ -17,18 +14,6 @@ import { MemoriesTab } from "./tabs/memories-tab";
 export function RightSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("memories");
-
-  // Enable SSE for real-time updates
-  useMemorySSE();
-
-  const { data, isLoading: isLoadingMemories } = useMemories();
-  const { mutate: deleteMemory } = useDeleteMemory();
-
-  const handleDeleteMemory = (id: string) => {
-    deleteMemory(id);
-  };
-
-  const memories = data?.data || [];
 
   return (
     <motion.aside
@@ -111,11 +96,7 @@ export function RightSidebar() {
               </TabsList>
               <ScrollArea className="flex-1 px-3 py-2">
                 <TabsContent value="memories">
-                  <MemoriesTab
-                    isLoading={isLoadingMemories}
-                    memories={memories}
-                    onDelete={handleDeleteMemory}
-                  />
+                  <MemoriesTab />
                 </TabsContent>
                 <TabsContent
                   className="flex h-full flex-col items-center justify-center gap-2 py-8 text-muted-foreground"

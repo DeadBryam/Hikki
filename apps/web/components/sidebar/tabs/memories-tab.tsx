@@ -4,20 +4,24 @@ import { motion } from "framer-motion";
 import { Brain, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { Memory } from "@/lib/types/memory";
+import { useDeleteMemory } from "@/lib/hooks/memories/mutations/use-memory-mutations";
+import { useMemories } from "@/lib/hooks/memories/queries/use-memories";
+import { useMemorySSE } from "@/lib/hooks/memories/use-memory-sse";
 import { cardHoverVariants } from "@/lib/utils/animations";
 
-interface MemoriesTabProps {
-  isLoading: boolean;
-  memories: Memory[];
-  onDelete: (id: string) => void;
-}
+export function MemoriesTab() {
+  // Enable SSE for real-time updates
+  useMemorySSE();
 
-export function MemoriesTab({
-  memories,
-  isLoading,
-  onDelete,
-}: MemoriesTabProps) {
+  const { data, isLoading } = useMemories();
+  const { mutate: deleteMemory } = useDeleteMemory();
+
+  const handleDeleteMemory = (id: string) => {
+    deleteMemory(id);
+  };
+
+  const memories = data?.data || [];
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -62,7 +66,7 @@ export function MemoriesTab({
             className="absolute top-2 right-2 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
             onClick={(e) => {
               e.stopPropagation();
-              onDelete(memory.id);
+              handleDeleteMemory(memory.id);
             }}
             size="icon"
             variant="ghost"
