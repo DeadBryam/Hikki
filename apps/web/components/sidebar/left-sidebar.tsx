@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useTransitionRouter } from "next-view-transitions";
 import { useState } from "react";
 import { useCreateThread } from "@/lib/hooks/threads/mutations/use-create-thread";
+import { useThreadSSE } from "@/lib/hooks/threads/use-thread-sse";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { authService } from "@/lib/services/auth-service";
 import { sidebarVariants } from "@/lib/utils/animations";
@@ -23,6 +24,7 @@ export function LeftSidebar() {
   const { user, logout: logoutFromStore } = useAuth();
 
   const createThread = useCreateThread();
+  useThreadSSE();
 
   const handleNewChat = () => {
     createThread.mutate(undefined);

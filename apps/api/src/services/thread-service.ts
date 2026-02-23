@@ -3,6 +3,7 @@ import { logger } from "@/config/logger";
 import type { MessageRepository } from "@/database/repositories/message-repository";
 import type { ThreadRepository } from "@/database/repositories/thread-repository";
 import type JobService from "@/services/job-service";
+import { threadEmitter } from "@/services/thread-events";
 import type { Message } from "@/types/llm";
 import type { Thread } from "@/types/thread";
 
@@ -230,6 +231,7 @@ export default class ThreadService {
     }
 
     this.threadRepo.softDeleteThread(conversationId);
+    threadEmitter.emitThreadDeleted(userId, conversationId);
     return true;
   }
 
@@ -259,6 +261,7 @@ export default class ThreadService {
     });
 
     logger.info(`Thread ${id} created for user ${userId}`);
+    threadEmitter.emitThreadCreated(userId, id);
     return {
       id,
       user_id: userId,

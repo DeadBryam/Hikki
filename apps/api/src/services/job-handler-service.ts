@@ -3,6 +3,7 @@ import type { JobRepository } from "@/database/repositories/job-repository";
 import type { MessageRepository } from "@/database/repositories/message-repository";
 import type { ThreadRepository } from "@/database/repositories/thread-repository";
 import type LLMService from "@/services/llm-service";
+import { threadEmitter } from "@/services/thread-events";
 
 interface JobHandlerServiceDeps {
   jobRepository: JobRepository;
@@ -42,6 +43,13 @@ export default class JobHandlerService {
         await this.llmService.generateTitleWithAI(firstMessage);
       this.threadRepository.updateTitle(threadId, title);
       this.jobRepository.updateJobService(jobId, serviceUsed);
+
+      // Get thread to get userId for SSE event
+      const thread = this.threadRepository.findById(threadId);
+      if (thread?.user_id) {
+        threadEmitter.emitThreadUpdated(thread.user_id, threadId);
+      }
+
       logger.info(
         `Title generated for thread ${threadId} using ${serviceUsed}`
       );
