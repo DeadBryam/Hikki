@@ -70,7 +70,6 @@ export function useSendMessage(threadId: string | undefined) {
       try {
         while (true) {
           const { done, value } = await reader.read();
-          console.log("Received chunk:", { done, value });
           if (done) {
             break;
           }
