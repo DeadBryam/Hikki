@@ -3,6 +3,11 @@
 import OpenAI from "openai";
 import llmSources, { circuitBreaker } from "@/config/llm-sources";
 import { logger } from "@/config/logger";
+import {
+  executeTool,
+  type IMemoryService,
+  memoryTools,
+} from "@/services/llm-tools";
 import type {
   ChatRequestOptions,
   ChatResponse,
@@ -213,7 +218,161 @@ class LLMService {
     }
   }
 
+  /**
+   * Creates a non-streaming chat completion for tool call detection.
+   * Returns the full completion object to check for tool_calls.
+   */
+  private async createChatCompletion(
+    selectedModel: string,
+    messages: Array<{ role?: string; content: string }>,
+    temperature: number,
+    tools?: OpenAI.Chat.Completions.ChatCompletionTool[]
+  ): Promise<OpenAI.Chat.Completions.ChatCompletion> {
+    return this.client.chat.completions.create({
+      model: selectedModel,
+      messages: messages.map((msg) => ({
+        role: msg.role || "user",
+        content: msg.content,
+      })) as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+      temperature,
+      stream: false,
+      tools,
+    });
+  }
+
+  /**
+   * Executes chat with tools and handles tool calls recursively.
+   * This implements the tool calling flow:
+   * 1. User message -> LLM (with tools)
+   * 2. LLM returns tool_calls OR text response
+   * 3. If tool_calls: execute tools -> call LLM again with results -> return final response
+   * 4. If text: return directly
+   */
+  async *chatWithTools(
+    options: ChatRequestOptions & { memoryService?: IMemoryService }
+  ): ChatResponse {
+    const {
+      messages,
+      model,
+      stream = true,
+      temperature = 0.2,
+      memoryService,
+    } = options;
+
+    const selectedModel = model || this.defaultModel;
+    if (!this.isModelAvailable(selectedModel)) {
+      yield `[Error from ${this.serviceN}]: Model "${selectedModel}" is not available.`;
+      return;
+    }
+
+    try {
+      // First call - get the initial response with potential tool_calls
+      const initialCompletion = await this.createChatCompletion(
+        selectedModel,
+        messages,
+        temperature,
+        [...memoryTools] as OpenAI.Chat.Completions.ChatCompletionTool[]
+      );
+
+      const initialMessage = initialCompletion.choices[0]?.message;
+
+      // Check if the model wants to call tools
+      const toolCalls = initialMessage?.tool_calls;
+
+      if (toolCalls && toolCalls.length > 0 && memoryService) {
+        logger.info(
+          `LLM ${this.serviceN} triggered ${toolCalls.length} tool call(s)`
+        );
+
+        // Build the tool results messages
+        const toolResults: Array<{
+          role: "tool";
+          content: string;
+          tool_call_id: string;
+        }> = [];
+
+        // Execute each tool call
+        for (const toolCall of toolCalls) {
+          // Only handle function-type tool calls
+          if (toolCall.type !== "function") {
+            continue;
+          }
+          const toolName = toolCall.function.name;
+          const args = JSON.parse(toolCall.function.arguments);
+
+          logger.info(
+            `Executing tool: ${toolName} with args: ${JSON.stringify(args)}`
+          );
+
+          const result = executeTool(toolName, args, memoryService);
+          toolResults.push({
+            role: "tool",
+            content: result,
+            tool_call_id: toolCall.id,
+          });
+        }
+
+        // Second call - send tool results back to get final response
+        const messagesWithResults = [
+          ...messages.map((m) => ({
+            role: m.role || "user",
+            content: m.content,
+          })),
+          initialMessage as OpenAI.Chat.Completions.ChatCompletionMessage,
+          ...toolResults,
+        ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
+
+        const finalCompletion = await this.client.chat.completions.create({
+          model: selectedModel,
+          messages:
+            messagesWithResults as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+          temperature,
+          stream,
+        });
+
+        if (stream) {
+          yield* this.handleStreaming(
+            finalCompletion as unknown as AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>
+          );
+        } else {
+          const result = this.handleNonStreamingCompletion(
+            finalCompletion as OpenAI.Chat.Completions.ChatCompletion
+          );
+          yield result;
+        }
+      } else if (stream) {
+        // No tool calls - return the initial response directly
+        yield* this.handleStreaming(
+          initialCompletion as unknown as AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>
+        );
+      } else {
+        const result = this.handleNonStreamingCompletion(
+          initialCompletion as OpenAI.Chat.Completions.ChatCompletion
+        );
+        yield result;
+      }
+
+      circuitBreaker.recordSuccess(this.serviceN);
+    } catch (error) {
+      circuitBreaker.recordFailure(this.serviceN);
+      yield `[Error from ${this.serviceN}]: ${(error as Error).message}`;
+    }
+  }
+
+  /**
+   * Chat method - supports both regular chat and chat with tools
+   */
   async *chat(options: ChatRequestOptions): ChatResponse {
+    // Check if memoryService is provided in options (via extended options)
+    const extendedOptions = options as ChatRequestOptions & {
+      memoryService?: IMemoryService;
+    };
+
+    if (extendedOptions.memoryService) {
+      yield* this.chatWithTools(extendedOptions);
+      return;
+    }
+
     const { messages, model, stream = true, temperature = 0.2 } = options;
 
     const executeFn = (selectedModel: string) =>

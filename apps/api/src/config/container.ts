@@ -14,6 +14,7 @@ import { EmailService } from "@/services/email-service";
 import JobHandlerService from "@/services/job-handler-service";
 import JobService from "@/services/job-service";
 import LLMService from "@/services/llm-service";
+import { MemoryService } from "@/services/memory-service";
 import ThreadService from "@/services/thread-service";
 import type { ContainerCradle } from "@/types/container";
 
@@ -51,6 +52,7 @@ export function createDIContainer() {
 
     authService: asClass(AuthService).singleton(),
     threadService: asClass(ThreadService).singleton(),
+    memoryService: asClass(MemoryService).singleton(),
     llmService: asClass(LLMService).singleton(),
     jobHandlerService: asClass(JobHandlerService).singleton(),
     jobService: asClass(JobService).singleton(),

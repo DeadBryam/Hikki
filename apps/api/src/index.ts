@@ -23,7 +23,9 @@ import { authRoutes } from "./routes/auth";
 import { chatRoute } from "./routes/chat";
 import { appRoute } from "./routes/health";
 import { limitsRoutes } from "./routes/limits";
+import { memoriesRoutes } from "./routes/memories";
 import { rootRoute } from "./routes/root";
+import { sseRoutes } from "./routes/sse";
 import { threadsRoutes } from "./routes/threads";
 
 dotenv.config();
@@ -50,7 +52,9 @@ const app = new Elysia(serveConfig)
       .use(limitsRoutes)
       .use(authRoutes)
       .use(threadsRoutes)
+      .use(memoriesRoutes)
       .use(adminRoutes)
+      .use(sseRoutes)
   );
 
 export { app };

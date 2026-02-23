@@ -34,6 +34,7 @@ export const verificationTokenRepository = resolve(
 
 export const authService = resolve("authService");
 export const threadService = resolve("threadService");
+export const memoryService = resolve("memoryService");
 export const jobHandlerService = resolve("jobHandlerService");
 export const jobService = resolve("jobService");
 export const emailService = resolve("emailService");

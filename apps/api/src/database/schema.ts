@@ -1,5 +1,11 @@
 import { sql } from "drizzle-orm";
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  blob,
+  index,
+  integer,
+  sqliteTable,
+  text,
+} from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
@@ -60,19 +66,28 @@ export const summaries = sqliteTable("summaries", {
   updated_at: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const memoryItems = sqliteTable("memory_items", {
-  id: text("id").primaryKey(),
-  thread_id: text("thread_id").references(() => threads.id, {
-    onDelete: "cascade",
-  }),
-  type: text("type", {
-    enum: ["fact", "personality", "event", "other"],
-  }).notNull(),
-  content: text("content").notNull(),
-  created_at: text("created_at").default(sql`CURRENT_TIMESTAMP`),
-  updated_at: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
-  deleted_at: text("deleted_at"),
-});
+export const memoryItems = sqliteTable(
+  "memory_items",
+  {
+    id: text("id").primaryKey(),
+    user_id: text("user_id").references(() => users.id, {
+      onDelete: "cascade",
+    }),
+    thread_id: text("thread_id").references(() => threads.id, {
+      onDelete: "cascade",
+    }),
+    type: text("memory_type", {
+      enum: ["fact", "personality", "event", "other"],
+    }).notNull(),
+    content: text("content").notNull(),
+    embedding: blob("embedding"),
+    importance: integer("importance").default(1),
+    created_at: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+    updated_at: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
+    deleted_at: text("deleted_at"),
+  },
+  (table) => [index("idx_memory_items_user_id").on(table.user_id)]
+);
 
 export const jobs = sqliteTable(
   "jobs",

@@ -13,6 +13,7 @@ import type { EmailService } from "@/services/email-service";
 import type JobHandlerService from "@/services/job-handler-service";
 import type JobService from "@/services/job-service";
 import type LLMService from "@/services/llm-service";
+import type { MemoryService } from "@/services/memory-service";
 import type ThreadService from "@/services/thread-service";
 
 /**
@@ -29,6 +30,7 @@ export interface ContainerCradle {
   jobService: JobService;
   llmService: LLMService;
   memoryRepository: MemoryRepository;
+  memoryService: MemoryService;
   messageRepository: MessageRepository;
   sessionRepository: SessionRepository;
   summaryRepository: SummaryRepository;

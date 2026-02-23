@@ -1,3 +1,5 @@
+import type { IMemoryService } from "../services/llm-tools";
+
 export interface Message {
   content: string;
   role?: "system" | "user" | "assistant";
@@ -18,6 +20,7 @@ export interface ChatRequest {
 }
 
 export interface ChatRequestOptions {
+  memoryService?: IMemoryService;
   messages: Message[];
   model?: string;
   stream?: boolean;
