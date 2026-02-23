@@ -74,7 +74,6 @@ export const memoryItems = sqliteTable(
       enum: ["fact", "preference", "context", "personality", "event", "other"],
     }).notNull(),
     content: text("content").notNull(),
-    importance: integer("importance").default(1),
     created_at: text("created_at").default(sql`CURRENT_TIMESTAMP`),
     updated_at: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
     deleted_at: text("deleted_at"),

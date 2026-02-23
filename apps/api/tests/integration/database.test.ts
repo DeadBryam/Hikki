@@ -50,7 +50,6 @@ interface MemoryItemRow {
   created_at: string;
   deleted_at: string | null;
   id: string;
-  importance: number;
   thread_id: string | null;
   type: "fact" | "preference" | "context" | "personality" | "event" | "other";
   updated_at: string;
@@ -336,8 +335,8 @@ describe("Database Tests", () => {
       .query("SELECT id FROM users WHERE username = 'root'")
       .get() as UserRow;
     testDb.run(
-      "INSERT INTO memory_items (id, user_id, thread_id, type, importance, content) VALUES (?, ?, ?, ?, ?, ?)",
-      ["test-memory", user.id, "valid-thread", "fact", 5, "User likes blue"]
+      "INSERT INTO memory_items (id, user_id, thread_id, typ, content) VALUES (?, ?, ?, ?, ?)",
+      ["test-memory", user.id, "valid-thread", "fact", "User likes blue"]
     );
 
     const memoryItems = testDb

@@ -22,7 +22,6 @@ export class MemoryRepository {
     thread_id?: string;
     type: "fact" | "personality" | "event" | "other";
     content: string;
-    importance?: number;
   }): void {
     const id = crypto.randomUUID();
     this.db
@@ -33,7 +32,6 @@ export class MemoryRepository {
         thread_id: item.thread_id || null,
         type: item.type,
         content: item.content,
-        importance: item.importance ?? 1,
       })
       .run();
   }
@@ -103,7 +101,6 @@ export class MemoryRepository {
         thread_id: memoryItems.thread_id,
         type: memoryItems.type,
         content: memoryItems.content,
-        importance: memoryItems.importance,
         created_at: memoryItems.created_at,
         updated_at: memoryItems.updated_at,
         deleted_at: memoryItems.deleted_at,
