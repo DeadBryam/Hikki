@@ -50,9 +50,11 @@ interface MemoryItemRow {
   created_at: string;
   deleted_at: string | null;
   id: string;
+  importance: number;
   thread_id: string | null;
-  type: "fact" | "personality" | "event" | "other";
+  type: "fact" | "preference" | "context" | "personality" | "event" | "other";
   updated_at: string;
+  user_id: string;
 }
 
 interface JobRow {
@@ -330,9 +332,12 @@ describe("Database Tests", () => {
   });
 
   it("should allow memory item creation", () => {
+    const user = testDb
+      .query("SELECT id FROM users WHERE username = 'root'")
+      .get() as UserRow;
     testDb.run(
-      "INSERT INTO memory_items (id, thread_id, type, content) VALUES (?, ?, ?, ?)",
-      ["test-memory", "valid-thread", "fact", "User likes blue"]
+      "INSERT INTO memory_items (id, user_id, thread_id, type, importance, content) VALUES (?, ?, ?, ?, ?, ?)",
+      ["test-memory", user.id, "valid-thread", "fact", 5, "User likes blue"]
     );
 
     const memoryItems = testDb
@@ -341,6 +346,7 @@ describe("Database Tests", () => {
     expect(memoryItems.length).toBe(1);
     expect(memoryItems[0].type).toBe("fact");
     expect(memoryItems[0].content).toBe("User likes blue");
+    expect(memoryItems[0].user_id).toBe(user.id);
   });
 
   it("should allow job creation", () => {
@@ -375,10 +381,19 @@ describe("Database Tests", () => {
   });
 
   it("should enforce memory item type check", () => {
+    const user = testDb
+      .query("SELECT id FROM users WHERE username = 'root'")
+      .get() as UserRow;
     expect(() => {
       testDb.run(
-        "INSERT INTO memory_items (id, type, content) VALUES (?, ?, ?)",
-        ["invalid-memory", "invalid-type", "Content"]
+        "INSERT INTO memory_items (id, user_id, thread_id, type, content) VALUES (?, ?, ?, ?, ?)",
+        [
+          "invalid-memory",
+          user.id,
+          "valid-thread",
+          "invalid_type",
+          "Invalid content",
+        ]
       );
     }).toThrow();
   });

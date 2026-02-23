@@ -3,7 +3,6 @@ import { initDatabase } from "@/database/connection";
 import type { MemoryRepository } from "@/database/repositories/memory-repository";
 import type { ThreadRepository } from "@/database/repositories/thread-repository";
 import type { UserRepository } from "@/database/repositories/user-repository";
-import type { MemoryItem } from "@/types/thread";
 import {
   createMemoryRepository,
   createThreadRepository,
@@ -49,9 +48,10 @@ describe("Memory Repository", () => {
   });
 
   it("should save memory item", () => {
-    const memoryData: Omit<MemoryItem, "id" | "created_at" | "updated_at"> = {
+    const memoryData = {
+      userId: testUserId,
       thread_id: testThreadId,
-      type: "fact",
+      type: "fact" as const,
       content: "Test memory content",
     };
 
@@ -59,15 +59,20 @@ describe("Memory Repository", () => {
   });
 
   it("should get memory by type", () => {
-    const memoryData: Omit<MemoryItem, "id" | "created_at" | "updated_at"> = {
+    const memoryData = {
+      userId: testUserId,
       thread_id: testThreadId,
-      type: "personality",
+      type: "personality" as const,
       content: "Test personality trait",
     };
 
     memoryRepo.saveMemoryItem(memoryData);
 
-    const memories = memoryRepo.getMemoryByType(testThreadId, "personality");
+    const memories = memoryRepo.getMemoryByType(
+      testUserId,
+      testThreadId,
+      "personality"
+    );
     expect(Array.isArray(memories)).toBe(true);
     expect(memories.length).toBeGreaterThan(0);
 
@@ -78,7 +83,7 @@ describe("Memory Repository", () => {
   });
 
   it("should get all memory for thread", () => {
-    const threadMemories = memoryRepo.getMemoryByType(testThreadId);
+    const threadMemories = memoryRepo.getMemoryByType(testUserId, testThreadId);
     expect(Array.isArray(threadMemories)).toBe(true);
     expect(threadMemories.length).toBeGreaterThan(0);
 
@@ -88,7 +93,11 @@ describe("Memory Repository", () => {
   });
 
   it("should get memory by type only", () => {
-    const factMemories = memoryRepo.getMemoryByType(undefined, "fact");
+    const factMemories = memoryRepo.getMemoryByType(
+      testUserId,
+      undefined,
+      "fact"
+    );
     expect(Array.isArray(factMemories)).toBe(true);
 
     for (const memory of factMemories) {
@@ -96,21 +105,26 @@ describe("Memory Repository", () => {
     }
   });
 
-  it("should get all memory items", () => {
-    const allMemories = memoryRepo.getMemoryByType();
+  it("should get all memory items for user", () => {
+    const allMemories = memoryRepo.getMemoryByType(testUserId);
     expect(Array.isArray(allMemories)).toBe(true);
     expect(allMemories.length).toBeGreaterThan(0);
   });
 
   it("should save memory item without thread_id", () => {
-    const globalMemory: Omit<MemoryItem, "id" | "created_at" | "updated_at"> = {
-      type: "event",
+    const globalMemory = {
+      userId: testUserId,
+      type: "event" as const,
       content: "Global event memory",
     };
 
     expect(() => memoryRepo.saveMemoryItem(globalMemory)).not.toThrow();
 
-    const eventMemories = memoryRepo.getMemoryByType(undefined, "event");
+    const eventMemories = memoryRepo.getMemoryByType(
+      testUserId,
+      undefined,
+      "event"
+    );
     expect(eventMemories.length).toBeGreaterThan(0);
 
     const globalEvent = eventMemories.find(
