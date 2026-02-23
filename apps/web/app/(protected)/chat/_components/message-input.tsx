@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mic, Paperclip, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import {
   forwardRef,
   type KeyboardEvent as ReactKeyboardEvent,
@@ -208,41 +208,21 @@ export const MessageInput = forwardRef<MessageInputHandle, MessageInputProps>(
               value={message}
             />
 
-            {/* Character and message count */}
-            <div
-              className={cn(
-                "absolute right-3 bottom-1 flex gap-2 text-xs transition-colors",
-                isOverLimit ? "text-rose-500" : "text-muted-foreground/50"
-              )}
-            >
-              <span>
-                {messageCount}/{maxMessages} msg
-              </span>
-              <span>
-                {message.length}/{maxMessageLength}
-              </span>
-            </div>
-
             {/* Action buttons */}
-            <div className="mt-2 flex items-center justify-between border-border/30 border-t pt-2">
-              <div className="flex items-center gap-1">
-                <Button
-                  className="h-8 w-8 rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                  disabled={isLoading}
-                  size="icon"
-                  variant="ghost"
-                >
-                  <Paperclip className="h-4 w-4" />
-                </Button>
-
-                <Button
-                  className="h-8 w-8 rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                  disabled={isLoading}
-                  size="icon"
-                  variant="ghost"
-                >
-                  <Mic className="h-4 w-4" />
-                </Button>
+            <div className="mt-2 flex items-center justify-between border-border/30 border-t">
+              {/* Character and message count */}
+              <div
+                className={cn(
+                  "mb-auto flex gap-2 text-xs transition-colors",
+                  isOverLimit ? "text-rose-500" : "text-muted-foreground/50"
+                )}
+              >
+                <span>
+                  {messageCount}/{maxMessages} messages
+                </span>
+                <span>
+                  {message.length}/{maxMessageLength}
+                </span>
               </div>
 
               <div className="flex items-center gap-2">
