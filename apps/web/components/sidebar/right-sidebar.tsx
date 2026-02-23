@@ -1,36 +1,41 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  AlertCircle,
-  Brain,
-  CheckCircle2,
-  Clock,
-  PanelRight,
-  Play,
-} from "lucide-react";
+import { Brain, CheckCircle2, Clock, PanelRight } from "lucide-react";
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip } from "@/components/ui/tooltip";
-import { cardHoverVariants, sidebarVariants } from "@/lib/utils/animations";
+import { useDeleteMemory } from "@/lib/hooks/memories/mutations/use-memory-mutations";
+import { useMemories } from "@/lib/hooks/memories/queries/use-memories";
+import { useMemorySSE } from "@/lib/hooks/memories/use-memory-sse";
+import { sidebarVariants } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/misc";
+import { MemoriesTab } from "./tabs/memories-tab";
 
 export function RightSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("memories");
 
-  const jobsRunning = 0;
-  const remindersPending = 0;
+  // Enable SSE for real-time updates
+  useMemorySSE();
+
+  const { data, isLoading: isLoadingMemories } = useMemories();
+  const { mutate: deleteMemory } = useDeleteMemory();
+
+  const handleDeleteMemory = (id: string) => {
+    deleteMemory(id);
+  };
+
+  const memories = data?.data || [];
 
   return (
     <motion.aside
       animate={isOpen ? "expanded" : "collapsed"}
       className={cn(
         "relative flex h-full shrink-0 flex-col overflow-hidden border-border/50 border-l bg-sidebar/80 backdrop-blur-xl",
-        !isOpen && "min-w-[60px] border-l-transparent"
+        !isOpen && "min-w-15 border-l-transparent"
       )}
       initial={false}
       variants={sidebarVariants}
@@ -46,7 +51,7 @@ export function RightSidebar() {
           animate={{ opacity: isOpen ? 1 : 0, width: isOpen ? "auto" : 0 }}
           className="overflow-hidden whitespace-nowrap font-semibold text-sm"
         >
-          Context
+          Panel
         </motion.span>
 
         <Button
@@ -84,171 +89,47 @@ export function RightSidebar() {
               onValueChange={setActiveTab}
               value={activeTab}
             >
-              <div className="px-3 pt-2">
-                <TabsList className="grid h-8 w-full grid-cols-3">
-                  <TabsTrigger className="relative text-xs" value="memories">
-                    <Brain className="mr-1 h-3.5 w-3.5" />
-                    Memories
-                  </TabsTrigger>
-                  <TabsTrigger className="relative text-xs" value="jobs">
-                    <Clock className="mr-1 h-3.5 w-3.5" />
-                    Jobs
-                    {jobsRunning > 0 && (
-                      <Badge
-                        className="ml-1 h-4 min-w-4 px-1 text-[10px]"
-                        variant="secondary"
-                      >
-                        {jobsRunning}
-                      </Badge>
-                    )}
-                  </TabsTrigger>
-                  <TabsTrigger className="relative text-xs" value="reminders">
-                    <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
-                    Tasks
-                    {remindersPending > 0 && (
-                      <Badge
-                        className="ml-1 h-4 min-w-4 px-1 text-[10px]"
-                        variant="secondary"
-                      >
-                        {remindersPending}
-                      </Badge>
-                    )}
-                  </TabsTrigger>
-                </TabsList>
-              </div>
-
+              <TabsList className="flex w-full gap-1 rounded-none! border-border/50 border-b p-1!">
+                <TabsTrigger
+                  className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-md px-3 py-2 font-medium text-sm transition-colors hover:bg-accent data-[state=active]:bg-accent"
+                  value="memories"
+                >
+                  <span>Memories</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-md px-3 py-2 font-medium text-sm transition-colors hover:bg-accent data-[state=active]:bg-accent"
+                  value="jobs"
+                >
+                  <span>Jobs</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-md px-3 py-2 font-medium text-sm transition-colors hover:bg-accent data-[state=active]:bg-accent"
+                  value="tasks"
+                >
+                  <span>Tasks</span>
+                </TabsTrigger>
+              </TabsList>
               <ScrollArea className="flex-1 px-3 py-2">
-                {/* Memories Tab */}
-                <TabsContent className="mt-0 space-y-2" value="memories">
-                  {[].map((memory: any) => (
-                    <motion.div
-                      className="group relative cursor-pointer overflow-hidden rounded-xl border border-border/50 bg-card p-3"
-                      initial="rest"
-                      key={memory.id}
-                      variants={cardHoverVariants}
-                      whileHover="hover"
-                    >
-                      <p className="mb-2 text-sm leading-relaxed">
-                        {memory.content}
-                      </p>
-                      <div className="flex flex-wrap items-center gap-1">
-                        {memory.tags.map((tag: any) => (
-                          <Badge
-                            className="h-4 px-1.5 py-0 text-[10px]"
-                            key={tag}
-                            variant="secondary"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                      <p className="mt-2 text-muted-foreground text-xs">
-                        {new Date(memory.date).toLocaleDateString()}
-                      </p>
-
-                      {/* Hover gradient */}
-                      <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-rose-500/5 via-transparent to-cyan-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
-                    </motion.div>
-                  ))}
+                <TabsContent value="memories">
+                  <MemoriesTab
+                    isLoading={isLoadingMemories}
+                    memories={memories}
+                    onDelete={handleDeleteMemory}
+                  />
                 </TabsContent>
-
-                {/* Jobs Tab */}
-                <TabsContent className="mt-0 space-y-2" value="jobs">
-                  {[].map((job: any) => (
-                    <motion.div
-                      className={cn(
-                        "group relative cursor-pointer overflow-hidden rounded-xl border bg-card p-3",
-                        job.status === "running" && "border-cyan-500/30",
-                        job.status === "failed" && "border-rose-500/30",
-                        job.status === "pending" && "border-border/50",
-                        job.status === "completed" && "border-green-500/30"
-                      )}
-                      initial="rest"
-                      key={job.id}
-                      variants={cardHoverVariants}
-                      whileHover="hover"
-                    >
-                      <div className="mb-1 flex items-start justify-between">
-                        <h4 className="font-medium text-sm">{job.name}</h4>
-                        <StatusIcon status={job.status} />
-                      </div>
-                      <p className="mb-2 text-muted-foreground text-xs">
-                        {job.description}
-                      </p>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-mono text-muted-foreground">
-                          {job.schedule}
-                        </span>
-                        <span
-                          className={cn(
-                            job.status === "running" && "text-cyan-400",
-                            job.status === "failed" && "text-rose-400"
-                          )}
-                        >
-                          {job.status === "running" ? "Running" : "---"}
-                        </span>
-                      </div>
-                    </motion.div>
-                  ))}
+                <TabsContent
+                  className="flex h-full flex-col items-center justify-center gap-2 py-8 text-muted-foreground"
+                  value="jobs"
+                >
+                  <Clock className="h-8 w-8 opacity-50" />
+                  <p className="text-sm">No active jobs</p>
                 </TabsContent>
-
-                {/* Reminders Tab */}
-                <TabsContent className="mt-0 space-y-2" value="reminders">
-                  {[].map((reminder: any) => (
-                    <motion.div
-                      className={cn(
-                        "group relative flex cursor-pointer items-start gap-3 overflow-hidden rounded-xl border border-border/50 bg-card p-3",
-                        reminder.completed && "opacity-60"
-                      )}
-                      initial="rest"
-                      key={reminder.id}
-                      variants={cardHoverVariants}
-                      whileHover="hover"
-                    >
-                      <div
-                        className={cn(
-                          "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors",
-                          reminder.completed
-                            ? "border-primary bg-primary"
-                            : "border-muted-foreground/30 hover:border-primary"
-                        )}
-                      >
-                        {reminder.completed && (
-                          <CheckCircle2 className="h-3 w-3 text-white" />
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p
-                          className={cn(
-                            "text-sm",
-                            reminder.completed &&
-                              "text-muted-foreground line-through"
-                          )}
-                        >
-                          {reminder.text}
-                        </p>
-                        <div className="mt-1 flex items-center gap-2">
-                          <Badge
-                            className={cn(
-                              "h-4 px-1.5 py-0 text-[10px]",
-                              reminder.priority === "high" &&
-                                "border-rose-400/50 text-rose-400",
-                              reminder.priority === "medium" &&
-                                "border-amber-400/50 text-amber-400",
-                              reminder.priority === "low" &&
-                                "border-green-400/50 text-green-400"
-                            )}
-                            variant="outline"
-                          >
-                            {reminder.priority}
-                          </Badge>
-                          <span className="text-muted-foreground text-xs">
-                            {new Date(reminder.dueDate).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                <TabsContent
+                  className="flex h-full flex-col items-center justify-center gap-2 py-8 text-muted-foreground"
+                  value="tasks"
+                >
+                  <CheckCircle2 className="h-8 w-8 opacity-50" />
+                  <p className="text-sm">No tasks yet</p>
                 </TabsContent>
               </ScrollArea>
             </Tabs>
@@ -266,6 +147,10 @@ export function RightSidebar() {
               data-tooltip-content="Memories"
               data-tooltip-id="tab-memories"
               data-tooltip-place="left"
+              onClick={() => {
+                setActiveTab("memories");
+                setIsOpen(true);
+              }}
               size="icon"
               variant="ghost"
             >
@@ -278,15 +163,14 @@ export function RightSidebar() {
               data-tooltip-content="Jobs"
               data-tooltip-id="tab-jobs"
               data-tooltip-place="left"
+              onClick={() => {
+                setActiveTab("jobs");
+                setIsOpen(true);
+              }}
               size="icon"
               variant="ghost"
             >
               <Clock className="h-5 w-5" />
-              {jobsRunning > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-cyan-500 font-medium text-[10px] text-white">
-                  {jobsRunning}
-                </span>
-              )}
             </Button>
             <Tooltip id="tab-jobs" />
 
@@ -295,15 +179,14 @@ export function RightSidebar() {
               data-tooltip-content="Tasks"
               data-tooltip-id="tab-tasks"
               data-tooltip-place="left"
+              onClick={() => {
+                setActiveTab("tasks");
+                setIsOpen(true);
+              }}
               size="icon"
               variant="ghost"
             >
               <CheckCircle2 className="h-5 w-5" />
-              {remindersPending > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 font-medium text-[10px] text-white">
-                  {remindersPending}
-                </span>
-              )}
             </Button>
             <Tooltip id="tab-tasks" />
           </motion.div>
@@ -311,33 +194,4 @@ export function RightSidebar() {
       </AnimatePresence>
     </motion.aside>
   );
-}
-
-function StatusIcon({ status }: { status: string }) {
-  switch (status) {
-    case "running":
-      return (
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-cyan-500/20">
-          <Play className="h-3 w-3 fill-cyan-400 text-cyan-400" />
-        </div>
-      );
-    case "failed":
-      return (
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-500/20">
-          <AlertCircle className="h-3 w-3 text-rose-400" />
-        </div>
-      );
-    case "completed":
-      return (
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500/20">
-          <CheckCircle2 className="h-3 w-3 text-green-400" />
-        </div>
-      );
-    default:
-      return (
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
-          <Clock className="h-3 w-3 text-muted-foreground" />
-        </div>
-      );
-  }
 }
