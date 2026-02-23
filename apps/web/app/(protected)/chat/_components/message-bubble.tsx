@@ -93,8 +93,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         >
           {/* Command chip for user messages */}
           {isUser && command && (
-            <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-rose-500/30 px-2.5 py-1 font-medium text-rose-100 text-xs">
-              <span className="text-rose-300">/</span>
+            <div className="mb-1 inline-flex items-center gap-1.5 rounded-full bg-rose-500/30 px-2.5 py-1 font-medium text-rose-100 text-xs">
               <span>{command}</span>
             </div>
           )}
