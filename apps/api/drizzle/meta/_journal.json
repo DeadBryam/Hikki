@@ -89,6 +89,14 @@
       "tag": "0011_add_archived_and_pinned_to_threads",
       "hash": "4a1d102b31980421a5463289fbf5bd9470ca5c7ed8f9e534f7b7cce07b41f3d1",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1771741643695,
+      "tag": "0012_add_memory_user_id_and_fts5",
+      "hash": "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456",
+      "breakpoints": true
     }
   ]
 }

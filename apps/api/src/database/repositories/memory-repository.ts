@@ -103,7 +103,6 @@ export class MemoryRepository {
         thread_id: memoryItems.thread_id,
         type: memoryItems.type,
         content: memoryItems.content,
-        embedding: memoryItems.embedding,
         importance: memoryItems.importance,
         created_at: memoryItems.created_at,
         updated_at: memoryItems.updated_at,

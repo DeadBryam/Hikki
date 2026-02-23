@@ -1,11 +1,5 @@
 import { sql } from "drizzle-orm";
-import {
-  blob,
-  index,
-  integer,
-  sqliteTable,
-  text,
-} from "drizzle-orm/sqlite-core";
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
@@ -76,11 +70,10 @@ export const memoryItems = sqliteTable(
     thread_id: text("thread_id").references(() => threads.id, {
       onDelete: "cascade",
     }),
-    type: text("memory_type", {
-      enum: ["fact", "personality", "event", "other"],
+    type: text("type", {
+      enum: ["fact", "preference", "context", "personality", "event", "other"],
     }).notNull(),
     content: text("content").notNull(),
-    embedding: blob("embedding"),
     importance: integer("importance").default(1),
     created_at: text("created_at").default(sql`CURRENT_TIMESTAMP`),
     updated_at: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
