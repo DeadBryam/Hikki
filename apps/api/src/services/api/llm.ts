@@ -113,20 +113,20 @@ class LLMService {
   ): AsyncGenerator<string, void, unknown> {
     let thinking = false;
     for await (const chunk of completion) {
-      const content = chunk.choices[0]?.delta?.content;
-      if (content?.includes("<think>")) {
+      const content = chunk.choices[0]?.delta?.content ?? "";
+      if (content.includes("<think>")) {
         thinking = true;
         logger.info(`LLM ${this.serviceN} is thinking...`);
         continue;
       }
 
-      if (content?.includes("</think>")) {
+      if (content.includes("</think>")) {
         thinking = false;
         logger.info(`LLM ${this.serviceN} finished thinking.`);
         continue;
       }
 
-      if (content?.trim() === "") {
+      if (content.trim() === "") {
         continue;
       }
 
@@ -143,7 +143,7 @@ class LLMService {
     completion: AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>
   ): AsyncGenerator<string, void, unknown> {
     for await (const chunk of completion) {
-      const content = chunk.choices[0]?.delta?.content;
+      const content = chunk.choices[0]?.delta?.content ?? "";
       if (content) {
         yield content;
       }

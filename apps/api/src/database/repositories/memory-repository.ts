@@ -1,5 +1,6 @@
 import { and, desc, eq, type SQL, sql } from "drizzle-orm";
 import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
+import { memoryEmitter } from "@/services/memory-events";
 import type * as schema from "../schema";
 import { memoryItems } from "../schema";
 
@@ -34,6 +35,8 @@ export class MemoryRepository {
         content: item.content,
       })
       .run();
+
+    memoryEmitter.emitMemoryCreated(item.userId, id);
   }
 
   getMemoryByType(userId: string, threadId?: string, type?: string) {
