@@ -1,16 +1,19 @@
 /** biome-ignore-all lint/suspicious/useAwait: This file uses a mix of sync and async function */
 
 import OpenAI from "openai";
+import { memoryRepository } from "@/config/dependencies";
 import llmSources, { circuitBreaker } from "@/config/llm-sources";
 import { logger } from "@/config/logger";
 import {
+  allTools,
+  createMemoryService,
   executeTool,
   type IMemoryService,
-  memoryTools,
 } from "@/services/llm-tools";
 import type {
   ChatRequestOptions,
   ChatResponse,
+  ChatWithToolsRequest,
   CompletionRequestOptions,
   CompletionResponse,
 } from "@/types/llm";
@@ -105,10 +108,11 @@ class LLMService {
     circuitBreaker.recordFailure(this.serviceN);
     yield `[Error from ${this.serviceN}]: All models failed`;
   }
+
   /**
    * Handles streaming response from LLM, filtering out thinking tags and empty content.
    */
-  private async *handleStreaming(
+  private async *handleStreamingCompletion(
     completion: AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>
   ): AsyncGenerator<string, void, unknown> {
     let thinking = false;
@@ -137,20 +141,6 @@ class LLMService {
   }
 
   /**
-   * Handles streaming response for completion.
-   */
-  private async *handleStreamingCompletion(
-    completion: AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>
-  ): AsyncGenerator<string, void, unknown> {
-    for await (const chunk of completion) {
-      const content = chunk.choices[0]?.delta?.content ?? "";
-      if (content) {
-        yield content;
-      }
-    }
-  }
-
-  /**
    * Handles non-streaming response for completion.
    */
   private handleNonStreamingCompletion(
@@ -168,8 +158,8 @@ class LLMService {
     temperature: number,
     stream: boolean
   ): AsyncGenerator<string, void, unknown> {
-    const completion = await this.client.chat.completions.create({
-      model: selectedModel,
+    const completion = await this.executeLLMRequest({
+      selectedModel,
       messages: [{ role: "user", content: prompt }],
       temperature,
       stream,
@@ -187,6 +177,28 @@ class LLMService {
     }
   }
 
+  private async executeLLMRequest(props: {
+    selectedModel: string;
+    messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[];
+    temperature: number;
+    stream: boolean;
+    tools?: OpenAI.Chat.Completions.ChatCompletionTool[];
+  }) {
+    const completion = await this.client.chat.completions.create({
+      model: props.selectedModel,
+      messages:
+        props.messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+      temperature: props.temperature,
+      stream: props.stream,
+      tools: props.tools,
+    });
+
+    if (props.stream) {
+      return completion as AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>;
+    }
+    return completion as OpenAI.Chat.Completions.ChatCompletion;
+  }
+
   /**
    * Executes chat completion with the specified model.
    */
@@ -196,18 +208,16 @@ class LLMService {
     temperature: number,
     stream: boolean
   ): AsyncGenerator<string, void, unknown> {
-    const completion = await this.client.chat.completions.create({
-      model: selectedModel,
-      messages: messages.map((msg) => ({
-        role: msg.role || "user",
-        content: msg.content,
-      })) as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+    const completion = await this.executeLLMRequest({
+      selectedModel,
+      messages:
+        messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
       temperature,
       stream,
     });
 
     if (stream) {
-      yield* this.handleStreaming(
+      yield* this.handleStreamingCompletion(
         completion as AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>
       );
     } else {
@@ -216,28 +226,6 @@ class LLMService {
       );
       yield result;
     }
-  }
-
-  /**
-   * Creates a non-streaming chat completion for tool call detection.
-   * Returns the full completion object to check for tool_calls.
-   */
-  private async createChatCompletion(
-    selectedModel: string,
-    messages: Array<{ role?: string; content: string }>,
-    temperature: number,
-    tools?: OpenAI.Chat.Completions.ChatCompletionTool[]
-  ): Promise<OpenAI.Chat.Completions.ChatCompletion> {
-    return this.client.chat.completions.create({
-      model: selectedModel,
-      messages: messages.map((msg) => ({
-        role: msg.role || "user",
-        content: msg.content,
-      })) as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
-      temperature,
-      stream: false,
-      tools,
-    });
   }
 
   /**
@@ -310,15 +298,15 @@ class LLMService {
       ...toolResults,
     ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
 
-    const finalCompletion = await this.client.chat.completions.create({
-      model: selectedModel,
+    const finalCompletion = await this.executeLLMRequest({
+      selectedModel,
       messages: messagesWithResults,
       temperature,
       stream,
     });
 
     if (stream) {
-      yield* this.handleStreaming(
+      yield* this.handleStreamingCompletion(
         finalCompletion as unknown as AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>
       );
     } else {
@@ -336,12 +324,18 @@ class LLMService {
     initialCompletion: OpenAI.Chat.Completions.ChatCompletion,
     stream: boolean
   ): AsyncGenerator<string, void, unknown> {
+    logger.info(
+      `LLM ${this.serviceN} response does not require tool calls, returning directly.`
+    );
+
+    const result = this.handleNonStreamingCompletion(initialCompletion);
+
     if (stream) {
-      yield* this.handleStreaming(
-        initialCompletion as unknown as AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>
-      );
+      const chunkSize = 10;
+      for (let i = 0; i < result.length; i += chunkSize) {
+        yield result.slice(i, i + chunkSize);
+      }
     } else {
-      const result = this.handleNonStreamingCompletion(initialCompletion);
       yield result;
     }
   }
@@ -354,9 +348,7 @@ class LLMService {
    * 3. If tool_calls: execute tools -> call LLM again with results -> return final response
    * 4. If text: return directly
    */
-  async *chatWithTools(
-    options: ChatRequestOptions & { memoryService?: IMemoryService }
-  ): ChatResponse {
+  async *chatWithTools(options: ChatWithToolsRequest): ChatResponse {
     const {
       messages,
       model,
@@ -366,23 +358,26 @@ class LLMService {
     } = options;
 
     const selectedModel = model || this.defaultModel;
+
     if (!this.isModelAvailable(selectedModel)) {
       yield `[Error from ${this.serviceN}]: Model "${selectedModel}" is not available.`;
       return;
     }
 
     try {
-      const initialCompletion = await this.createChatCompletion(
+      const initialCompletion = (await this.executeLLMRequest({
         selectedModel,
-        messages,
+        messages:
+          messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
         temperature,
-        [...memoryTools] as OpenAI.Chat.Completions.ChatCompletionTool[]
-      );
+        stream: false,
+        tools: allTools,
+      })) as OpenAI.Chat.Completions.ChatCompletion;
 
-      const initialMessage = initialCompletion.choices[0]?.message;
+      const initialMessage = initialCompletion?.choices?.[0]?.message;
       const toolCalls = initialMessage?.tool_calls;
 
-      if (toolCalls && toolCalls.length > 0 && memoryService) {
+      if (toolCalls && toolCalls?.length > 0) {
         logger.info(
           `LLM ${this.serviceN} triggered ${toolCalls.length} tool call(s)`
         );
@@ -406,6 +401,9 @@ class LLMService {
 
       circuitBreaker.recordSuccess(this.serviceN);
     } catch (error) {
+      logger.error(
+        `Error in chatWithTools for service ${this.serviceN}: ${(error as Error).message}`
+      );
       circuitBreaker.recordFailure(this.serviceN);
       yield `[Error from ${this.serviceN}]: ${(error as Error).message}`;
     }
@@ -415,13 +413,16 @@ class LLMService {
    * Chat method - supports both regular chat and chat with tools
    */
   async *chat(options: ChatRequestOptions): ChatResponse {
-    // Check if memoryService is provided in options (via extended options)
-    const extendedOptions = options as ChatRequestOptions & {
-      memoryService?: IMemoryService;
-    };
+    const memoryServiceInstance = createMemoryService(
+      memoryRepository,
+      options.userId
+    );
 
-    if (extendedOptions.memoryService) {
-      yield* this.chatWithTools(extendedOptions);
+    if (memoryServiceInstance) {
+      yield* this.chatWithTools({
+        ...options,
+        memoryService: memoryServiceInstance,
+      });
       return;
     }
 
@@ -486,7 +487,7 @@ export function createLLMService(): { service: LLMService; name: string } {
       return { service, name: source.serviceN };
     } catch (error) {
       circuitBreaker.recordFailure(source.name);
-      console.warn(
+      logger.warn(
         `LLM service ${source.name} failed to initialize, trying next source: ${(error as Error).message}`
       );
     }

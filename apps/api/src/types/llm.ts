@@ -1,4 +1,4 @@
-import type { IMemoryService } from "../services/llm-tools";
+import type { IMemoryService } from "@/services/llm-tools";
 
 export interface Message {
   content: string;
@@ -25,8 +25,12 @@ export interface ChatRequest extends LLMRequestOptions {
 }
 
 export interface ChatRequestOptions extends LLMRequestOptions {
-  memoryService?: IMemoryService;
   messages: Message[];
+  userId: string;
+}
+
+export interface ChatWithToolsRequest extends ChatRequestOptions {
+  memoryService: IMemoryService;
 }
 
 export interface CompletionRequestOptions extends LLMRequestOptions {

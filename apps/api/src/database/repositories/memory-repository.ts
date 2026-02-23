@@ -21,7 +21,7 @@ export class MemoryRepository {
   saveMemoryItem(item: {
     userId: string;
     thread_id?: string;
-    type: "fact" | "personality" | "event" | "other";
+    type: "fact" | "preference" | "context" | "personality" | "event" | "other";
     content: string;
   }): void {
     const id = crypto.randomUUID();

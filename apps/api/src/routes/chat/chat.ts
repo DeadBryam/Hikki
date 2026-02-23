@@ -1,12 +1,7 @@
 import { t } from "elysia";
 import { CHAT_CONSTANTS } from "@/config/constants";
-import {
-  memoryRepository,
-  threadRepository,
-  threadService,
-} from "@/config/dependencies";
+import { threadRepository, threadService } from "@/config/dependencies";
 import { createLLMService } from "@/services/api/llm";
-import { createMemoryService } from "@/services/llm-tools";
 import type { AuthenticatedContext } from "@/types/context";
 import type { ChatRequest } from "@/types/llm";
 import { createErrorResponse } from "@/utils/errors";
@@ -44,7 +39,6 @@ export async function* chatHandler(params: AuthenticatedContext<ChatRequest>) {
   }
 
   const { service, name } = createLLMService();
-  const memoryServiceInstance = createMemoryService(memoryRepository, userId);
 
   logestic?.info(`[${requestId}] [${name}] selected for thread. ID: ${thread}`);
 
@@ -72,7 +66,7 @@ export async function* chatHandler(params: AuthenticatedContext<ChatRequest>) {
     messages,
     stream,
     model,
-    memoryService: memoryServiceInstance,
+    userId,
   });
 
   set.headers["Content-Type"] = "text/plain; charset=utf-8";

@@ -74,6 +74,8 @@ export const memoryTools = [
   },
 ];
 
+export const allTools = [...memoryTools];
+
 export interface IMemoryService {
   deleteMemory(args: { id: string }): string;
   getMemories(args: { query?: string }): string;
