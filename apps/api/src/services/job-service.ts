@@ -84,6 +84,11 @@ export default class JobService {
             ...JSON.parse(job.data),
             jobId: job.id,
           });
+        } else if (job.type === "reminder") {
+          await this.jobHandlerService.handleReminder({
+            ...JSON.parse(job.data),
+            jobId: job.id,
+          });
         }
 
         this.jobRepository.markAsCompleted(job.id);

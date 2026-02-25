@@ -4,6 +4,7 @@ import { db } from "@/database/connection";
 import { JobRepository } from "@/database/repositories/job-repository";
 import { MemoryRepository } from "@/database/repositories/memory-repository";
 import { MessageRepository } from "@/database/repositories/message-repository";
+import { ReminderRepository } from "@/database/repositories/reminder-repository";
 import { SessionRepository } from "@/database/repositories/session-repository";
 import { SummaryRepository } from "@/database/repositories/summary-repository";
 import { ThreadRepository } from "@/database/repositories/thread-repository";
@@ -15,6 +16,7 @@ import JobHandlerService from "@/services/job-handler-service";
 import JobService from "@/services/job-service";
 import LLMService from "@/services/llm-service";
 import { MemoryService } from "@/services/memory-service";
+import { ReminderService } from "@/services/reminder-service";
 import ThreadService from "@/services/thread-service";
 import type { ContainerCradle } from "@/types/container";
 
@@ -43,6 +45,7 @@ export function createDIContainer() {
     sessionRepository: asClass(SessionRepository).singleton(),
     summaryRepository: asClass(SummaryRepository).singleton(),
     memoryRepository: asClass(MemoryRepository).singleton(),
+    reminderRepository: asClass(ReminderRepository).singleton(),
     jobRepository: asClass(JobRepository).singleton(),
     threadRepository: asClass(ThreadRepository).singleton(),
     messageRepository: asClass(MessageRepository).singleton(),
@@ -53,6 +56,7 @@ export function createDIContainer() {
     authService: asClass(AuthService).singleton(),
     threadService: asClass(ThreadService).singleton(),
     memoryService: asClass(MemoryService).singleton(),
+    reminderService: asClass(ReminderService).singleton(),
     llmService: asClass(LLMService).singleton(),
     jobHandlerService: asClass(JobHandlerService).singleton(),
     jobService: asClass(JobService).singleton(),

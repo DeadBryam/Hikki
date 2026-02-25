@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Brain, Check, Search, Trash2, X } from "lucide-react";
+import { Bell, Brain, Check, Search, Trash2, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 
@@ -9,7 +9,7 @@ export interface SlashCommandItem {
   command: string;
   description: string;
   label: string;
-  type: "memory" | "forget" | "list";
+  type: "memory" | "forget" | "list" | "reminder";
 }
 
 export const SLASH_COMMANDS: SlashCommandItem[] = [
@@ -30,6 +30,12 @@ export const SLASH_COMMANDS: SlashCommandItem[] = [
     label: "Delete Memory",
     description: "Remove a memory by ID or content",
     type: "forget",
+  },
+  {
+    command: "/remindme",
+    label: "Set Reminder",
+    description: "Set a reminder (e.g., /remindme in 1 hour)",
+    type: "reminder",
   },
 ];
 
@@ -184,6 +190,9 @@ export function SlashCommandsDropdown({
                       {cmd.type === "forget" && (
                         <Trash2 className="h-4 w-4 text-rose-500" />
                       )}
+                      {cmd.type === "reminder" && (
+                        <Bell className="h-4 w-4 text-amber-500" />
+                      )}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
@@ -227,6 +236,8 @@ export function MemoryChip({
         return <Search className="h-3 w-3" />;
       case "/forget":
         return <Trash2 className="h-3 w-3" />;
+      case "/remindme":
+        return <Bell className="h-3 w-3" />;
       default:
         return <Brain className="h-3 w-3" />;
     }

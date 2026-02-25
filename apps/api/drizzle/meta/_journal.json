@@ -97,6 +97,14 @@
       "tag": "0012_add_memory_user_id_and_fts5",
       "hash": "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1772200000000,
+      "tag": "0013_create_reminders",
+      "hash": "d41d8cd98f00b204e9800998ecf8427e",
+      "breakpoints": true
     }
   ]
 }

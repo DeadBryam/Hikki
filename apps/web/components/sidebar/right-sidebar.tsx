@@ -10,6 +10,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { sidebarVariants } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/misc";
 import { MemoriesTab } from "./tabs/memories-tab";
+import { RemindersTab } from "./tabs/reminders-tab";
 
 export function RightSidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -83,15 +84,9 @@ export function RightSidebar() {
                 </TabsTrigger>
                 <TabsTrigger
                   className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-md px-3 py-2 font-medium text-sm transition-colors hover:bg-accent data-[state=active]:bg-accent"
-                  value="jobs"
+                  value="reminders"
                 >
-                  <span>Jobs</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-md px-3 py-2 font-medium text-sm transition-colors hover:bg-accent data-[state=active]:bg-accent"
-                  value="tasks"
-                >
-                  <span>Tasks</span>
+                  <span>Reminders</span>
                 </TabsTrigger>
               </TabsList>
               <ScrollArea className="flex-1 px-3 py-2">
@@ -111,6 +106,9 @@ export function RightSidebar() {
                 >
                   <CheckCircle2 className="h-8 w-8 opacity-50" />
                   <p className="text-sm">No tasks yet</p>
+                </TabsContent>
+                <TabsContent value="reminders">
+                  <RemindersTab />
                 </TabsContent>
               </ScrollArea>
             </Tabs>

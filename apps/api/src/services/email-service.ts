@@ -120,4 +120,47 @@ export class EmailService {
 
     return { success: true };
   }
+
+  async sendReminderEmail(
+    email: string,
+    message: string
+  ): Promise<EmailResult> {
+    const subject = "🔔 Reminder";
+
+    if (!this.resend) {
+      logger.info(`[DEV] Reminder email to ${email}: ${message}`);
+      return { success: true };
+    }
+
+    const fromEmail = env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+
+    const { error } = await this.resend.emails.send({
+      from: `${env.APP_NAME} <${fromEmail}>`,
+      to: email,
+      subject,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #333;">🔔 Reminder</h1>
+          <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p style="color: #333; font-size: 16px; margin: 0;">${message}</p>
+          </div>
+          <p style="color: #999; font-size: 14px;">This is a reminder from ${env.APP_NAME}</p>
+        </body>
+        </html>
+      `,
+    });
+
+    if (error) {
+      logger.error(`Error sending reminder email: ${error.message}`);
+      return { success: false };
+    }
+
+    return { success: true };
+  }
 }

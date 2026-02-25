@@ -1,15 +1,22 @@
 /** biome-ignore-all lint/suspicious/useAwait: This file uses a mix of sync and async function */
 
 import OpenAI from "openai";
-import { memoryRepository } from "@/config/dependencies";
+import {
+  memoryRepository,
+  reminderRepository,
+  userRepository,
+} from "@/config/dependencies";
 import llmSources, { circuitBreaker } from "@/config/llm-sources";
 import { logger } from "@/config/logger";
 import {
   allTools,
   createMemoryService,
+  createReminderService,
   executeTool,
   type IMemoryService,
+  type IReminderService,
 } from "@/services/llm-tools";
+import { ReminderService } from "@/services/reminder-service";
 import type {
   ChatRequestOptions,
   ChatResponse,
@@ -237,7 +244,8 @@ class LLMService {
       function?: { name: string; arguments: string };
       id: string;
     }>,
-    memoryService: IMemoryService
+    memoryService: IMemoryService,
+    reminderService?: IReminderService
   ): Promise<
     Array<{
       role: "tool";
@@ -263,7 +271,12 @@ class LLMService {
         `Executing tool: ${toolName} with args: ${JSON.stringify(args)}`
       );
 
-      const result = executeTool(toolName, args, memoryService);
+      const result = executeTool(
+        toolName,
+        args,
+        memoryService,
+        reminderService
+      );
       toolResults.push({
         role: "tool",
         content: result,
@@ -355,6 +368,7 @@ class LLMService {
       stream = true,
       temperature = 0.2,
       memoryService,
+      reminderService,
     } = options;
 
     const selectedModel = model || this.defaultModel;
@@ -384,7 +398,8 @@ class LLMService {
 
         const toolResults = await this.executeToolCalls(
           toolCalls,
-          memoryService
+          memoryService,
+          reminderService
         );
 
         yield* this.streamFinalCompletion(
@@ -418,10 +433,21 @@ class LLMService {
       options.userId
     );
 
+    const reminderServiceInstance = new ReminderService({
+      reminderRepository,
+      userRepository,
+    });
+
+    const reminderServiceForTools = createReminderService(
+      reminderServiceInstance,
+      options.userId
+    );
+
     if (memoryServiceInstance) {
       yield* this.chatWithTools({
         ...options,
         memoryService: memoryServiceInstance,
+        reminderService: reminderServiceForTools,
       });
       return;
     }

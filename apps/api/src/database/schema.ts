@@ -152,6 +152,9 @@ export const verificationTokens = sqliteTable(
   ]
 );
 
+export type VerificationTokenSelect = typeof verificationTokens.$inferSelect;
+export type VerificationTokenInsert = typeof verificationTokens.$inferInsert;
+
 export type UserSelect = typeof users.$inferSelect;
 export type UserInsert = typeof users.$inferInsert;
 
@@ -173,5 +176,31 @@ export type JobInsert = typeof jobs.$inferInsert;
 export type SessionSelect = typeof sessions.$inferSelect;
 export type SessionInsert = typeof sessions.$inferInsert;
 
-export type VerificationTokenSelect = typeof verificationTokens.$inferSelect;
-export type VerificationTokenInsert = typeof verificationTokens.$inferInsert;
+// Reminder types - table defined in migration 0013_create_reminders.sql
+export const reminders = sqliteTable("reminders", {
+  id: text("id").primaryKey(),
+  user_id: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  message: text("message").notNull(),
+  type: text("type", {
+    enum: ["one-time", "recurrent"],
+  }).notNull(),
+  schedule_at: text("schedule_at").notNull(),
+  repeat_pattern: text("repeat_pattern"),
+  channel: text("channel", {
+    enum: ["in-app", "email", "push", "all"],
+  }).notNull(),
+  status: text("status", {
+    enum: ["active", "completed", "cancelled"],
+  })
+    .default("active")
+    .notNull(),
+  triggered_at: text("triggered_at"),
+  job_id: text("job_id").references(() => jobs.id, { onDelete: "set null" }),
+  created_at: text("created_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
+  updated_at: text("updated_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+
+export type ReminderSelect = typeof reminders.$inferSelect;
+export type ReminderInsert = typeof reminders.$inferInsert;

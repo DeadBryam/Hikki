@@ -2,6 +2,7 @@ import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import type { JobRepository } from "@/database/repositories/job-repository";
 import type { MemoryRepository } from "@/database/repositories/memory-repository";
 import type { MessageRepository } from "@/database/repositories/message-repository";
+import type { ReminderRepository } from "@/database/repositories/reminder-repository";
 import type { SessionRepository } from "@/database/repositories/session-repository";
 import type { SummaryRepository } from "@/database/repositories/summary-repository";
 import type { ThreadRepository } from "@/database/repositories/thread-repository";
@@ -14,6 +15,7 @@ import type JobHandlerService from "@/services/job-handler-service";
 import type JobService from "@/services/job-service";
 import type LLMService from "@/services/llm-service";
 import type { MemoryService } from "@/services/memory-service";
+import type { ReminderService } from "@/services/reminder-service";
 import type ThreadService from "@/services/thread-service";
 
 /**
@@ -32,6 +34,8 @@ export interface ContainerCradle {
   memoryRepository: MemoryRepository;
   memoryService: MemoryService;
   messageRepository: MessageRepository;
+  reminderRepository: ReminderRepository;
+  reminderService: ReminderService;
   sessionRepository: SessionRepository;
   summaryRepository: SummaryRepository;
   threadRepository: ThreadRepository;

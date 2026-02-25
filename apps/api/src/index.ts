@@ -24,6 +24,7 @@ import { chatRoute } from "./routes/chat";
 import { appRoute } from "./routes/health";
 import { limitsRoutes } from "./routes/limits";
 import { memoriesRoutes } from "./routes/memories";
+import { remindersRoutes } from "./routes/reminders";
 import { rootRoute } from "./routes/root";
 import { sseRoutes } from "./routes/sse";
 import { threadsRoutes } from "./routes/threads";
@@ -53,6 +54,7 @@ const app = new Elysia(serveConfig)
       .use(authRoutes)
       .use(threadsRoutes)
       .use(memoriesRoutes)
+      .use(remindersRoutes)
       .use(adminRoutes)
       .use(sseRoutes)
   );
