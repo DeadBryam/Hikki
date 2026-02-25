@@ -335,7 +335,7 @@ describe("Database Tests", () => {
       .query("SELECT id FROM users WHERE username = 'root'")
       .get() as UserRow;
     testDb.run(
-      "INSERT INTO memory_items (id, user_id, thread_id, typ, content) VALUES (?, ?, ?, ?, ?)",
+      "INSERT INTO memory_items (id, user_id, thread_id, type, content) VALUES (?, ?, ?, ?, ?)",
       ["test-memory", user.id, "valid-thread", "fact", "User likes blue"]
     );
 
